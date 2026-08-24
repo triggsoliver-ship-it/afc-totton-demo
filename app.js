@@ -1,3 +1,8 @@
+// lock zoom on mobile
+(function(){var v=document.querySelector('meta[name=viewport]');if(v)v.setAttribute('content','width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover');
+ var s=document.createElement('style');s.textContent='html{touch-action:manipulation}';document.head.appendChild(s);
+ document.addEventListener('gesturestart',function(e){e.preventDefault();});
+ var lt=0;document.addEventListener('touchend',function(e){var n=Date.now();if(n-lt<350){e.preventDefault();}lt=n;},{passive:false});})();
 function tab(btn,id){document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
  document.querySelectorAll('.tabpane').forEach(p=>p.style.display='none');document.getElementById(id).style.display='block';}
 function demo(e){if(e)e.preventDefault();alert('This is a demo site — checkout, downloads and form submissions are disabled.');return false;}
