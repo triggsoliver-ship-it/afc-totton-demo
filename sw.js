@@ -1,8 +1,5 @@
-const C='afct-demo-v2';
-const CORE=['/','/index.html','/style.css','/app.js','/match-centre.html','/teams.html','/news.html','/club.html','/img/crest.svg'];
-self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(CORE).catch(()=>{})).then(()=>self.skipWaiting()));});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()));});
+const C='afct-demo-v3';
+self.addEventListener('install',e=>self.skipWaiting());
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.map(x=>caches.delete(x)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;
- e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
-   const cp=res.clone();caches.open(C).then(c=>c.put(e.request,cp).catch(()=>{}));return res;
- }).catch(()=>caches.match('/index.html'))));});
+ e.respondWith(fetch(e.request).then(res=>{const cp=res.clone();caches.open(C).then(c=>c.put(e.request,cp).catch(()=>{}));return res;}).catch(()=>caches.match(e.request).then(r=>r||caches.match('/index.html'))));});
