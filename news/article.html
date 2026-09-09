@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>News | AFC Totton</title><meta name="description" content="AFC Totton news.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#151C36">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="/img/crest.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css"></head><body data-page="article">
+<div class="demo-bar">DEMO SITE &middot; INDICATIVE CONTENT &middot; NOT AFC TOTTON POLICY</div>
+<header class="site"><div class="wrap hdr">
+<a class="brand" href="/"><img class="crest" src="/img/crest.svg" alt="AFC Totton crest"><span>AFC TOTTON</span></a>
+<nav class="main"><a href="/tickets.html" class="">Tickets</a><a href="/match-centre.html" class="">Match Centre</a><a href="/teams.html" class="">Teams</a><a href="/news.html" class="on">News</a><a href="/club.html" class="">Club</a><a href="/community.html" class="">Community</a><a href="/commercial.html" class="">Commercial</a><a href="/shop.html" class="">Shop</a><a href="/tickets.html" class="btn" style="color:#fff">Buy Tickets</a></nav>
+<button class="burger" onclick="document.querySelector('nav.main').style.display='flex'">&#9776;</button>
+</div></header>
+<section><div class="wrap" style="max-width:1000px" id="art">
+<p style="color:#8a90a0">Loading article&hellip;</p>
+</div></section>
+<footer class="site"><div class="wrap">
+<div class="btm"><span>&copy; 2026 AFC TOTTON 1886 LTD. Demo site built for board and member review.</span>
+<span><a href="/news.html" style="color:#93a2c0">&lsaquo; All news</a></span></div>
+</div></footer>
+<script src="/app.js"></script>
+<script>
+(async function(){
+  const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const id = new URLSearchParams(location.search).get('id');
+  const el = document.getElementById('art');
+  const items = await fetch('/api/news?ts=' + Date.now()).then(r => r.json()).catch(() => null);
+  const i = items && items.find(x => x.id === id);
+  if (!i){ el.innerHTML = '<p>Article not found. <a href="/news.html" style="color:#5B7AB8">Back to all news</a></p>'; return; }
+  document.title = i.title + ' | AFC Totton';
+  const paras = String(i.body||'').split(/\n\s*\n/).map(p => '<p>' + esc(p).replace(/\n/g,'<br>') + '</p>').join('');
+  el.innerHTML = `
+    <span class="eyebrow" style="color:#5B7AB8">${esc(i.cat)} &middot; ${esc(i.date)} &middot; BY THE STAGS MEDIA TEAM</span>
+    <h1 style="font-size:clamp(28px,4vw,44px);color:#151C36;margin:14px 0 16px;font-weight:800;line-height:1.12">${esc(i.title)}</h1>
+    ${i.standfirst ? `<p style="font-size:19px;color:#5b6272;line-height:1.6;margin-bottom:26px;max-width:60ch">${esc(i.standfirst)}</p>` : ''}
+    ${i.img ? `<img src="${esc(i.img)}" alt="" style="width:100%;border-radius:5px;margin-bottom:30px">` : ''}
+    <div class="prose">${paras}</div>
+    <div style="margin-top:34px;padding-top:22px;border-top:1px solid var(--line)">
+    <button class="btn dark" onclick="shareIt()">Share this story</button></div>`;
+})();
+</script></body></html>
