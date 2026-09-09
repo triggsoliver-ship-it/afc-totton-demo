@@ -1,0 +1,223 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Club Admin | AFC Totton</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/svg+xml" href="/img/crest.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+body{background:#EEF1F8}
+.abar{background:#151C36;color:#fff;padding:14px 0}
+.abar .wrap{display:flex;align-items:center;gap:12px}
+.abar img{height:36px}
+.abar b{letter-spacing:.05em}
+.abar .tag2{margin-left:auto;font-size:10px;font-weight:800;letter-spacing:.12em;color:#A8BFE0}
+.panel{background:#fff;border:1px solid #DDE2ED;border-radius:6px;padding:22px;margin:18px 0}
+.panel h2{font-size:17px;color:#151C36;margin-bottom:14px;font-weight:800}
+.frm{display:grid;gap:10px}
+.frm label{font-size:11px;font-weight:800;letter-spacing:.08em;color:#5B7AB8;text-transform:uppercase}
+.frm input,.frm textarea,.frm select{padding:11px 12px;border:1px solid #C9D0E0;border-radius:4px;font:inherit;font-size:14px;width:100%}
+.frm textarea{min-height:140px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.msg{font-size:13px;padding:10px 12px;border-radius:4px;display:none}
+.msg.okc{display:block;background:#E4F3E9;color:#1F7A46}
+.msg.errc{display:block;background:#F8E4E4;color:#B33A3A}
+table.ft{width:100%;border-collapse:collapse;font-size:13px}
+table.ft th{text-align:left;background:#151C36;color:#fff;padding:8px 10px;font-size:10px;letter-spacing:.1em}
+table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
+.newsitem{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #EEF1F8;font-size:13.5px}
+.newsitem img{width:56px;height:36px;object-fit:cover;border-radius:3px;background:#EEF1F8}
+.newsitem .del{margin-left:auto;background:#B33A3A;color:#fff;border:0;border-radius:3px;padding:6px 10px;font-size:11px;font-weight:800;cursor:pointer}
+.hint{font-size:12px;color:#8a90a0}
+#gate{max-width:420px;margin:60px auto}
+.hidden{display:none}
+</style></head><body>
+<div class="abar"><div class="wrap"><img src="/img/crest.svg" alt=""><b>AFC TOTTON · CLUB ADMIN</b><span class="tag2">CONTENT ONLY · CANNOT ALTER SITE DESIGN</span></div></div>
+
+<div id="gate" class="panel">
+  <h2>Sign in</h2>
+  <div class="frm">
+    <label>Admin password</label>
+    <input id="pw" type="password" autocomplete="current-password" placeholder="Password">
+    <button class="btn dark" onclick="login()">Sign in</button>
+    <div id="gmsg" class="msg"></div>
+  </div>
+</div>
+
+<div id="app" class="wrap hidden" style="max-width:900px;padding-bottom:60px">
+
+  <div class="panel">
+    <h2>Live match score</h2>
+    <div class="frm">
+      <div class="row3">
+        <div><label>Opponent</label><input id="s_opp" placeholder="Dorking Wanderers"></div>
+        <div><label>Venue</label><select id="s_venue"><option value="home">Home</option><option value="away">Away</option></select></div>
+        <div><label>Status</label><select id="s_status">
+          <option value="none">No match (hide)</option><option value="upcoming">Upcoming</option>
+          <option value="live">LIVE</option><option value="ht">Half-time</option><option value="ft">Full-time</option>
+        </select></div>
+      </div>
+      <div class="row3">
+        <div><label>Totton goals</label><input id="s_home" type="number" min="0" value="0"></div>
+        <div><label>Opponent goals</label><input id="s_away" type="number" min="0" value="0"></div>
+        <div><label>Minute (e.g. 67')</label><input id="s_min" placeholder="67'"></div>
+      </div>
+      <div><label>Note (optional, e.g. scorer)</label><input id="s_note" placeholder="Lee 12', Sims 40'"></div>
+      <button class="btn dark" onclick="saveScore()">Publish score</button>
+      <div id="smsg" class="msg"></div>
+      <div class="hint">Appears on the homepage and the Match Centre live tab within about a minute. Set status to “No match” after the game to clear it.</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Publish news</h2>
+    <div class="frm">
+      <div class="row2">
+        <div><label>Headline</label><input id="n_title" maxlength="140"></div>
+        <div><label>Category</label><select id="n_cat">
+          <option>CLUB NEWS</option><option>MATCH REPORT</option><option>MATCH PREVIEW</option>
+          <option>CLUB STATEMENT</option><option>COMMUNITY</option><option>COMMERCIAL</option><option>ACADEMY</option>
+        </select></div>
+      </div>
+      <div><label>Standfirst (one-sentence summary)</label><input id="n_stand" maxlength="300"></div>
+      <div><label>Article text (blank line = new paragraph)</label><textarea id="n_body"></textarea></div>
+      <div><label>Photo (optional — resized automatically)</label><input id="n_photo" type="file" accept="image/*"></div>
+      <button class="btn dark" onclick="publishNews()">Publish article</button>
+      <div id="nmsg" class="msg"></div>
+    </div>
+    <h2 style="margin-top:26px">Published articles</h2>
+    <div id="newslist" class="hint">Loading…</div>
+  </div>
+
+  <div class="panel">
+    <h2>Social stories</h2>
+    <div class="hint" style="margin-bottom:10px">Quick photo + caption, shown in the story rail at the top of the homepage. Stories disappear automatically after 48 hours.</div>
+    <div class="frm">
+      <div><label>Photo (required)</label><input id="st_photo" type="file" accept="image/*"></div>
+      <div class="row2">
+        <div><label>Caption</label><input id="st_cap" maxlength="200" placeholder="Warm-up underway at the Snows…"></div>
+        <div><label>Link (optional)</label><input id="st_link" placeholder="/tickets.html"></div>
+      </div>
+      <button class="btn dark" onclick="publishStory()">Post story</button>
+      <div id="stmsg" class="msg"></div>
+    </div>
+    <h2 style="margin-top:22px">Live stories</h2>
+    <div id="storylist" class="hint">Loading…</div>
+  </div>
+
+  <div class="panel">
+    <h2>Fan data</h2>
+    <div class="hint" style="margin-bottom:10px">Signups from the website’s “Join the Stags list” form. <b id="fcount"></b></div>
+    <button class="btn dark" onclick="downloadCsv()">Download CSV</button>
+    <div style="overflow-x:auto;margin-top:14px"><table class="ft" id="ftable"></table></div>
+  </div>
+
+  <div class="hint" style="margin:10px 4px">Signed in. This panel manages content only — it cannot change the design or structure of the site. Keep the password private; anyone with it can publish to the club website.</div>
+</div>
+
+<script>
+let KEY = sessionStorage.getItem('afct_admin') || '';
+const $ = id => document.getElementById(id);
+function show(el, txt, good){ el.textContent = txt; el.className = 'msg ' + (good ? 'okc' : 'errc'); if (good) setTimeout(()=>{el.className='msg';}, 4000); }
+async function api(path, opts){ opts = opts || {}; opts.headers = Object.assign({'Content-Type':'application/json','x-admin-key':KEY}, opts.headers||{}); const r = await fetch(path, opts); if (r.status === 401){ sessionStorage.removeItem('afct_admin'); location.reload(); } return r; }
+
+async function login(){
+  KEY = $('pw').value.trim();
+  const r = await fetch('/api/fans', { headers: { 'x-admin-key': KEY } });
+  if (r.status === 200){ sessionStorage.setItem('afct_admin', KEY); boot(); }
+  else show($('gmsg'), 'Wrong password.', false);
+}
+
+async function boot(){
+  $('gate').classList.add('hidden'); $('app').classList.remove('hidden');
+  loadScore(); loadNews(); loadFans(); loadStories();
+}
+
+async function loadScore(){
+  const s = await (await fetch('/api/score?ts=' + Date.now())).json();
+  if (s && s.status && s.status !== 'none'){ $('s_opp').value = s.opp||''; $('s_venue').value = s.venue||'home'; $('s_status').value = s.status; $('s_home').value = s.home||0; $('s_away').value = s.away||0; $('s_min').value = s.minute||''; $('s_note').value = s.note||''; }
+}
+async function saveScore(){
+  const body = { opp:$('s_opp').value, venue:$('s_venue').value, status:$('s_status').value, home:$('s_home').value, away:$('s_away').value, minute:$('s_min').value, note:$('s_note').value };
+  const r = await api('/api/score', { method:'POST', body: JSON.stringify(body) });
+  show($('smsg'), r.ok ? 'Score published.' : 'Failed — try again.', r.ok);
+}
+
+function resizeImage(file){ return new Promise((resolve,reject)=>{
+  const img = new Image(); const fr = new FileReader();
+  fr.onload = () => { img.onload = () => {
+    const max = 1600; let w = img.width, h = img.height;
+    if (w > max){ h = h * max / w; w = max; }
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    c.getContext('2d').drawImage(img, 0, 0, w, h);
+    resolve(c.toDataURL('image/jpeg', 0.82));
+  }; img.onerror = reject; img.src = fr.result; };
+  fr.onerror = reject; fr.readAsDataURL(file);
+});}
+
+async function publishNews(){
+  const t = $('n_title').value.trim(), b = $('n_body').value.trim();
+  if (!t || !b) return show($('nmsg'), 'Headline and article text are required.', false);
+  let img = '';
+  const f = $('n_photo').files[0];
+  try {
+    if (f){ show($('nmsg'), 'Uploading photo…', true);
+      const data = await resizeImage(f);
+      const up = await api('/api/upload', { method:'POST', body: JSON.stringify({ filename: f.name, data }) });
+      if (!up.ok) return show($('nmsg'), 'Photo upload failed.', false);
+      img = (await up.json()).url;
+    }
+    const r = await api('/api/news', { method:'POST', body: JSON.stringify({ title:t, body:b, standfirst:$('n_stand').value, cat:$('n_cat').value, img }) });
+    if (r.ok){ show($('nmsg'), 'Published! It is live on the site now.', true); $('n_title').value=''; $('n_stand').value=''; $('n_body').value=''; $('n_photo').value=''; loadNews(); }
+    else show($('nmsg'), 'Publish failed — try again.', false);
+  } catch(e){ show($('nmsg'), 'Something went wrong: ' + e.message, false); }
+}
+
+async function loadNews(){
+  const items = await (await fetch('/api/news?ts=' + Date.now())).json();
+  $('newslist').innerHTML = items.map(i => `<div class="newsitem"><img src="${i.img||'/img/crest.svg'}" alt=""><span><b>${i.title}</b><br><span class="hint">${i.cat} · ${i.date}</span></span>${i.id.startsWith('seed-') ? '' : `<button class="del" onclick="delNews('${i.id}')">Delete</button>`}</div>`).join('') || 'No articles yet.';
+}
+async function delNews(id){
+  if (!confirm('Delete this article from the website?')) return;
+  await api('/api/news?id=' + encodeURIComponent(id), { method:'DELETE' });
+  loadNews();
+}
+
+async function loadFans(){
+  const fans = await (await api('/api/fans')).json();
+  $('fcount').textContent = fans.length + ' signup' + (fans.length === 1 ? '' : 's');
+  $('ftable').innerHTML = '<tr><th>NAME</th><th>EMAIL</th><th>INTEREST</th><th>WHEN</th></tr>' +
+    fans.slice().reverse().map(f => `<tr><td>${f.name||''}</td><td>${f.email}</td><td>${f.interest||''}</td><td>${(f.ts||'').slice(0,10)}</td></tr>`).join('');
+}
+async function downloadCsv(){
+  const r = await api('/api/fans?format=csv');
+  const blob = await r.blob(); const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'stags-fans.csv'; a.click();
+}
+
+
+async function publishStory(){
+  const f = $('st_photo').files[0];
+  if (!f) return show($('stmsg'), 'Choose a photo first.', false);
+  try {
+    show($('stmsg'), 'Uploading…', true);
+    const data = await resizeImage(f);
+    const up = await api('/api/upload', { method:'POST', body: JSON.stringify({ filename: f.name, data }) });
+    if (!up.ok) return show($('stmsg'), 'Photo upload failed.', false);
+    const img = (await up.json()).url;
+    const r = await api('/api/stories', { method:'POST', body: JSON.stringify({ img, caption:$('st_cap').value, link:$('st_link').value }) });
+    if (r.ok){ show($('stmsg'), 'Story is live for the next 48 hours.', true); $('st_photo').value=''; $('st_cap').value=''; $('st_link').value=''; loadStories(); }
+    else show($('stmsg'), 'Failed — try again.', false);
+  } catch(e){ show($('stmsg'), 'Something went wrong: ' + e.message, false); }
+}
+async function loadStories(){
+  const items = await (await fetch('/api/stories?ts=' + Date.now())).json();
+  $('storylist').innerHTML = items.map(s => `<div class="newsitem"><img src="${s.img}" alt=""><span>${s.caption||'(no caption)'}<br><span class="hint">${(s.ts||'').slice(0,16).replace('T',' ')}</span></span><button class="del" onclick="delStory('${s.id}')">Delete</button></div>`).join('') || 'No live stories.';
+}
+async function delStory(id){ await api('/api/stories?id=' + encodeURIComponent(id), { method:'DELETE' }); loadStories(); }
+
+$('pw').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+if (KEY) boot();
+</script></body></html>
