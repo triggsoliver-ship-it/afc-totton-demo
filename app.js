@@ -127,6 +127,20 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
         `<a href="/events.html" class="${page==='events'?'on':''}">Events</a><a href="/hospitality.html" class="${page==='hospitality'?'on':''}">Hospitality</a>`);
     }
   }
+  const burger = document.querySelector('.burger');
+  if (burger && nav){
+    burger.onclick = null;
+    const close = () => { nav.classList.remove('open'); nav.style.display = ''; };
+    burger.addEventListener('click', e => {
+      e.preventDefault();
+      nav.style.display = ''; nav.classList.add('open');
+      if (!nav.querySelector('.navx')){
+        const x = document.createElement('button'); x.className = 'navx'; x.innerHTML = '&times;';
+        x.addEventListener('click', close); nav.appendChild(x);
+      }
+    });
+    nav.addEventListener('click', e => { if (e.target.closest('a')) close(); });
+  }
   document.querySelectorAll('footer.site').forEach(f => {
     const cols = f.querySelectorAll('.cols > div');
     if (!cols.length) return;
