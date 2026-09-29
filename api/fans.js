@@ -1,6 +1,29 @@
 import { readJson, writeJson, ok, isAuthed } from './_util.js';
 
 export default async function handler(req, res) {
+  if (req.method === 'POST' && Array.isArray((req.body || {}).import)) {
+    if (!isAuthed(req)) return res.status(401).json({ error: 'unauthorised' });
+    const b = req.body;
+    if (b.consentConfirmed !== true) return res.status(400).json({ error: 'confirm consent basis first' });
+    const fans = await readJson('data/fans.json', []);
+    const have = new Set(fans.map(f => f.email));
+    let added = 0;
+    for (const row of b.import.slice(0, 5000)) {
+      const email = String((row && row.email) || '').trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || have.has(email)) continue;
+      have.add(email); added++;
+      fans.push({
+        name: String((row && row.name) || '').slice(0, 80),
+        email,
+        interest: String((row && row.interest) || '').slice(0, 60),
+        consent: true,
+        source: 'imported',
+        ts: new Date().toISOString()
+      });
+    }
+    await writeJson('data/fans.json', fans.slice(-5000));
+    return ok(res, { imported: added, total: fans.length });
+  }
   if (req.method === 'POST') {
     const b = req.body || {};
     const email = String(b.email || '').trim().toLowerCase();

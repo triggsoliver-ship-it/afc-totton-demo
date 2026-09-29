@@ -18,6 +18,8 @@ export default async function handler(req, res) {
       away: Math.max(0, parseInt(b.away, 10) || 0),
       minute: String(b.minute || '').slice(0, 8),
       note: String(b.note || '').slice(0, 140),
+      sponsor: String(b.sponsor || '').slice(0, 80),
+      sponsorUrl: String(b.sponsorUrl || '').slice(0, 300),
       updated: new Date().toISOString()
     };
     await writeJson('data/score.json', data);
