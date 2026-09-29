@@ -8,6 +8,7 @@ function tab(btn,id){document.querySelectorAll('.tabs button').forEach(b=>b.clas
 function demo(e){if(e)e.preventDefault();alert('This is a demo site — checkout, downloads and form submissions are disabled.');return false;}
 function shareIt(){const d={title:document.title,text:document.title,url:location.href};
  if(navigator.share){navigator.share(d).catch(()=>{});}else{navigator.clipboard&&navigator.clipboard.writeText(location.href);alert('Link copied to clipboard.');}}
+// PWA install
 let deferred=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;show();});
 const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -22,11 +23,53 @@ document.addEventListener('click',e=>{if(e.target&&e.target.id==='installbtn'){
  else{alert('Open this site on your phone, then use your browser menu to add it to your home screen.');}}});
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 
-// ===== dynamic content hydration (news / score / stories / fan capture) =====
+// ===== dark / light mode (follows device, manual override persisted) =====
+(function(){
+if (!document.querySelector('header.site')) return; // not on admin
+const mq = window.matchMedia('(prefers-color-scheme: dark)');
+const MAP = [['#151C36','#EEF1F8'],['#5b6272','#9AA5BF'],['#8a90a0','#8E99B2'],['#FAFBFD','#0E1630'],['#33384a','#B9C2D8'],['#EEF1F8','#1A2442']];
+function darkNow(){ const t = localStorage.getItem('theme'); return t === 'dark' || (t !== 'light' && mq.matches); }
+function remap(on){
+  document.querySelectorAll('[style]').forEach(el => {
+    if (el.closest('#storyview,.storyrail,.fanband,.band,.hero,.scorecard,footer,.strip,header')) return;
+    if (!el.dataset.ls) el.dataset.ls = el.getAttribute('style');
+    let s = el.dataset.ls;
+    if (on) MAP.forEach(m => { s = s.split(m[0]).join(m[1]); });
+    el.setAttribute('style', s);
+  });
+}
+function apply(){
+  const on = darkNow();
+  document.documentElement.setAttribute('data-theme', on ? 'dark' : 'light');
+  const tc = document.querySelector('meta[name=theme-color]');
+  if (tc) tc.setAttribute('content', on ? '#0B1122' : '#151C36');
+  remap(on);
+  const b = document.getElementById('themebtn');
+  if (b) b.innerHTML = on ? '&#9788;' : '&#9789;';
+}
+const hdr = document.querySelector('.hdr');
+if (hdr && !document.getElementById('themebtn')){
+  const b = document.createElement('button');
+  b.id = 'themebtn'; b.setAttribute('aria-label','Toggle dark mode');
+  b.style.cssText = 'background:none;border:1px solid rgba(255,255,255,.3);color:#fff;font-size:15px;width:34px;height:34px;border-radius:50%;cursor:pointer;margin-left:6px;flex:0 0 auto';
+  b.onclick = () => { localStorage.setItem('theme', darkNow() ? 'light' : 'dark'); apply(); };
+  const burger = hdr.querySelector('.burger');
+  hdr.insertBefore(b, burger || null);
+}
+mq.addEventListener && mq.addEventListener('change', apply);
+// re-run remap after hydration inserts content
+window.__applyTheme = apply;
+apply();
+setTimeout(apply, 800); setTimeout(apply, 2500);
+})();
+
+// ===== dynamic content hydration =====
 (function(){
 const page = document.body.getAttribute('data-page');
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const J = (u) => fetch(u + (u.indexOf('?')<0?'?':'&') + 'ts=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null);
+const fmtD = d => { try { return new Date(d+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'}); } catch(e){ return d; } };
+const fmtDL = d => { try { return new Date(d+'T12:00:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); } catch(e){ return d; } };
 
 const css = document.createElement('style');
 css.textContent = `
@@ -50,9 +93,61 @@ css.textContent = `
 .fanband form{display:flex;gap:10px;flex-wrap:wrap}
 .fanband input[type=text],.fanband input[type=email]{flex:1 1 180px;padding:12px 14px;border-radius:4px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.07);color:#fff;font:inherit}
 .fanband label.c{display:flex;gap:8px;align-items:flex-start;font-size:11.5px;color:#93a2c0;margin-top:10px;line-height:1.5}
+.spchip{position:absolute;top:10px;left:10px;z-index:2;background:rgba(255,255,255,.94);border-radius:3px;padding:3px 7px;display:flex;align-items:center;gap:5px;font-size:8.5px;font-weight:800;letter-spacing:.06em;color:#151C36;text-transform:uppercase;max-width:70%}
+.spchip img{height:14px;width:auto}
+.pc{cursor:pointer}
+#pmodal{position:fixed;inset:0;background:rgba(5,8,20,.94);z-index:210;display:none;align-items:center;justify-content:center;padding:20px}
+#pmodal .bx{background:#fff;border-radius:8px;max-width:460px;width:100%;max-height:86vh;overflow:auto;position:relative}
+#pmodal .ph2{background:linear-gradient(170deg,#151C36,#0A0F22);aspect-ratio:16/10;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+#pmodal .ph2 img{height:96%;width:auto;object-fit:contain}
+#pmodal .bd2{padding:20px 22px 24px}
+#pmodal .bd2 h3{font-size:22px;color:#151C36;font-weight:800}
+#pmodal .bd2 .ps{font-size:11px;letter-spacing:.12em;color:#5B7AB8;font-weight:800;text-transform:uppercase;margin:4px 0 12px}
+#pmodal .bd2 p{font-size:14.5px;line-height:1.65;color:#33384a}
+#pmodal .bd2 .spl{margin-top:16px;padding-top:14px;border-top:1px solid #DDE2ED;font-size:12px;color:#5b6272;display:flex;align-items:center;gap:10px}
+#pmodal .bd2 .spl img{height:26px;width:auto}
+#pmodal .x2{position:absolute;top:10px;right:14px;font-size:26px;color:#fff;background:none;border:0;cursor:pointer;z-index:2}
+.evcard .when{font-size:11px;font-weight:800;letter-spacing:.1em;color:#C9A24B;text-transform:uppercase}
+html[data-theme=dark] #pmodal .bx{background:#111A33}
+html[data-theme=dark] #pmodal .bd2 h3{color:#EEF1F8}
+html[data-theme=dark] #pmodal .bd2 p{color:#B9C2D8}
+html[data-theme=dark] #pmodal .bd2 .spl{border-color:#232E4E}
 `;
 document.head.appendChild(css);
+const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
 
+// ---- nav + footer injection (Events / Hospitality / contacts / safeguarding) ----
+(function(){
+  const nav = document.querySelector('nav.main');
+  if (nav && !nav.querySelector('a[href="/events.html"]')){
+    const anchor = nav.querySelector('a[href="/commercial.html"]');
+    if (anchor){
+      anchor.insertAdjacentHTML('beforebegin',
+        `<a href="/events.html" class="${page==='events'?'on':''}">Events</a><a href="/hospitality.html" class="${page==='hospitality'?'on':''}">Hospitality</a>`);
+    }
+  }
+  document.querySelectorAll('footer.site').forEach(f => {
+    const cols = f.querySelectorAll('.cols > div');
+    if (!cols.length) return;
+    const addr = cols[0].querySelector('p');
+    if (addr) addr.innerHTML = 'Snows Stadium<br>Mally&rsquo;s Way, Totton SO40 2RW<br><a href="tel:02380868981" style="display:inline;padding:0">02380 868981</a> &middot; Capacity 3,000 &middot; Founded 1886';
+    const explore = cols[1];
+    if (explore && !explore.querySelector('a[href="/events.html"]'))
+      explore.insertAdjacentHTML('beforeend','<a href="/events.html">Events</a><a href="/hospitality.html">Hospitality</a>');
+    const contact = cols[3];
+    if (contact) contact.innerHTML = '<h4>CONTACT</h4>'
+      + '<a href="mailto:Enquires@afctotton.com">Enquires@afctotton.com</a>'
+      + '<a href="tel:02380868981">02380 868981</a>'
+      + '<a href="mailto:events@afctotton.com">Events &amp; hospitality</a>'
+      + '<a href="mailto:salesandmarketing@afctotton.com">Commercial &amp; sponsorship</a>'
+      + '<p style="margin-top:12px;font-size:11px;line-height:1.7"><b style="color:#fff">SAFEGUARDING</b><br>'
+      + 'Dan Woodnutt &middot; <a href="mailto:dan.woodnutt@afctottonyouth.com" style="display:inline;padding:0">dan.woodnutt@afctottonyouth.com</a> &middot; 07879 868311<br>'
+      + 'Caroline Keats &middot; <a href="mailto:Safeguarding@afctottondp.com" style="display:inline;padding:0">Safeguarding@afctottondp.com</a> &middot; 07395 292386</p>'
+      + '<p style="margin-top:12px;font-size:11.5px">AFC Totton in the Community<br>Registered Charity 1206854</p>';
+  });
+})();
+
+// ---- social stories (homepage) ----
 if (page === 'index') J('/api/stories').then(items => {
   if (!items || !items.length) return;
   const rail = document.createElement('div'); rail.className = 'storyrail';
@@ -73,6 +168,56 @@ if (page === 'index') J('/api/stories').then(items => {
   v.addEventListener('click', e => { if (e.target === v || e.target.className === 'x') v.style.display = 'none'; });
 });
 
+// ---- fixtures / results / next-match strip ----
+function fxRow(f){
+  const score = f.status === 'played'
+    ? `<div class="v" style="font-weight:800;color:#151C36">${f.venue==='away' ? (f.ag+'-'+f.hg) : (f.hg+'-'+f.ag)}</div><div class="g"><span class="pill ${f.hg>f.ag?'w':(f.hg===f.ag?'t':'p')}">${f.hg>f.ag?'W':(f.hg===f.ag?'D':'L')}</span></div>`
+    : `<div class="v">${esc(f.ko)}</div><div class="g" style="font-size:12px;color:#8a90a0">${f.status==='postponed'?'POSTPONED':esc(f.ground||'Venue TBC')}</div>`;
+  const pill = f.status==='postponed' ? '<span class="pill p">POSTPONED</span>'
+    : (f.venue==='home' ? '<span class="pill h">HOME</span>' : f.venue==='away' ? '<span class="pill a">AWAY</span>' : '<span class="pill t">TBC</span>');
+  return `<div class="r"><div class="d">${esc(fmtD(f.date))}</div><div class="o">${esc(f.opp)}</div><div>${pill}</div>${score}</div>`;
+}
+const fxP = (page==='index'||page==='match-centre') ? J('/api/fixtures') : null;
+if (fxP) fxP.then(items => {
+  if (!items || !items.length) return;
+  const upcoming = items.filter(f => f.status !== 'played');
+  const played = items.filter(f => f.status === 'played').reverse();
+  if (page === 'index'){
+    const grid = document.querySelector('.fx');
+    if (grid) grid.innerHTML = upcoming.slice(0,5).map(fxRow).join('');
+  }
+  if (page === 'match-centre'){
+    const fx = document.querySelector('#fx .fx');
+    if (fx) fx.innerHTML = upcoming.map(fxRow).join('');
+    const rs = document.querySelector('#rs .fx');
+    if (rs) rs.innerHTML = played.map(fxRow).join('') || '<div class="r"><div class="d"></div><div class="o" style="color:#8a90a0">No results yet this season.</div></div>';
+  }
+  rethemed();
+});
+// strip on every page
+J('/api/fixtures').then(items => {
+  if (!items) return;
+  const next = items.find(f => f.status === 'scheduled');
+  const strip = document.querySelector('.strip .in');
+  if (!next || !strip) return;
+  const b = strip.querySelector('b'), m = strip.querySelector('.meta');
+  const title = next.venue === 'away' ? `${next.opp} v AFC Totton` : `AFC Totton v ${next.opp}`;
+  if (b) b.textContent = title;
+  if (m) m.innerHTML = `${esc(next.comp)} &middot; ${esc(fmtDL(next.date))} &middot; KO ${esc(next.ko)} &middot; ${esc(next.ground || 'Venue TBC')}`;
+});
+
+// ---- league table ----
+if (page === 'match-centre') J('/api/table').then(t => {
+  if (!t || !t.rows || !t.rows.length) return;
+  const pane = document.getElementById('tb');
+  if (!pane) return;
+  pane.innerHTML = `<table class="tbl"><thead><tr><th>#</th><th>Club</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead><tbody>`
+    + t.rows.map(r => `<tr${/totton/i.test(r.club)?' style="background:#EEF1F8;font-weight:700"':''}><td>${r.pos}</td><td>${esc(r.club)}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gd>0?'+':''}${r.gd}</td><td><b>${r.pts}</b></td></tr>`).join('')
+    + `</tbody></table><p style="margin-top:12px;font-size:12px;color:#8a90a0">Updated ${esc(t.updated||'')} by the club. <a href="${esc(t.link||'https://www.thenationalleague.org.uk')}" target="_blank" rel="noopener" style="color:#5B7AB8;font-weight:700">View the full official table &rsaquo;</a></p>`;
+  rethemed();
+});
+
+// ---- live score (homepage card + match centre live tab + results) ----
 function scoreLines(s){
   const us = 'AFC Totton', them = s.opp || 'Opponent';
   const a = s.venue === 'away' ? them : us, b = s.venue === 'away' ? us : them;
@@ -80,28 +225,123 @@ function scoreLines(s){
   return {a, b, ag, bg};
 }
 function applyScore(s){
-  if (!s || !s.status || s.status === 'none' || s.status === 'upcoming') return;
+  if (!s) return;
+  if (s.sponsor){
+    const strip = document.querySelector('.strip .in');
+    if (strip && !strip.querySelector('.msp')){
+      const el = document.createElement('span');
+      el.className = 'lbl msp'; el.style.background = '#C9A24B'; el.style.color = '#231B00';
+      el.innerHTML = s.sponsorUrl ? `<a href="${esc(s.sponsorUrl)}" target="_blank" rel="noopener" style="color:inherit">MATCHDAY SPONSOR &middot; ${esc(s.sponsor).toUpperCase()}</a>` : `MATCHDAY SPONSOR &middot; ${esc(s.sponsor).toUpperCase()}`;
+      const btn = strip.querySelector('.btn');
+      strip.insertBefore(el, btn || null);
+    }
+  }
+  if (!s.status || s.status === 'none' || s.status === 'upcoming') return;
   const L = scoreLines(s);
   const badge = s.status === 'live' ? `<span class="lp">LIVE ${esc(s.minute)}</span>` : (s.status === 'ht' ? '<span class="lp" style="animation:none;background:#5B7AB8">HALF-TIME</span>' : 'FULL TIME');
+  const spLine = s.sponsor ? ` &middot; MATCHDAY SPONSOR: ${esc(s.sponsor).toUpperCase()}` : '';
   const card = document.querySelector('.scorecard');
   if (card){
     card.classList.add('livecard');
     card.innerHTML = `<div class="t">${s.status==='ft'?'RESULT · FULL TIME':'MATCH IN PROGRESS'} ${s.status!=='ft'?badge:''}</div>
       <div class="row"><span>${esc(L.a)}</span><span>${L.ag}</span></div>
       <div class="row"><span style="color:#b9c6de">${esc(L.b)}</span><span style="color:#b9c6de">${L.bg}</span></div>
-      <div style="margin-top:12px;font-size:11px;color:#8fa3c7;letter-spacing:.05em">${esc(s.note) || 'SNOWS STADIUM · NATIONAL LEAGUE SOUTH'}</div>`;
+      <div style="margin-top:12px;font-size:11px;color:#8fa3c7;letter-spacing:.05em">${esc(s.note) || 'SNOWS STADIUM · NATIONAL LEAGUE SOUTH'}${spLine}</div>`;
   }
   const lv = document.getElementById('lv');
   if (lv) lv.innerHTML = `<div style="border:1px solid var(--line);border-radius:5px;padding:34px;text-align:center">
     <div style="margin-bottom:12px">${badge}</div>
     <div style="font-size:26px;font-weight:800;color:#151C36">${esc(L.a)} ${L.ag} &ndash; ${L.bg} ${esc(L.b)}</div>
-    <div style="margin-top:10px;color:#5b6272;font-size:14px">${esc(s.note)||''}</div></div>`;
+    <div style="margin-top:10px;color:#5b6272;font-size:14px">${esc(s.note)||''}</div>
+    ${s.sponsor?`<div style="margin-top:14px;font-size:11px;letter-spacing:.1em;color:#C9A24B;font-weight:800">MATCHDAY HEADLINE SPONSOR &middot; ${esc(s.sponsor).toUpperCase()}</div>`:''}</div>`;
+  const rs = document.querySelector('#rs');
+  if (rs && (s.status === 'live' || s.status === 'ht')){
+    let lb = rs.querySelector('.liverow');
+    if (!lb){ lb = document.createElement('div'); lb.className = 'liverow'; rs.insertBefore(lb, rs.firstChild); }
+    lb.innerHTML = `<div style="border:1px solid #C0392B;border-radius:5px;padding:14px 18px;margin-bottom:14px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+      <span class="lp">LIVE ${esc(s.minute)}</span><b style="font-size:16px">${esc(L.a)} ${L.ag} &ndash; ${L.bg} ${esc(L.b)}</b>
+      <span style="font-size:12px;color:#8a90a0">Full result appears here automatically after the final whistle.</span></div>`;
+  }
+  rethemed();
 }
 if (page === 'index' || page === 'match-centre'){
   const tick = () => J('/api/score').then(applyScore);
   tick(); setInterval(tick, 45000);
+} else {
+  J('/api/score').then(applyScore); // sponsor strip on other pages
 }
 
+// ---- squad (teams page) ----
+if (page === 'teams') J('/api/players').then(items => {
+  if (!items || !items.length) return;
+  const firstGrp = document.querySelector('.grp');
+  if (!firstGrp) return;
+  const host = firstGrp.parentNode;
+  const marker = document.createElement('div');
+  host.insertBefore(marker, firstGrp);
+  host.querySelectorAll('.grp, .sq').forEach(el => el.remove());
+  const gname = {gk:'GOALKEEPERS',df:'DEFENDERS',mf:'MIDFIELDERS',fw:'FORWARDS'};
+  let html = '';
+  ['gk','df','mf','fw'].forEach(g => {
+    const list = items.filter(p => p.group === g).sort((a,b) => a.num - b.num);
+    if (!list.length) return;
+    html += `<div class="grp">${gname[g]}</div><div class="sq">` + list.map(p => {
+      const chip = p.sponsor ? `<span class="spchip">${p.sponsorLogo?`<img src="${esc(p.sponsorLogo)}" alt="">`:''}${esc(p.sponsor)}</span>` : '';
+      return `<div class="pc ${p.img?'':'empty'}" data-id="${esc(p.id)}">${chip}<span class="no">${p.num||''}</span>${p.img?`<img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy">`:''}<div class="nm"><b>${esc(p.name)}</b><span>${esc(p.pos)}</span></div></div>`;
+    }).join('') + '</div>';
+  });
+  marker.insertAdjacentHTML('afterend', html);
+  marker.remove();
+  let modal = document.getElementById('pmodal');
+  if (!modal){
+    modal = document.createElement('div'); modal.id = 'pmodal';
+    modal.innerHTML = '<div class="bx"><button class="x2">&times;</button><div class="ph2"></div><div class="bd2"></div></div>';
+    document.body.appendChild(modal);
+    modal.addEventListener('click', e => { if (e.target === modal || e.target.className === 'x2') modal.style.display = 'none'; });
+  }
+  const spu = {};
+  items.forEach(p => { if (p.sponsorUrl) spu[p.id] = p.sponsorUrl; });
+  host.addEventListener('click', e => {
+    const chip = e.target.closest('.spchip');
+    if (chip){ const u = spu[chip.closest('.pc').getAttribute('data-id')]; if (u) window.open(u, '_blank'); return; }
+    const pc = e.target.closest('.pc'); if (!pc) return;
+    const p = items.find(x => x.id === pc.getAttribute('data-id')); if (!p) return;
+    modal.querySelector('.ph2').innerHTML = p.img ? `<img src="${esc(p.img)}" alt="">` : '<span style="color:rgba(255,255,255,.3);font-size:11px;letter-spacing:.12em;font-weight:800;align-self:center">PHOTO TO FOLLOW</span>';
+    modal.querySelector('.bd2').innerHTML = `<h3>${p.num?p.num+' · ':''}${esc(p.name)}</h3><div class="ps">${esc(p.pos)}</div>`
+      + `<p>${esc(p.bio) || 'Player profile to follow.'}</p>`
+      + (p.sponsor ? `<div class="spl">${p.sponsorLogo?`<img src="${esc(p.sponsorLogo)}" alt="">`:''}<span>Player sponsored by <b>${esc(p.sponsor)}</b>${p.sponsorUrl?` &middot; <a href="${esc(p.sponsorUrl)}" target="_blank" rel="noopener" style="color:#5B7AB8;font-weight:700">Visit site &rsaquo;</a>`:''}</span></div>` : '');
+    modal.style.display = 'flex';
+  });
+  rethemed();
+});
+
+// ---- events (events page) ----
+function evCard(e){
+  const d = fmtDL(e.date);
+  return `<div class="card evcard"><div class="ph"><img src="${esc(e.img)||'/img/stadium-1.webp'}" alt="" loading="lazy"></div>
+  <div class="bd"><span class="when">${esc(d)}${e.time?' · '+esc(e.time):''}</span><h3>${esc(e.title)}</h3><p>${esc(e.desc)}</p>
+  <div class="meta">${esc(e.where)}</div>
+  <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+    ${e.tickets?`<a class="btn" style="color:#fff" href="${esc(e.tickets)}" target="_blank" rel="noopener">Tickets on Fan Base</a>`:''}
+    <a class="btn dark" style="color:#fff" href="mailto:events@afctotton.com?subject=${encodeURIComponent(e.title)}">Ask about this event</a>
+  </div></div></div>`;
+}
+if (page === 'events') J('/api/events').then(items => {
+  if (!items) return;
+  const grid = document.getElementById('evgrid');
+  if (grid) grid.innerHTML = items.map(evCard).join('') || '<p style="color:#8a90a0">No events currently listed — check back soon.</p>';
+  const cal = document.getElementById('evcal');
+  if (cal && items.length){
+    const months = {};
+    items.forEach(e => { const m = new Date(e.date+'T12:00:00').toLocaleDateString('en-GB',{month:'long',year:'numeric'}); (months[m] = months[m] || []).push(e); });
+    cal.innerHTML = Object.keys(months).map(m => `<div style="margin-bottom:22px"><div class="grp" style="margin:0 0 10px">${esc(m)}</div>`
+      + months[m].map(e => `<div style="display:flex;gap:14px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px;align-items:baseline"><b style="min-width:92px;color:#151C36">${esc(fmtD(e.date))}</b><span style="flex:1"><b>${esc(e.title)}</b> &middot; ${esc(e.where)}${e.time?' &middot; '+esc(e.time):''}</span>${e.tickets?`<a href="${esc(e.tickets)}" target="_blank" rel="noopener" style="color:#5B7AB8;font-weight:700;font-size:12px">TICKETS &rsaquo;</a>`:''}</div>`).join('')
+      + '</div>').join('');
+  }
+  rethemed();
+});
+
+// ---- dynamic news cards ----
 function card(i){
   const href = i.url || ('/news/article.html?id=' + encodeURIComponent(i.id));
   return `<a class="card" href="${esc(href)}"><div class="ph"><img src="${esc(i.img)||'/img/crest.svg'}" alt="" loading="lazy"></div>
@@ -112,8 +352,10 @@ if (page === 'index' || page === 'news') J('/api/news').then(items => {
   if (!items || !items.length) return;
   const grid = document.querySelector('section .grid.g3');
   if (grid) grid.innerHTML = (page === 'index' ? items.slice(0,3) : items).map(card).join('');
+  rethemed();
 });
 
+// ---- fan capture band (homepage) ----
 if (page === 'index'){
   const sec = document.createElement('section'); sec.className = 'fanband';
   sec.innerHTML = `<div class="wrap"><h2>Join the Stags list</h2>
