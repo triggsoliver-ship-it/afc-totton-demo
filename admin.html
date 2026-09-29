@@ -19,8 +19,10 @@ body{background:#EEF1F8}
 .frm label{font-size:11px;font-weight:800;letter-spacing:.08em;color:#5B7AB8;text-transform:uppercase}
 .frm input,.frm textarea,.frm select{padding:11px 12px;border:1px solid #C9D0E0;border-radius:4px;font:inherit;font-size:14px;width:100%}
 .frm textarea{min-height:140px}
+.frm textarea.short{min-height:80px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
 .msg{font-size:13px;padding:10px 12px;border-radius:4px;display:none}
 .msg.okc{display:block;background:#E4F3E9;color:#1F7A46}
 .msg.errc{display:block;background:#F8E4E4;color:#B33A3A}
@@ -29,10 +31,13 @@ table.ft th{text-align:left;background:#151C36;color:#fff;padding:8px 10px;font-
 table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
 .newsitem{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #EEF1F8;font-size:13.5px}
 .newsitem img{width:56px;height:36px;object-fit:cover;border-radius:3px;background:#EEF1F8}
-.newsitem .del{margin-left:auto;background:#B33A3A;color:#fff;border:0;border-radius:3px;padding:6px 10px;font-size:11px;font-weight:800;cursor:pointer}
+.newsitem .del{margin-left:8px;background:#B33A3A;color:#fff;border:0;border-radius:3px;padding:6px 10px;font-size:11px;font-weight:800;cursor:pointer;flex:0 0 auto}
+.newsitem .edt{margin-left:auto;background:#5B7AB8;color:#fff;border:0;border-radius:3px;padding:6px 10px;font-size:11px;font-weight:800;cursor:pointer;flex:0 0 auto}
+.newsitem span:first-of-type{flex:1}
 .hint{font-size:12px;color:#8a90a0}
 #gate{max-width:420px;margin:60px auto}
 .hidden{display:none}
+@media(max-width:700px){.row3,.row4{grid-template-columns:1fr 1fr}}
 </style></head><body>
 <div class="abar"><div class="wrap"><img src="/img/crest.svg" alt=""><b>AFC TOTTON · CLUB ADMIN</b><span class="tag2">CONTENT ONLY · CANNOT ALTER SITE DESIGN</span></div></div>
 
@@ -65,9 +70,111 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
         <div><label>Minute (e.g. 67')</label><input id="s_min" placeholder="67'"></div>
       </div>
       <div><label>Note (optional, e.g. scorer)</label><input id="s_note" placeholder="Lee 12', Sims 40'"></div>
-      <button class="btn dark" onclick="saveScore()">Publish score</button>
+      <div class="row2">
+        <div><label>Matchday headline sponsor (optional)</label><input id="s_sp" placeholder="e.g. Garmin"></div>
+        <div><label>Sponsor link (optional)</label><input id="s_spu" placeholder="https://…"></div>
+      </div>
+      <div class="row2">
+        <button class="btn dark" onclick="saveScore()">Publish score</button>
+        <button class="btn" onclick="fileResult()" title="Copies the final score into Fixtures &amp; results below">File as full-time result</button>
+      </div>
       <div id="smsg" class="msg"></div>
-      <div class="hint">Appears on the homepage and the Match Centre live tab within about a minute. Set status to “No match” after the game to clear it.</div>
+      <div class="hint">Appears on the homepage and the Match Centre live tab within about a minute. After full time, press “File as full-time result” to add it to the results list, then set status back to “No match”.</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Fixtures &amp; results</h2>
+    <div class="frm">
+      <div class="row4">
+        <div><label>Date</label><input id="f_date" type="date"></div>
+        <div><label>Kick-off</label><input id="f_ko" type="time" value="15:00"></div>
+        <div><label>Venue</label><select id="f_venue"><option value="home">Home</option><option value="away">Away</option><option value="tbc">TBC</option></select></div>
+        <div><label>Status</label><select id="f_status"><option value="scheduled">Scheduled</option><option value="played">Played (result)</option><option value="postponed">Postponed</option></select></div>
+      </div>
+      <div class="row2">
+        <div><label>Opponent</label><input id="f_opp" placeholder="Dorking Wanderers"></div>
+        <div><label>Ground</label><input id="f_ground" placeholder="The Snows Stadium"></div>
+      </div>
+      <div class="row3">
+        <div><label>Competition</label><input id="f_comp" value="National League South"></div>
+        <div><label>Totton goals (if played)</label><input id="f_hg" type="number" min="0"></div>
+        <div><label>Opponent goals (if played)</label><input id="f_ag" type="number" min="0"></div>
+      </div>
+      <div><label>Scorers (optional)</label><input id="f_scorers" placeholder="Lee 12', Sims 40'"></div>
+      <input type="hidden" id="f_id">
+      <div class="row2">
+        <button class="btn dark" onclick="saveFixture()">Save fixture / result</button>
+        <button class="btn" onclick="clearFixture()">Clear form (new fixture)</button>
+      </div>
+      <div id="fmsg" class="msg"></div>
+      <div class="hint">Fixtures and results across the site update within about a minute. “Played” entries appear under Results; use Edit to move a match or correct a score.</div>
+    </div>
+    <h2 style="margin-top:22px">All fixtures</h2>
+    <div id="fixlist" class="hint">Loading…</div>
+  </div>
+
+  <div class="panel">
+    <h2>Squad</h2>
+    <div class="frm">
+      <div class="row4">
+        <div><label>Squad number</label><input id="p_num" type="number" min="1" max="99"></div>
+        <div><label>Name</label><input id="p_name" placeholder="Tony Lee"></div>
+        <div><label>Position</label><input id="p_pos" placeholder="Striker"></div>
+        <div><label>Group</label><select id="p_group"><option value="gk">Goalkeeper</option><option value="df">Defender</option><option value="mf">Midfielder</option><option value="fw">Forward</option></select></div>
+      </div>
+      <div><label>Photo (optional — replaces current)</label><input id="p_photo" type="file" accept="image/*"></div>
+      <div><label>Bio / about (shown when a fan taps the player)</label><textarea id="p_bio" class="short" placeholder="Joined the Stags in 2024…"></textarea></div>
+      <div class="row3">
+        <div><label>Player sponsor (optional)</label><input id="p_sp" placeholder="Company name"></div>
+        <div><label>Sponsor link (optional)</label><input id="p_spu" placeholder="https://…"></div>
+        <div><label>Sponsor logo (optional)</label><input id="p_splogo" type="file" accept="image/*"></div>
+      </div>
+      <input type="hidden" id="p_id">
+      <div class="row2">
+        <button class="btn dark" onclick="savePlayer()">Save player</button>
+        <button class="btn" onclick="clearPlayer()">Clear form (new player)</button>
+      </div>
+      <div id="pmsg" class="msg"></div>
+    </div>
+    <h2 style="margin-top:22px">Current squad</h2>
+    <div id="playerlist" class="hint">Loading…</div>
+  </div>
+
+  <div class="panel">
+    <h2>Events</h2>
+    <div class="hint" style="margin-bottom:10px">Shown on the Events page. Ticket link should be the event’s Fan Base page.</div>
+    <div class="frm">
+      <div class="row3">
+        <div><label>Date</label><input id="e_date" type="date"></div>
+        <div><label>Time</label><input id="e_time" type="time" value="19:30"></div>
+        <div><label>Where</label><input id="e_where" value="Monarch Suite"></div>
+      </div>
+      <div><label>Event title</label><input id="e_title" placeholder="Stags Race Night"></div>
+      <div><label>Description</label><textarea id="e_desc" class="short"></textarea></div>
+      <div class="row2">
+        <div><label>Ticket link (Fan Base)</label><input id="e_tix" placeholder="https://www.fanbaseclub.com/…"></div>
+        <div><label>Photo (optional)</label><input id="e_photo" type="file" accept="image/*"></div>
+      </div>
+      <input type="hidden" id="e_id">
+      <div class="row2">
+        <button class="btn dark" onclick="saveEvent()">Save event</button>
+        <button class="btn" onclick="clearEvent()">Clear form (new event)</button>
+      </div>
+      <div id="emsg" class="msg"></div>
+    </div>
+    <h2 style="margin-top:22px">Upcoming events</h2>
+    <div id="eventlist" class="hint">Loading…</div>
+  </div>
+
+  <div class="panel">
+    <h2>League table</h2>
+    <div class="hint" style="margin-bottom:10px">One club per line: <b>position, club, played, won, drawn, lost, goal difference, points</b>. The Match Centre also links out to the official league table.</div>
+    <div class="frm">
+      <textarea id="t_rows" style="min-height:200px;font-family:ui-monospace,Menlo,monospace;font-size:13px"></textarea>
+      <div><label>Official table link</label><input id="t_link"></div>
+      <button class="btn dark" onclick="saveTable()">Publish table</button>
+      <div id="tmsg" class="msg"></div>
     </div>
   </div>
 
@@ -78,7 +185,7 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
         <div><label>Headline</label><input id="n_title" maxlength="140"></div>
         <div><label>Category</label><select id="n_cat">
           <option>CLUB NEWS</option><option>MATCH REPORT</option><option>MATCH PREVIEW</option>
-          <option>CLUB STATEMENT</option><option>COMMUNITY</option><option>COMMERCIAL</option><option>ACADEMY</option>
+          <option>CLUB STATEMENT</option><option>COMMUNITY</option><option>COMMERCIAL</option><option>ACADEMY</option><option>EVENTS</option>
         </select></div>
       </div>
       <div><label>Standfirst (one-sentence summary)</label><input id="n_stand" maxlength="300"></div>
@@ -112,6 +219,14 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
     <div class="hint" style="margin-bottom:10px">Signups from the website’s “Join the Stags list” form. <b id="fcount"></b></div>
     <button class="btn dark" onclick="downloadCsv()">Download CSV</button>
     <div style="overflow-x:auto;margin-top:14px"><table class="ft" id="ftable"></table></div>
+    <h2 style="margin-top:26px">Import existing fan list</h2>
+    <div class="hint" style="margin-bottom:10px">Paste one fan per line as <b>name, email</b> (or just the email). Duplicates are skipped automatically.</div>
+    <div class="frm">
+      <textarea id="imp_rows" class="short" placeholder="Jane Smith, jane@example.com&#10;mark@example.com"></textarea>
+      <label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:#5b6272;text-transform:none;letter-spacing:0;font-weight:600"><input type="checkbox" id="imp_ok" style="width:auto"> I confirm the club holds a lawful basis (consent or legitimate interest) to email everyone on this list.</label>
+      <button class="btn dark" onclick="importFans()">Import list</button>
+      <div id="impmsg" class="msg"></div>
+    </div>
   </div>
 
   <div class="hint" style="margin:10px 4px">Signed in. This panel manages content only — it cannot change the design or structure of the site. Keep the password private; anyone with it can publish to the club website.</div>
@@ -120,8 +235,10 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
 <script>
 let KEY = sessionStorage.getItem('afct_admin') || '';
 const $ = id => document.getElementById(id);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function show(el, txt, good){ el.textContent = txt; el.className = 'msg ' + (good ? 'okc' : 'errc'); if (good) setTimeout(()=>{el.className='msg';}, 4000); }
 async function api(path, opts){ opts = opts || {}; opts.headers = Object.assign({'Content-Type':'application/json','x-admin-key':KEY}, opts.headers||{}); const r = await fetch(path, opts); if (r.status === 401){ sessionStorage.removeItem('afct_admin'); location.reload(); } return r; }
+const J = u => fetch(u + (u.indexOf('?')<0?'?':'&') + 'ts=' + Date.now()).then(r=>r.json());
 
 async function login(){
   KEY = $('pw').value.trim();
@@ -132,19 +249,132 @@ async function login(){
 
 async function boot(){
   $('gate').classList.add('hidden'); $('app').classList.remove('hidden');
-  loadScore(); loadNews(); loadFans(); loadStories();
+  loadScore(); loadNews(); loadFans(); loadStories(); loadFixtures(); loadPlayers(); loadEvents(); loadTable();
 }
 
+/* ---------- score ---------- */
 async function loadScore(){
-  const s = await (await fetch('/api/score?ts=' + Date.now())).json();
-  if (s && s.status && s.status !== 'none'){ $('s_opp').value = s.opp||''; $('s_venue').value = s.venue||'home'; $('s_status').value = s.status; $('s_home').value = s.home||0; $('s_away').value = s.away||0; $('s_min').value = s.minute||''; $('s_note').value = s.note||''; }
+  const s = await J('/api/score');
+  if (s && s.status && s.status !== 'none'){ $('s_opp').value = s.opp||''; $('s_venue').value = s.venue||'home'; $('s_status').value = s.status; $('s_home').value = s.home||0; $('s_away').value = s.away||0; $('s_min').value = s.minute||''; $('s_note').value = s.note||''; $('s_sp').value = s.sponsor||''; $('s_spu').value = s.sponsorUrl||''; }
 }
 async function saveScore(){
-  const body = { opp:$('s_opp').value, venue:$('s_venue').value, status:$('s_status').value, home:$('s_home').value, away:$('s_away').value, minute:$('s_min').value, note:$('s_note').value };
+  const body = { opp:$('s_opp').value, venue:$('s_venue').value, status:$('s_status').value, home:$('s_home').value, away:$('s_away').value, minute:$('s_min').value, note:$('s_note').value, sponsor:$('s_sp').value, sponsorUrl:$('s_spu').value };
   const r = await api('/api/score', { method:'POST', body: JSON.stringify(body) });
   show($('smsg'), r.ok ? 'Score published.' : 'Failed — try again.', r.ok);
 }
+async function fileResult(){
+  if (!$('s_opp').value.trim()) return show($('smsg'), 'Enter the opponent first.', false);
+  const body = { date: new Date().toISOString().slice(0,10), ko:'15:00', opp:$('s_opp').value, venue:$('s_venue').value,
+    ground: $('s_venue').value==='home' ? 'The Snows Stadium' : '', status:'played', hg:$('s_home').value, ag:$('s_away').value, scorers:$('s_note').value };
+  const r = await api('/api/fixtures', { method:'POST', body: JSON.stringify(body) });
+  show($('smsg'), r.ok ? 'Filed under results — edit the date below if the match wasn’t today.' : 'Failed — try again.', r.ok);
+  if (r.ok) loadFixtures();
+}
 
+/* ---------- fixtures ---------- */
+function clearFixture(){ ['f_id','f_opp','f_ground','f_scorers','f_hg','f_ag'].forEach(i=>$(i).value=''); $('f_date').value=''; $('f_ko').value='15:00'; $('f_venue').value='home'; $('f_status').value='scheduled'; $('f_comp').value='National League South'; }
+async function saveFixture(){
+  const body = { id:$('f_id').value||undefined, date:$('f_date').value, ko:$('f_ko').value, opp:$('f_opp').value, venue:$('f_venue').value, ground:$('f_ground').value, comp:$('f_comp').value, status:$('f_status').value, hg:$('f_hg').value, ag:$('f_ag').value, scorers:$('f_scorers').value };
+  if (!body.date || !body.opp) return show($('fmsg'), 'Date and opponent are required.', false);
+  const r = await api('/api/fixtures', { method:'POST', body: JSON.stringify(body) });
+  show($('fmsg'), r.ok ? 'Saved — live on the site within a minute.' : 'Failed — try again.', r.ok);
+  if (r.ok){ clearFixture(); loadFixtures(); }
+}
+let FIX = [];
+async function loadFixtures(){
+  FIX = await J('/api/fixtures');
+  $('fixlist').innerHTML = FIX.map(f => {
+    const res = f.status==='played' ? `<b>${f.venue==='away' ? (f.ag+'-'+f.hg) : (f.hg+'-'+f.ag)}</b> ${f.hg>f.ag?'W':(f.hg===f.ag?'D':'L')}` : f.status.toUpperCase();
+    return `<div class="newsitem"><span><b>${esc(f.date)}</b> ${esc(f.ko)} · ${esc(f.opp)} (${esc(f.venue)})<br><span class="hint">${esc(f.comp)} · ${res}${f.scorers?' · '+esc(f.scorers):''}</span></span><button class="edt" onclick="editFixture('${f.id}')">Edit</button><button class="del" onclick="delFixture('${f.id}')">Delete</button></div>`;
+  }).join('') || 'No fixtures yet.';
+}
+function editFixture(id){
+  const f = FIX.find(x=>x.id===id); if (!f) return;
+  $('f_id').value=f.id; $('f_date').value=f.date; $('f_ko').value=f.ko; $('f_opp').value=f.opp; $('f_venue').value=f.venue; $('f_ground').value=f.ground||''; $('f_comp').value=f.comp||''; $('f_status').value=f.status; $('f_hg').value=f.hg==null?'':f.hg; $('f_ag').value=f.ag==null?'':f.ag; $('f_scorers').value=f.scorers||'';
+  window.scrollTo({top:$('f_date').getBoundingClientRect().top+window.scrollY-120,behavior:'smooth'});
+}
+async function delFixture(id){ if(!confirm('Delete this fixture?'))return; await api('/api/fixtures?id='+encodeURIComponent(id),{method:'DELETE'}); loadFixtures(); }
+
+/* ---------- players ---------- */
+function clearPlayer(){ ['p_id','p_num','p_name','p_pos','p_bio','p_sp','p_spu'].forEach(i=>$(i).value=''); $('p_photo').value=''; $('p_splogo').value=''; $('p_group').value='mf'; }
+let PLAYERS = [];
+async function savePlayer(){
+  if (!$('p_name').value.trim()) return show($('pmsg'), 'Name is required.', false);
+  try {
+    const cur = PLAYERS.find(x=>x.id===$('p_id').value) || {};
+    let img = cur.img || '', sponsorLogo = cur.sponsorLogo || '';
+    const f1 = $('p_photo').files[0];
+    if (f1){ show($('pmsg'),'Uploading photo…',true); img = await uploadFile(f1); }
+    const f2 = $('p_splogo').files[0];
+    if (f2){ show($('pmsg'),'Uploading sponsor logo…',true); sponsorLogo = await uploadFile(f2); }
+    const body = { id:$('p_id').value||undefined, num:$('p_num').value, name:$('p_name').value, pos:$('p_pos').value, group:$('p_group').value, img, bio:$('p_bio').value, sponsor:$('p_sp').value, sponsorUrl:$('p_spu').value, sponsorLogo };
+    const r = await api('/api/players', { method:'POST', body: JSON.stringify(body) });
+    show($('pmsg'), r.ok ? 'Player saved — live on the Teams page within a minute.' : 'Failed — try again.', r.ok);
+    if (r.ok){ clearPlayer(); loadPlayers(); }
+  } catch(e){ show($('pmsg'), 'Something went wrong: '+e.message, false); }
+}
+async function loadPlayers(){
+  PLAYERS = await J('/api/players');
+  const gname = {gk:'GOALKEEPERS',df:'DEFENDERS',mf:'MIDFIELDERS',fw:'FORWARDS'};
+  let html = '';
+  ['gk','df','mf','fw'].forEach(g => {
+    const list = PLAYERS.filter(p=>p.group===g).sort((a,b)=>a.num-b.num);
+    if (!list.length) return;
+    html += `<div class="hint" style="margin:12px 0 4px;font-weight:800;letter-spacing:.1em">${gname[g]}</div>`;
+    html += list.map(p => `<div class="newsitem"><img src="${esc(p.img)||'/img/crest.svg'}" alt="" style="width:36px;height:44px;object-fit:cover"><span><b>${p.num||''} ${esc(p.name)}</b><br><span class="hint">${esc(p.pos)}${p.sponsor?' · Sponsored by '+esc(p.sponsor):''}${p.bio?' · bio ✓':''}</span></span><button class="edt" onclick="editPlayer('${p.id}')">Edit</button><button class="del" onclick="delPlayer('${p.id}')">Remove</button></div>`).join('');
+  });
+  $('playerlist').innerHTML = html || 'No players yet.';
+}
+function editPlayer(id){
+  const p = PLAYERS.find(x=>x.id===id); if (!p) return;
+  $('p_id').value=p.id; $('p_num').value=p.num||''; $('p_name').value=p.name; $('p_pos').value=p.pos||''; $('p_group').value=p.group; $('p_bio').value=p.bio||''; $('p_sp').value=p.sponsor||''; $('p_spu').value=p.sponsorUrl||'';
+  window.scrollTo({top:$('p_num').getBoundingClientRect().top+window.scrollY-120,behavior:'smooth'});
+}
+async function delPlayer(id){ if(!confirm('Remove this player from the site?'))return; await api('/api/players?id='+encodeURIComponent(id),{method:'DELETE'}); loadPlayers(); }
+
+/* ---------- events ---------- */
+function clearEvent(){ ['e_id','e_title','e_desc','e_tix'].forEach(i=>$(i).value=''); $('e_date').value=''; $('e_time').value='19:30'; $('e_where').value='Monarch Suite'; $('e_photo').value=''; }
+let EVENTS = [];
+async function saveEvent(){
+  if (!$('e_title').value.trim() || !$('e_date').value) return show($('emsg'), 'Title and date are required.', false);
+  try {
+    const cur = EVENTS.find(x=>x.id===$('e_id').value) || {};
+    let img = cur.img || '';
+    const f = $('e_photo').files[0];
+    if (f){ show($('emsg'),'Uploading photo…',true); img = await uploadFile(f); }
+    const body = { id:$('e_id').value||undefined, date:$('e_date').value, time:$('e_time').value, where:$('e_where').value, title:$('e_title').value, desc:$('e_desc').value, tickets:$('e_tix').value, img };
+    const r = await api('/api/events', { method:'POST', body: JSON.stringify(body) });
+    show($('emsg'), r.ok ? 'Event saved — live on the Events page within a minute.' : 'Failed — try again.', r.ok);
+    if (r.ok){ clearEvent(); loadEvents(); }
+  } catch(e){ show($('emsg'), 'Something went wrong: '+e.message, false); }
+}
+async function loadEvents(){
+  EVENTS = await J('/api/events');
+  $('eventlist').innerHTML = EVENTS.map(e => `<div class="newsitem"><img src="${esc(e.img)||'/img/crest.svg'}" alt=""><span><b>${esc(e.title)}</b><br><span class="hint">${esc(e.date)} ${esc(e.time)} · ${esc(e.where)}</span></span><button class="edt" onclick="editEvent('${e.id}')">Edit</button><button class="del" onclick="delEvent('${e.id}')">Delete</button></div>`).join('') || 'No events yet.';
+}
+function editEvent(id){
+  const e = EVENTS.find(x=>x.id===id); if (!e) return;
+  $('e_id').value=e.id; $('e_date').value=e.date; $('e_time').value=e.time||''; $('e_where').value=e.where||''; $('e_title').value=e.title; $('e_desc').value=e.desc||''; $('e_tix').value=e.tickets||'';
+  window.scrollTo({top:$('e_date').getBoundingClientRect().top+window.scrollY-120,behavior:'smooth'});
+}
+async function delEvent(id){ if(!confirm('Delete this event?'))return; await api('/api/events?id='+encodeURIComponent(id),{method:'DELETE'}); loadEvents(); }
+
+/* ---------- table ---------- */
+async function loadTable(){
+  const t = await J('/api/table');
+  $('t_rows').value = (t.rows||[]).map(r=>[r.pos,r.club,r.p,r.w,r.d,r.l,r.gd,r.pts].join(', ')).join('\n');
+  $('t_link').value = t.link||'';
+}
+async function saveTable(){
+  const rows = $('t_rows').value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
+    const p = l.split(',').map(s=>s.trim());
+    return { pos:p[0], club:p[1], p:p[2], w:p[3], d:p[4], l:p[5], gd:p[6], pts:p[7] };
+  });
+  const r = await api('/api/table', { method:'POST', body: JSON.stringify({ rows, link:$('t_link').value }) });
+  show($('tmsg'), r.ok ? 'Table published.' : 'Check the format — one club per line, eight comma-separated values.', r.ok);
+}
+
+/* ---------- shared upload ---------- */
 function resizeImage(file){ return new Promise((resolve,reject)=>{
   const img = new Image(); const fr = new FileReader();
   fr.onload = () => { img.onload = () => {
@@ -156,28 +386,29 @@ function resizeImage(file){ return new Promise((resolve,reject)=>{
   }; img.onerror = reject; img.src = fr.result; };
   fr.onerror = reject; fr.readAsDataURL(file);
 });}
+async function uploadFile(f){
+  const data = await resizeImage(f);
+  const up = await api('/api/upload', { method:'POST', body: JSON.stringify({ filename: f.name, data }) });
+  if (!up.ok) throw new Error('upload failed');
+  return (await up.json()).url;
+}
 
+/* ---------- news ---------- */
 async function publishNews(){
   const t = $('n_title').value.trim(), b = $('n_body').value.trim();
   if (!t || !b) return show($('nmsg'), 'Headline and article text are required.', false);
   let img = '';
   const f = $('n_photo').files[0];
   try {
-    if (f){ show($('nmsg'), 'Uploading photo…', true);
-      const data = await resizeImage(f);
-      const up = await api('/api/upload', { method:'POST', body: JSON.stringify({ filename: f.name, data }) });
-      if (!up.ok) return show($('nmsg'), 'Photo upload failed.', false);
-      img = (await up.json()).url;
-    }
+    if (f){ show($('nmsg'), 'Uploading photo…', true); img = await uploadFile(f); }
     const r = await api('/api/news', { method:'POST', body: JSON.stringify({ title:t, body:b, standfirst:$('n_stand').value, cat:$('n_cat').value, img }) });
     if (r.ok){ show($('nmsg'), 'Published! It is live on the site now.', true); $('n_title').value=''; $('n_stand').value=''; $('n_body').value=''; $('n_photo').value=''; loadNews(); }
     else show($('nmsg'), 'Publish failed — try again.', false);
   } catch(e){ show($('nmsg'), 'Something went wrong: ' + e.message, false); }
 }
-
 async function loadNews(){
-  const items = await (await fetch('/api/news?ts=' + Date.now())).json();
-  $('newslist').innerHTML = items.map(i => `<div class="newsitem"><img src="${i.img||'/img/crest.svg'}" alt=""><span><b>${i.title}</b><br><span class="hint">${i.cat} · ${i.date}</span></span>${i.id.startsWith('seed-') ? '' : `<button class="del" onclick="delNews('${i.id}')">Delete</button>`}</div>`).join('') || 'No articles yet.';
+  const items = await J('/api/news');
+  $('newslist').innerHTML = items.map(i => `<div class="newsitem"><img src="${esc(i.img)||'/img/crest.svg'}" alt=""><span><b>${esc(i.title)}</b><br><span class="hint">${esc(i.cat)} · ${esc(i.date)}</span></span>${i.id.startsWith('seed-') ? '' : `<button class="del" style="margin-left:auto" onclick="delNews('${i.id}')">Delete</button>`}</div>`).join('') || 'No articles yet.';
 }
 async function delNews(id){
   if (!confirm('Delete this article from the website?')) return;
@@ -185,36 +416,45 @@ async function delNews(id){
   loadNews();
 }
 
+/* ---------- fans ---------- */
 async function loadFans(){
   const fans = await (await api('/api/fans')).json();
   $('fcount').textContent = fans.length + ' signup' + (fans.length === 1 ? '' : 's');
-  $('ftable').innerHTML = '<tr><th>NAME</th><th>EMAIL</th><th>INTEREST</th><th>WHEN</th></tr>' +
-    fans.slice().reverse().map(f => `<tr><td>${f.name||''}</td><td>${f.email}</td><td>${f.interest||''}</td><td>${(f.ts||'').slice(0,10)}</td></tr>`).join('');
+  $('ftable').innerHTML = '<tr><th>NAME</th><th>EMAIL</th><th>SOURCE</th><th>WHEN</th></tr>' +
+    fans.slice().reverse().slice(0,200).map(f => `<tr><td>${esc(f.name)}</td><td>${esc(f.email)}</td><td>${esc(f.source)}</td><td>${(f.ts||'').slice(0,10)}</td></tr>`).join('');
 }
 async function downloadCsv(){
   const r = await api('/api/fans?format=csv');
   const blob = await r.blob(); const a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = 'stags-fans.csv'; a.click();
 }
+async function importFans(){
+  if (!$('imp_ok').checked) return show($('impmsg'), 'Please confirm the lawful basis checkbox first.', false);
+  const rows = $('imp_rows').value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
+    const p = l.split(',').map(s=>s.trim());
+    return p.length > 1 ? { name:p[0], email:p[1] } : { email:p[0] };
+  });
+  if (!rows.length) return show($('impmsg'), 'Paste at least one line first.', false);
+  const r = await api('/api/fans', { method:'POST', body: JSON.stringify({ import: rows, consentConfirmed: true }) });
+  if (r.ok){ const d = await r.json(); show($('impmsg'), `Imported ${d.imported} new contact${d.imported===1?'':'s'} (duplicates skipped). Total on list: ${d.total}.`, true); $('imp_rows').value=''; $('imp_ok').checked=false; loadFans(); }
+  else show($('impmsg'), 'Import failed — check the format.', false);
+}
 
-
+/* ---------- stories ---------- */
 async function publishStory(){
   const f = $('st_photo').files[0];
   if (!f) return show($('stmsg'), 'Choose a photo first.', false);
   try {
     show($('stmsg'), 'Uploading…', true);
-    const data = await resizeImage(f);
-    const up = await api('/api/upload', { method:'POST', body: JSON.stringify({ filename: f.name, data }) });
-    if (!up.ok) return show($('stmsg'), 'Photo upload failed.', false);
-    const img = (await up.json()).url;
+    const img = await uploadFile(f);
     const r = await api('/api/stories', { method:'POST', body: JSON.stringify({ img, caption:$('st_cap').value, link:$('st_link').value }) });
     if (r.ok){ show($('stmsg'), 'Story is live for the next 48 hours.', true); $('st_photo').value=''; $('st_cap').value=''; $('st_link').value=''; loadStories(); }
     else show($('stmsg'), 'Failed — try again.', false);
   } catch(e){ show($('stmsg'), 'Something went wrong: ' + e.message, false); }
 }
 async function loadStories(){
-  const items = await (await fetch('/api/stories?ts=' + Date.now())).json();
-  $('storylist').innerHTML = items.map(s => `<div class="newsitem"><img src="${s.img}" alt=""><span>${s.caption||'(no caption)'}<br><span class="hint">${(s.ts||'').slice(0,16).replace('T',' ')}</span></span><button class="del" onclick="delStory('${s.id}')">Delete</button></div>`).join('') || 'No live stories.';
+  const items = await J('/api/stories');
+  $('storylist').innerHTML = items.map(s => `<div class="newsitem"><img src="${esc(s.img)}" alt=""><span>${esc(s.caption)||'(no caption)'}<br><span class="hint">${(s.ts||'').slice(0,16).replace('T',' ')}</span></span><button class="del" style="margin-left:auto" onclick="delStory('${s.id}')">Delete</button></div>`).join('') || 'No live stories.';
 }
 async function delStory(id){ await api('/api/stories?id=' + encodeURIComponent(id), { method:'DELETE' }); loadStories(); }
 
