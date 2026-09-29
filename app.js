@@ -318,7 +318,7 @@ if (page === 'teams') J('/api/players').then(items => {
 // ---- events (events page) ----
 function evCard(e){
   const d = fmtDL(e.date);
-  return `<div class="card evcard"><div class="ph"><img src="${esc(e.img)||'/img/stadium-1.webp'}" alt="" loading="lazy"></div>
+  return `<div class="card evcard"><div class="ph"><img src="${esc(e.img)||'https://lh3.googleusercontent.com/d/19SIqXsPGjVk7sh9T7NCBA6OKhec-zliQ=w1000'}" alt="" loading="lazy"></div>
   <div class="bd"><span class="when">${esc(d)}${e.time?' · '+esc(e.time):''}</span><h3>${esc(e.title)}</h3><p>${esc(e.desc)}</p>
   <div class="meta">${esc(e.where)}</div>
   <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
@@ -358,13 +358,14 @@ if (page === 'index' || page === 'news') J('/api/news').then(items => {
 // ---- sponsor links (all pages with a sponsor grid) ----
 if (document.querySelector('.sponsors')) J('/api/sponsors').then(list => {
   if (!list) return;
-  const map = {}; list.forEach(s => { map[s.img] = s; });
+  const map = {}; list.forEach(s => { map[s.img] = s; if (s.gid) map[s.gid] = s; });
   document.querySelectorAll('.sponsors > div > img').forEach(img => {
-    const fn = (img.getAttribute('src') || '').split('/').pop();
-    const s = map[fn]; if (!s || !s.url) return;
+    const src = img.getAttribute('src') || '';
+    const m = src.match(/\/d\/([^=]+)=/);
+    const s = map[m ? m[1] : src.split('/').pop()]; if (!s || !s.url) return;
     const a = document.createElement('a');
     a.href = s.url; a.target = '_blank'; a.rel = 'noopener sponsored';
-    a.setAttribute('data-sp', s.name || fn); a.title = s.name || '';
+    a.setAttribute('data-sp', s.name || s.img); a.title = s.name || '';
     a.style.cssText = 'display:flex;align-items:center;justify-content:center;width:100%;height:100%';
     img.parentNode.insertBefore(a, img); a.appendChild(img);
   });
