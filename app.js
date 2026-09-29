@@ -27,14 +27,15 @@ if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.ser
 (function(){
 if (!document.querySelector('header.site')) return; // not on admin
 const mq = window.matchMedia('(prefers-color-scheme: dark)');
-const MAP = [['#151C36','#EEF1F8'],['#5b6272','#9AA5BF'],['#8a90a0','#8E99B2'],['#FAFBFD','#0E1630'],['#33384a','#B9C2D8'],['#EEF1F8','#1A2442']];
+const M = {'#151C36':'#EEF1F8','#5b6272':'#9AA5BF','#8a90a0':'#8E99B2','#FAFBFD':'#0E1630','#33384a':'#B9C2D8','#EEF1F8':'#1A2442','#C9D0E0':'#2A3658','#1B1B1B':'#CBD5EA'};
+const MRX = /#(?:151C36|5b6272|8a90a0|FAFBFD|33384a|EEF1F8|C9D0E0|1B1B1B)/g;
 function darkNow(){ const t = localStorage.getItem('theme'); return t === 'dark' || (t !== 'light' && mq.matches); }
 function remap(on){
   document.querySelectorAll('[style]').forEach(el => {
     if (el.closest('#storyview,.storyrail,.fanband,.band,.hero,.scorecard,footer,.strip,header')) return;
     if (!el.dataset.ls) el.dataset.ls = el.getAttribute('style');
     let s = el.dataset.ls;
-    if (on) MAP.forEach(m => { s = s.split(m[0]).join(m[1]); });
+    if (on) s = s.replace(MRX, m => M[m]);
     el.setAttribute('style', s);
   });
 }
