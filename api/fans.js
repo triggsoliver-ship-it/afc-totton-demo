@@ -43,6 +43,10 @@ export default async function handler(req, res) {
     }
     return ok(res, { thanks: true });
   }
+  if (req.method === 'GET' && req.query.count === '1') {
+    const fans = await readJson('data/fans.json', []);
+    return ok(res, { count: fans.length });
+  }
   if (!isAuthed(req)) return res.status(401).json({ error: 'unauthorised' });
   if (req.method === 'GET') {
     const fans = await readJson('data/fans.json', []);
