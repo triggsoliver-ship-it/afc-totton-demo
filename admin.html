@@ -179,6 +179,30 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
   </div>
 
   <div class="panel">
+    <h2>Site analytics <span class="hint" style="font-weight:400">&middot; last 7 days</span></h2>
+    <div class="row3" style="margin-bottom:14px">
+      <div><div class="hint">PAGE VIEWS</div><div id="a_pv" style="font-size:26px;font-weight:800;color:#151C36">&ndash;</div></div>
+      <div><div class="hint">SPONSOR CLICKS</div><div id="a_sp" style="font-size:26px;font-weight:800;color:#151C36">&ndash;</div></div>
+      <div><div class="hint">FAN SIGNUPS (TOTAL)</div><div id="a_fans" style="font-size:26px;font-weight:800;color:#151C36">&ndash;</div></div>
+    </div>
+    <div class="row2" style="align-items:start">
+      <div><div class="hint" style="font-weight:800;margin-bottom:6px">TOP PAGES</div><table class="ft" id="a_pages"></table></div>
+      <div><div class="hint" style="font-weight:800;margin-bottom:6px">TOP CLICKS</div><table class="ft" id="a_clicks"></table></div>
+    </div>
+    <div class="hint" style="margin-top:12px">Counts every page view and every click on sponsor logos, email links, Fan Base ticket links and buttons. A weekly review lands with Oli every Monday morning.</div>
+  </div>
+
+  <div class="panel">
+    <h2>Sponsor links</h2>
+    <div class="hint" style="margin-bottom:10px">One sponsor per line: <b>image-file | sponsor name | website link</b>. Logos with a link become clickable everywhere on the site (and clicks are counted above). Leave the link blank to keep a logo unclickable.</div>
+    <div class="frm">
+      <textarea id="sp_rows" style="min-height:220px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px"></textarea>
+      <button class="btn dark" onclick="saveSponsors()">Save sponsor links</button>
+      <div id="spmsg" class="msg"></div>
+    </div>
+  </div>
+
+  <div class="panel">
     <h2>Publish news</h2>
     <div class="frm">
       <div class="row2">
@@ -249,7 +273,34 @@ async function login(){
 
 async function boot(){
   $('gate').classList.add('hidden'); $('app').classList.remove('hidden');
-  loadScore(); loadNews(); loadFans(); loadStories(); loadFixtures(); loadPlayers(); loadEvents(); loadTable();
+  loadScore(); loadNews(); loadFans(); loadStories(); loadFixtures(); loadPlayers(); loadEvents(); loadTable(); loadSponsors(); loadAnalytics();
+}
+
+/* ---------- analytics ---------- */
+async function loadAnalytics(){
+  const t = await J('/api/track?days=7');
+  if (!t || !t.totals) return;
+  $('a_pv').textContent = t.totals.pageviews || 0;
+  const clicks = Object.entries(t.totals.clicks || {}).sort((a,b)=>b[1]-a[1]);
+  $('a_sp').textContent = clicks.filter(c=>c[0].indexOf('sponsor:')===0).reduce((s,c)=>s+c[1],0);
+  const fc = await J('/api/fans?count=1'); if (fc) $('a_fans').textContent = fc.count;
+  const pages = Object.entries(t.totals.pv || {}).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  $('a_pages').innerHTML = '<tr><th>PAGE</th><th>VIEWS</th></tr>' + (pages.map(p=>`<tr><td>${esc(p[0])}</td><td>${p[1]}</td></tr>`).join('') || '<tr><td colspan=2 class="hint">No data yet</td></tr>');
+  $('a_clicks').innerHTML = '<tr><th>WHAT</th><th>CLICKS</th></tr>' + (clicks.slice(0,10).map(c=>`<tr><td>${esc(c[0])}</td><td>${c[1]}</td></tr>`).join('') || '<tr><td colspan=2 class="hint">No data yet</td></tr>');
+}
+
+/* ---------- sponsor links ---------- */
+async function loadSponsors(){
+  const list = await J('/api/sponsors');
+  if (Array.isArray(list)) $('sp_rows').value = list.map(s=>[s.img,s.name,s.url].join(' | ')).join('\n');
+}
+async function saveSponsors(){
+  const list = $('sp_rows').value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
+    const p = l.split('|').map(s=>s.trim());
+    return { img:p[0], name:p[1]||'', url:p[2]||'' };
+  });
+  const r = await api('/api/sponsors', { method:'POST', body: JSON.stringify({ list }) });
+  show($('spmsg'), r.ok ? 'Sponsor links saved — live within a minute.' : 'Check the format — image-file | name | link.', r.ok);
 }
 
 /* ---------- score ---------- */
