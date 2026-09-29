@@ -355,6 +355,37 @@ if (page === 'index' || page === 'news') J('/api/news').then(items => {
   rethemed();
 });
 
+// ---- sponsor links (all pages with a sponsor grid) ----
+if (document.querySelector('.sponsors')) J('/api/sponsors').then(list => {
+  if (!list) return;
+  const map = {}; list.forEach(s => { map[s.img] = s; });
+  document.querySelectorAll('.sponsors > div > img').forEach(img => {
+    const fn = (img.getAttribute('src') || '').split('/').pop();
+    const s = map[fn]; if (!s || !s.url) return;
+    const a = document.createElement('a');
+    a.href = s.url; a.target = '_blank'; a.rel = 'noopener sponsored';
+    a.setAttribute('data-sp', s.name || fn); a.title = s.name || '';
+    a.style.cssText = 'display:flex;align-items:center;justify-content:center;width:100%;height:100%';
+    img.parentNode.insertBefore(a, img); a.appendChild(img);
+  });
+});
+
+// ---- analytics beacons (pageviews + clicks) ----
+(function(){
+  const send = (type, target) => { try {
+    navigator.sendBeacon('/api/track', new Blob([JSON.stringify({ type, page: location.pathname, target })], { type: 'application/json' }));
+  } catch(e){} };
+  send('pageview');
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a'); if (!a) return;
+    const h = a.getAttribute('href') || '';
+    if (a.getAttribute('data-sp')) send('click', 'sponsor:' + a.getAttribute('data-sp'));
+    else if (h.indexOf('mailto:') === 0) send('click', 'email:' + h.slice(7).split('?')[0]);
+    else if (h.indexOf('fanbase') > -1) send('click', 'fanbase-tickets');
+    else if (a.classList.contains('btn')) send('click', 'btn:' + (a.textContent || '').trim().slice(0, 40));
+  }, true);
+})();
+
 // ---- fan capture band (homepage) ----
 if (page === 'index'){
   const sec = document.createElement('section'); sec.className = 'fanband';
