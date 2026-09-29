@@ -1,3 +1,4 @@
+
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--navy:#151C36;--deep:#0A0F22;--mid:#2A3658;--blue:#5B7AB8;--lt:#A8BFE0;--cream:#EEF1F8;--ink:#1B1B1B;--line:#DDE2ED}
 html{scroll-behavior:smooth}
@@ -138,3 +139,31 @@ footer .btm{border-top:1px solid rgba(255,255,255,.1);padding-top:20px;display:f
  .g4,.g3,.g2{grid-template-columns:1fr} .sq{grid-template-columns:repeat(2,1fr)}
  section{padding:38px 0} .hero .in{padding:40px 0 34px}
 }
+/* dark mode */
+html[data-theme=dark] body{background:#0B1122;color:#CBD5EA}
+html[data-theme=dark] .card{background:#111A33;border-color:#232E4E}
+html[data-theme=dark] .card h3{color:#E8ECF5}
+html[data-theme=dark] .card p{color:#9AA5BF}
+html[data-theme=dark] .meta{color:#7C87A2}
+html[data-theme=dark] .sec-head{border-color:#5B7AB8}
+html[data-theme=dark] .sec-head h2{color:#EEF1F8}
+html[data-theme=dark] .fx,html[data-theme=dark] .fx .r{border-color:#232E4E}
+html[data-theme=dark] .fx .r:nth-child(even){background:#0E1630}
+html[data-theme=dark] .fx .r .d,html[data-theme=dark] .fx .r .o{color:#E8ECF5}
+html[data-theme=dark] .pill.a{background:#232E4E;color:#CBD5EA}
+html[data-theme=dark] .pill.t{background:#3d3110;color:#E5CE8F}
+html[data-theme=dark] .tbl td{border-color:#232E4E;color:#CBD5EA}
+html[data-theme=dark] .tbl tr:nth-child(even) td{background:#0E1630}
+html[data-theme=dark] .tbl td:first-child{color:#E8ECF5}
+html[data-theme=dark] .tier{border-color:#232E4E;background:#111A33}
+html[data-theme=dark] .tier .pr{color:#EEF1F8}
+html[data-theme=dark] .tier ul{color:#9AA5BF}
+html[data-theme=dark] .tabs{border-color:#232E4E}
+html[data-theme=dark] .tabs button.on{color:#EEF1F8}
+html[data-theme=dark] .prose p{color:#B9C2D8}
+html[data-theme=dark] .prose h3,html[data-theme=dark] .pull{color:#E8ECF5}
+html[data-theme=dark] .sponsors div{background:#E9EDF5;border-color:#232E4E}
+html[data-theme=dark] #install{background:#111A33;border-color:#232E4E}
+html[data-theme=dark] #install .tx{color:#B9C2D8}
+html[data-theme=dark] #install .tx b{color:#EEF1F8}
+html[data-theme=dark] .grp{color:#7f9bd0}
