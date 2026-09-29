@@ -167,3 +167,19 @@ html[data-theme=dark] #install{background:#111A33;border-color:#232E4E}
 html[data-theme=dark] #install .tx{color:#B9C2D8}
 html[data-theme=dark] #install .tx b{color:#EEF1F8}
 html[data-theme=dark] .grp{color:#7f9bd0}
+
+/* strip meta alignment (override generic .meta card style) */
+.strip .meta{font-size:12.5px;padding-top:0;margin-top:0}
+/* PWA standalone: keep content clear of the iPhone status bar */
+@media (display-mode: standalone){
+  body{padding-top:env(safe-area-inset-top)}
+  body:before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:#0A0F22;z-index:120}
+  header.site{top:env(safe-area-inset-top)}
+}
+/* mobile nav: full-screen overlay menu */
+@media(max-width:1000px){
+  nav.main.open{display:flex !important;position:fixed;inset:0;background:rgba(8,12,28,.97);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);flex-direction:column;align-items:center;justify-content:center;gap:4px;z-index:220;margin:0;padding:calc(40px + env(safe-area-inset-top)) 20px calc(40px + env(safe-area-inset-bottom))}
+  nav.main.open a{font-size:16px;padding:10px 0;border-bottom:0}
+  nav.main.open .btn{margin-top:16px;padding:13px 26px}
+  nav.main.open .navx{position:absolute;top:calc(14px + env(safe-area-inset-top));right:20px;background:none;border:0;color:#fff;font-size:34px;cursor:pointer;line-height:1}
+}
