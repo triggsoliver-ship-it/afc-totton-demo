@@ -206,16 +206,18 @@ J('/api/fixtures').then(items => {
   if (m) m.innerHTML = `${esc(next.comp)} &middot; ${esc(fmtDL(next.date))} &middot; KO ${esc(next.ko)} &middot; ${esc(next.ground || 'Venue TBC')}`;
 });
 
-// ---- league table ----
-if (page === 'match-centre') J('/api/table').then(t => {
-  if (!t || !t.rows || !t.rows.length) return;
+// ---- league table (live link to the official table) ----
+if (page === 'match-centre'){
   const pane = document.getElementById('tb');
-  if (!pane) return;
-  pane.innerHTML = `<table class="tbl"><thead><tr><th>#</th><th>Club</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead><tbody>`
-    + t.rows.map(r => `<tr${/totton/i.test(r.club)?' style="background:#EEF1F8;font-weight:700"':''}><td>${r.pos}</td><td>${esc(r.club)}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gd>0?'+':''}${r.gd}</td><td><b>${r.pts}</b></td></tr>`).join('')
-    + `</tbody></table><p style="margin-top:12px;font-size:12px;color:#8a90a0">Updated ${esc(t.updated||'')} by the club. <a href="${esc(t.link||'https://www.thenationalleague.org.uk')}" target="_blank" rel="noopener" style="color:#5B7AB8;font-weight:700">View the full official table &rsaquo;</a></p>`;
-  rethemed();
-});
+  if (pane){ pane.innerHTML = `<div style="border:1px solid var(--line);border-radius:5px;padding:44px 24px;text-align:center">
+    <div class="eyebrow" style="color:#5B7AB8">ENTERPRISE NATIONAL LEAGUE SOUTH</div>
+    <h3 style="font-size:24px;color:#151C36;margin:12px 0 10px;font-weight:800">The live league table</h3>
+    <p style="color:#5b6272;font-size:14.5px;max-width:54ch;margin:0 auto 22px;line-height:1.6">Always up to date, straight from the source — updated automatically after every match.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <a class="btn" style="color:#fff" href="https://www.bbc.co.uk/sport/football/national-league-south/table" target="_blank" rel="noopener">View the live table — BBC Sport</a>
+    <a class="btn dark" style="color:#fff" href="https://www.thenationalleague.org.uk/match-hub/tables" target="_blank" rel="noopener">Official league site</a></div></div>`;
+  rethemed(); }
+}
 
 // ---- live score (homepage card + match centre live tab + results) ----
 function scoreLines(s){
