@@ -31,9 +31,9 @@ table.ft th{text-align:left;background:#151C36;color:#fff;padding:8px 10px;font-
 table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
 .newsitem{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #EEF1F8;font-size:13.5px}
 .newsitem img{width:56px;height:36px;object-fit:cover;border-radius:3px;background:#EEF1F8}
-.newsitem .del{margin-left:8px;background:#B33A3A;color:#fff;border:0;border-radius:3px;padding:6px 10px;font-size:11px;font-weight:800;cursor:pointer;flex:0 0 auto}
+.newsitem .del{margin-left:auto;background:#B33A3A;color:#fff;border:0;border-radius:3px;padding:6px 10px;font-size:11px;font-weight:800;cursor:pointer;flex:0 0 auto}
 .newsitem .edt{margin-left:auto;background:#5B7AB8;color:#fff;border:0;border-radius:3px;padding:6px 10px;font-size:11px;font-weight:800;cursor:pointer;flex:0 0 auto}
-.newsitem span:first-of-type{flex:1}
+.newsitem .edt+.del{margin-left:8px}
 .hint{font-size:12px;color:#8a90a0}
 #gate{max-width:420px;margin:60px auto}
 .hidden{display:none}
@@ -108,7 +108,7 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
         <button class="btn" onclick="clearFixture()">Clear form (new fixture)</button>
       </div>
       <div id="fmsg" class="msg"></div>
-      <div class="hint">Fixtures and results across the site update within about a minute. “Played” entries appear under Results; use Edit to move a match or correct a score. The league table links straight to the live BBC Sport / official league table — nothing to maintain here.</div>
+      <div class="hint">Fixtures and results across the site update within about a minute. “Played” entries appear under Results; use Edit to move a match or correct a score.</div>
     </div>
     <h2 style="margin-top:22px">All fixtures</h2>
     <div id="fixlist" class="hint">Loading…</div>
@@ -143,7 +143,7 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
 
   <div class="panel">
     <h2>Events</h2>
-    <div class="hint" style="margin-bottom:10px">Shown on the Events page. Ticket link should be the event’s Fan Base page.</div>
+    <div class="hint" style="margin-bottom:10px">Shown on the Events page and homepage. Ticket link should be the event’s Fan Base page.</div>
     <div class="frm">
       <div class="row3">
         <div><label>Date</label><input id="e_date" type="date"></div>
@@ -198,7 +198,7 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
         <div><label>Headline</label><input id="n_title" maxlength="140"></div>
         <div><label>Category</label><select id="n_cat">
           <option>CLUB NEWS</option><option>MATCH REPORT</option><option>MATCH PREVIEW</option>
-          <option>CLUB STATEMENT</option><option>COMMUNITY</option><option>COMMERCIAL</option><option>ACADEMY</option><option>EVENTS</option>
+          <option>CLUB STATEMENT</option><option>COMMUNITY</option><option>COMMERCIAL</option><option>ACADEMY</option><option>EVENTS</option><option>YOUTH</option>
         </select></div>
       </div>
       <div><label>Standfirst (one-sentence summary)</label><input id="n_stand" maxlength="300"></div>
@@ -225,6 +225,23 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
     </div>
     <h2 style="margin-top:22px">Live stories</h2>
     <div id="storylist" class="hint">Loading…</div>
+  </div>
+
+  <div class="panel">
+    <h2>Photo gallery</h2>
+    <div class="hint" style="margin-bottom:6px">Photos appear on the Gallery page (and Youth-category photos on the Youth page). Anyone on the team can add photos here, then share them straight to social from the site.</div>
+    <div class="msg errc" style="display:block;margin-bottom:10px"><b>Safeguarding:</b> only publish photos cleared for publication. For any photo showing young players, Dan Woodnutt or Caroline Keats must confirm photo consent is in place before it goes up.</div>
+    <div class="frm">
+      <div class="row3">
+        <div><label>Photo (required)</label><input id="g_photo" type="file" accept="image/*"></div>
+        <div><label>Category</label><select id="g_cat"><option>MATCHDAY</option><option>YOUTH</option><option>EVENTS</option><option>COMMUNITY</option><option>HOSPITALITY</option><option>CLUB</option></select></div>
+        <div><label>Caption (optional)</label><input id="g_cap" maxlength="160"></div>
+      </div>
+      <button class="btn dark" onclick="addPhoto()">Add to gallery</button>
+      <div id="gamsg" class="msg"></div>
+    </div>
+    <h2 style="margin-top:22px">Gallery photos</h2>
+    <div id="gallist" class="hint">Loading&hellip;</div>
   </div>
 
   <div class="panel">
@@ -262,7 +279,7 @@ async function login(){
 
 async function boot(){
   $('gate').classList.add('hidden'); $('app').classList.remove('hidden');
-  loadScore(); loadNews(); loadFans(); loadStories(); loadFixtures(); loadPlayers(); loadEvents(); loadSponsors(); loadAnalytics();
+  loadScore(); loadNews(); loadFans(); loadStories(); loadFixtures(); loadPlayers(); loadEvents(); loadSponsors(); loadAnalytics(); loadGallery();
 }
 
 /* ---------- analytics ---------- */
@@ -433,7 +450,7 @@ async function publishNews(){
 }
 async function loadNews(){
   const items = await J('/api/news');
-  $('newslist').innerHTML = items.map(i => `<div class="newsitem"><img src="${esc(i.img)||'/img/crest.svg'}" alt=""><span><b>${esc(i.title)}</b><br><span class="hint">${esc(i.cat)} · ${esc(i.date)}</span></span>${i.id.startsWith('seed-') ? '' : `<button class="del" style="margin-left:auto" onclick="delNews('${i.id}')">Delete</button>`}</div>`).join('') || 'No articles yet.';
+  $('newslist').innerHTML = items.map(i => `<div class="newsitem"><img src="${esc(i.img)||'/img/crest.svg'}" alt=""><span><b>${esc(i.title)}</b><br><span class="hint">${esc(i.cat)} · ${esc(i.date)}</span></span>${i.id.startsWith('seed-') ? '' : `<button class="del" onclick="delNews('${i.id}')">Delete</button>`}</div>`).join('') || 'No articles yet.';
 }
 async function delNews(id){
   if (!confirm('Delete this article from the website?')) return;
@@ -465,6 +482,24 @@ async function importFans(){
   else show($('impmsg'), 'Import failed — check the format.', false);
 }
 
+/* ---------- gallery ---------- */
+async function addPhoto(){
+  const f = $('g_photo').files[0];
+  if (!f) return show($('gamsg'), 'Choose a photo first.', false);
+  try {
+    show($('gamsg'), 'Uploading…', true);
+    const img = await uploadFile(f);
+    const r = await api('/api/gallery', { method:'POST', body: JSON.stringify({ img, caption:$('g_cap').value, cat:$('g_cat').value }) });
+    if (r.ok){ show($('gamsg'), 'Added to the gallery.', true); $('g_photo').value=''; $('g_cap').value=''; loadGallery(); }
+    else show($('gamsg'), 'Failed — try again.', false);
+  } catch(e){ show($('gamsg'), 'Something went wrong: ' + e.message, false); }
+}
+async function loadGallery(){
+  const items = await J('/api/gallery');
+  $('gallist').innerHTML = (items||[]).map(g => `<div class="newsitem"><img src="${esc(g.img)}" alt=""><span>${esc(g.caption)||'(no caption)'}<br><span class="hint">${esc(g.cat)} · ${(g.ts||'').slice(0,10)}</span></span><button class="del" style="margin-left:auto" onclick="delPhoto('${g.id}')">Delete</button></div>`).join('') || 'No photos yet.';
+}
+async function delPhoto(id){ if(!confirm('Remove this photo from the gallery?'))return; await api('/api/gallery?id='+encodeURIComponent(id),{method:'DELETE'}); loadGallery(); }
+
 /* ---------- stories ---------- */
 async function publishStory(){
   const f = $('st_photo').files[0];
@@ -479,7 +514,7 @@ async function publishStory(){
 }
 async function loadStories(){
   const items = await J('/api/stories');
-  $('storylist').innerHTML = items.map(s => `<div class="newsitem"><img src="${esc(s.img)}" alt=""><span>${esc(s.caption)||'(no caption)'}<br><span class="hint">${(s.ts||'').slice(0,16).replace('T',' ')}</span></span><button class="del" style="margin-left:auto" onclick="delStory('${s.id}')">Delete</button></div>`).join('') || 'No live stories.';
+  $('storylist').innerHTML = items.map(s => `<div class="newsitem"><img src="${esc(s.img)}" alt=""><span>${esc(s.caption)||'(no caption)'}<br><span class="hint">${(s.ts||'').slice(0,16).replace('T',' ')}</span></span><button class="del" onclick="delStory('${s.id}')">Delete</button></div>`).join('') || 'No live stories.';
 }
 async function delStory(id){ await api('/api/stories?id=' + encodeURIComponent(id), { method:'DELETE' }); loadStories(); }
 
