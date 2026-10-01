@@ -198,7 +198,7 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
         <div><label>Headline</label><input id="n_title" maxlength="140"></div>
         <div><label>Category</label><select id="n_cat">
           <option>CLUB NEWS</option><option>MATCH REPORT</option><option>MATCH PREVIEW</option>
-          <option>CLUB STATEMENT</option><option>COMMUNITY</option><option>COMMERCIAL</option><option>ACADEMY</option><option>EVENTS</option><option>YOUTH</option>
+          <option>CLUB STATEMENT</option><option>COMMUNITY</option><option>COMMERCIAL</option><option>ACADEMY</option><option>EVENTS</option><option>YOUTH</option><option>PROVISION</option>
         </select></div>
       </div>
       <div><label>Standfirst (one-sentence summary)</label><input id="n_stand" maxlength="300"></div>
@@ -229,12 +229,12 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
 
   <div class="panel">
     <h2>Photo gallery</h2>
-    <div class="hint" style="margin-bottom:6px">Photos appear on the Gallery page (and Youth-category photos on the Youth page). Anyone on the team can add photos here, then share them straight to social from the site.</div>
-    <div class="msg errc" style="display:block;margin-bottom:10px"><b>Safeguarding:</b> only publish photos cleared for publication. For any photo showing young players, Dan Woodnutt or Caroline Keats must confirm photo consent is in place before it goes up.</div>
+    <div class="hint" style="margin-bottom:6px">Photos appear on the Gallery page (Youth-category photos also on the Youth page, Provision-category photos on the Alternative Provision page). Anyone on the team can add photos here, then share them straight to social from the site.</div>
+    <div class="msg errc" style="display:block;margin-bottom:10px"><b>Safeguarding:</b> only publish photos cleared for publication. For any photo showing young players, Dan Woodnutt or Caroline Keats must confirm photo consent is in place before it goes up. For Alternative Provision photos, Hannah Hood or Caroline Keats must confirm consent &mdash; extra care applies to provision students.</div>
     <div class="frm">
       <div class="row3">
         <div><label>Photo (required)</label><input id="g_photo" type="file" accept="image/*"></div>
-        <div><label>Category</label><select id="g_cat"><option>MATCHDAY</option><option>YOUTH</option><option>EVENTS</option><option>COMMUNITY</option><option>HOSPITALITY</option><option>CLUB</option></select></div>
+        <div><label>Category</label><select id="g_cat"><option>MATCHDAY</option><option>YOUTH</option><option>PROVISION</option><option>EVENTS</option><option>COMMUNITY</option><option>HOSPITALITY</option><option>CLUB</option></select></div>
         <div><label>Caption (optional)</label><input id="g_cap" maxlength="160"></div>
       </div>
       <button class="btn dark" onclick="addPhoto()">Add to gallery</button>
