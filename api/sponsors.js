@@ -29,7 +29,7 @@ const SEED = [
   { img: 'sp-tichealth-league-sponsor.webp', gid: '1e1NM9asdqB2xkLDMGqNEKZOUeblQ6bhh', name: 'TIC Health · League Sponsor', url: '' },
   { img: 'sp-trou-digital.webp', gid: '1V5W75JO472drrBgNPEsi0fovjfZU5DyG', name: 'Trou Digital', url: '' },
   { img: 'heineken', src: A + '4517/1827/5814/Heineken-Logo-166x88PX.png', name: 'Heineken', url: 'https://www.heineken.co.uk' },
-  { img: 'sos-storage', src: A + '9817/1827/7311/SOS-Logo-166x88PX.png', name: 'SOS Storage', url: 'https://www.sosstorage.co.uk' },
+  { img: 'sos-storage', src: A + '9817/1827/7311/SOS-Logo-166x88PX.png', name: 'SOS Storage', url: 'https://storageonsite.co.uk' },
   { img: 'bidfood', src: A + '9717/4914/0363/Bidfood_Inspired_by_You_logo.png', name: 'Bidfood', url: 'https://www.bidfood.co.uk' },
   { img: 'matthew-clark', src: A + '3417/4914/5868/Matthew_Clark_wine_logo.jpg', name: 'Matthew Clark', url: 'https://www.mcbdrinks.co.uk' },
   { img: 'oakhaven', src: A + '6317/1827/7289/Oakhaven-Hospice-Logo-166x88PX.png', name: 'Oakhaven Hospice', url: 'https://www.oakhavenhospice.co.uk' },
