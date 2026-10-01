@@ -131,6 +131,7 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
     ins('/events.html', 'Events', page === 'events', '/commercial.html');
     ins('/hospitality.html', 'Hospitality', page === 'hospitality', '/commercial.html');
     ins('/youth.html', 'Youth', page === 'youth', '/events.html');
+    ins('/provision.html', 'Alt Provision', page === 'provision', '/events.html');
     ins('/gallery.html', 'Gallery', page === 'gallery', '/club.html');
   }
   const burger = document.querySelector('.burger');
@@ -157,6 +158,8 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
       explore.insertAdjacentHTML('beforeend','<a href="/events.html">Events</a><a href="/hospitality.html">Hospitality</a>');
     if (explore && !explore.querySelector('a[href="/youth.html"]'))
       explore.insertAdjacentHTML('beforeend','<a href="/youth.html">Youth</a>');
+    if (explore && !explore.querySelector('a[href="/provision.html"]'))
+      explore.insertAdjacentHTML('beforeend','<a href="/provision.html">Alternative Provision</a>');
     if (explore && !explore.querySelector('a[href="/gallery.html"]'))
       explore.insertAdjacentHTML('beforeend','<a href="/gallery.html">Gallery</a>');
     const contact = cols[3];
@@ -392,6 +395,27 @@ if (page === 'youth'){
     const band = document.querySelector('section.band'); if (!band) return;
     const sec = document.createElement('section'); sec.setAttribute('style', 'background:#FAFBFD');
     sec.innerHTML = '<div class="wrap"><div class="sec-head"><h2>Youth in pictures</h2><a href="/gallery.html">Full gallery &rsaquo;</a></div><div class="grid g4">' + yg.map(g => '<a class="card" href="/gallery.html"><div class="ph"><img src="' + esc(g.img) + '" alt="" loading="lazy"></div>' + (g.caption ? '<div class="bd"><p>' + esc(g.caption) + '</p></div>' : '') + '</a>').join('') + '</div></div>';
+    band.parentNode.insertBefore(sec, band); rethemed();
+  });
+}
+
+// ---- alternative provision page: provision news + photos ----
+if (page === 'provision'){
+  J('/api/news').then(items => {
+    if (!items) return;
+    const pn = items.filter(i => String(i.cat || '').toUpperCase() === 'PROVISION').slice(0, 3);
+    if (!pn.length) return;
+    const band = document.querySelector('section.band'); if (!band) return;
+    const sec = document.createElement('section');
+    sec.innerHTML = '<div class="wrap"><div class="sec-head"><h2>Provision news</h2><a href="/news.html">All news &rsaquo;</a></div><div class="grid g3">' + pn.map(card).join('') + '</div></div>';
+    band.parentNode.insertBefore(sec, band); rethemed();
+  });
+  J('/api/gallery').then(items => {
+    const pg = (items || []).filter(i => (i.cat || '') === 'PROVISION').slice(0, 8);
+    if (!pg.length) return;
+    const band = document.querySelector('section.band'); if (!band) return;
+    const sec = document.createElement('section'); sec.setAttribute('style', 'background:#FAFBFD');
+    sec.innerHTML = '<div class="wrap"><div class="sec-head"><h2>Life at the provision</h2><a href="/gallery.html">Full gallery &rsaquo;</a></div><div class="grid g4">' + pg.map(g => '<a class="card" href="/gallery.html"><div class="ph"><img src="' + esc(g.img) + '" alt="" loading="lazy"></div>' + (g.caption ? '<div class="bd"><p>' + esc(g.caption) + '</p></div>' : '') + '</a>').join('') + '</div></div>';
     band.parentNode.insertBefore(sec, band); rethemed();
   });
 }
