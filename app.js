@@ -120,12 +120,16 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
 // ---- nav + footer injection (Events / Hospitality / contacts / safeguarding) ----
 (function(){
   const nav = document.querySelector('nav.main');
-  if (nav && !nav.querySelector('a[href="/events.html"]')){
-    const anchor = nav.querySelector('a[href="/commercial.html"]');
-    if (anchor){
-      anchor.insertAdjacentHTML('beforebegin',
-        `<a href="/events.html" class="${page==='events'?'on':''}">Events</a><a href="/hospitality.html" class="${page==='hospitality'?'on':''}">Hospitality</a>`);
-    }
+  if (nav){
+    const ins = (href, label, on, beforeHref) => {
+      if (nav.querySelector('a[href="' + href + '"]')) return;
+      const anchor = nav.querySelector('a[href="' + beforeHref + '"]');
+      if (anchor) anchor.insertAdjacentHTML('beforebegin', '<a href="' + href + '" class="' + (on ? 'on' : '') + '">' + label + '</a>');
+    };
+    ins('/events.html', 'Events', page === 'events', '/commercial.html');
+    ins('/hospitality.html', 'Hospitality', page === 'hospitality', '/commercial.html');
+    ins('/youth.html', 'Youth', page === 'youth', '/events.html');
+    ins('/gallery.html', 'Gallery', page === 'gallery', '/club.html');
   }
   const burger = document.querySelector('.burger');
   if (burger && nav){
@@ -149,6 +153,10 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
     const explore = cols[1];
     if (explore && !explore.querySelector('a[href="/events.html"]'))
       explore.insertAdjacentHTML('beforeend','<a href="/events.html">Events</a><a href="/hospitality.html">Hospitality</a>');
+    if (explore && !explore.querySelector('a[href="/youth.html"]'))
+      explore.insertAdjacentHTML('beforeend','<a href="/youth.html">Youth</a>');
+    if (explore && !explore.querySelector('a[href="/gallery.html"]'))
+      explore.insertAdjacentHTML('beforeend','<a href="/gallery.html">Gallery</a>');
     const contact = cols[3];
     if (contact) contact.innerHTML = '<h4>CONTACT</h4>'
       + '<a href="mailto:Enquires@afctotton.com">Enquires@afctotton.com</a>'
@@ -197,6 +205,7 @@ if (fxP) fxP.then(items => {
   if (!items || !items.length) return;
   const upcoming = items.filter(f => f.status !== 'played');
   const played = items.filter(f => f.status === 'played').reverse();
+  // next-match strip (all pages with strip get this via the shared fetch below too)
   if (page === 'index'){
     const grid = document.querySelector('.fx');
     if (grid) grid.innerHTML = upcoming.slice(0,5).map(fxRow).join('');
@@ -243,6 +252,7 @@ function scoreLines(s){
 }
 function applyScore(s){
   if (!s) return;
+  // headline sponsor in the matchday strip (pre-match + live)
   if (s.sponsor){
     const strip = document.querySelector('.strip .in');
     if (strip && !strip.querySelector('.msp')){
@@ -271,6 +281,7 @@ function applyScore(s){
     <div style="font-size:26px;font-weight:800;color:#151C36">${esc(L.a)} ${L.ag} &ndash; ${L.bg} ${esc(L.b)}</div>
     <div style="margin-top:10px;color:#5b6272;font-size:14px">${esc(s.note)||''}</div>
     ${s.sponsor?`<div style="margin-top:14px;font-size:11px;letter-spacing:.1em;color:#C9A24B;font-weight:800">MATCHDAY HEADLINE SPONSOR &middot; ${esc(s.sponsor).toUpperCase()}</div>`:''}</div>`;
+  // live banner at the top of the Results tab
   const rs = document.querySelector('#rs');
   if (rs && (s.status === 'live' || s.status === 'ht')){
     let lb = rs.querySelector('.liverow');
@@ -316,12 +327,9 @@ if (page === 'teams') J('/api/players').then(items => {
     document.body.appendChild(modal);
     modal.addEventListener('click', e => { if (e.target === modal || e.target.className === 'x2') modal.style.display = 'none'; });
   }
-  const spu = {};
-  items.forEach(p => { if (p.sponsorUrl) spu[p.id] = p.sponsorUrl; });
   host.addEventListener('click', e => {
-    const chip = e.target.closest('.spchip');
-    if (chip){ const u = spu[chip.closest('.pc').getAttribute('data-id')]; if (u) window.open(u, '_blank'); return; }
     const pc = e.target.closest('.pc'); if (!pc) return;
+    if (e.target.closest('.spchip')) return;
     const p = items.find(x => x.id === pc.getAttribute('data-id')); if (!p) return;
     modal.querySelector('.ph2').innerHTML = p.img ? `<img src="${esc(p.img)}" alt="">` : '<span style="color:rgba(255,255,255,.3);font-size:11px;letter-spacing:.12em;font-weight:800;align-self:center">PHOTO TO FOLLOW</span>';
     modal.querySelector('.bd2').innerHTML = `<h3>${p.num?p.num+' · ':''}${esc(p.name)}</h3><div class="ps">${esc(p.pos)}</div>`
@@ -329,10 +337,17 @@ if (page === 'teams') J('/api/players').then(items => {
       + (p.sponsor ? `<div class="spl">${p.sponsorLogo?`<img src="${esc(p.sponsorLogo)}" alt="">`:''}<span>Player sponsored by <b>${esc(p.sponsor)}</b>${p.sponsorUrl?` &middot; <a href="${esc(p.sponsorUrl)}" target="_blank" rel="noopener" style="color:#5B7AB8;font-weight:700">Visit site &rsaquo;</a>`:''}</span></div>` : '');
     modal.style.display = 'flex';
   });
+  const spu = {};
+  items.forEach(p => { if (p.sponsorUrl) spu[p.id] = p.sponsorUrl; });
+  host.addEventListener('click', e => {
+    const chip = e.target.closest('.spchip'); if (!chip) return;
+    const pc = chip.closest('.pc'); const u = spu[pc.getAttribute('data-id')];
+    if (u) window.open(u, '_blank');
+  });
   rethemed();
 });
 
-// ---- events (events page) ----
+// ---- events (events page + homepage teaser) ----
 function evCard(e){
   const d = fmtDL(e.date);
   return `<div class="card evcard"><div class="ph"><img src="${esc(e.img)||'https://lh3.googleusercontent.com/d/19SIqXsPGjVk7sh9T7NCBA6OKhec-zliQ=w1000'}" alt="" loading="lazy"></div>
@@ -356,6 +371,58 @@ if (page === 'events') J('/api/events').then(items => {
       + '</div>').join('');
   }
   rethemed();
+});
+
+// ---- youth page: youth news + youth photos ----
+if (page === 'youth'){
+  J('/api/news').then(items => {
+    if (!items) return;
+    const yn = items.filter(i => String(i.cat || '').toUpperCase() === 'YOUTH').slice(0, 3);
+    if (!yn.length) return;
+    const band = document.querySelector('section.band'); if (!band) return;
+    const sec = document.createElement('section');
+    sec.innerHTML = '<div class="wrap"><div class="sec-head"><h2>Youth news</h2><a href="/news.html">All news &rsaquo;</a></div><div class="grid g3">' + yn.map(card).join('') + '</div></div>';
+    band.parentNode.insertBefore(sec, band); rethemed();
+  });
+  J('/api/gallery').then(items => {
+    const yg = (items || []).filter(i => (i.cat || '') === 'YOUTH').slice(0, 8);
+    if (!yg.length) return;
+    const band = document.querySelector('section.band'); if (!band) return;
+    const sec = document.createElement('section'); sec.setAttribute('style', 'background:#FAFBFD');
+    sec.innerHTML = '<div class="wrap"><div class="sec-head"><h2>Youth in pictures</h2><a href="/gallery.html">Full gallery &rsaquo;</a></div><div class="grid g4">' + yg.map(g => '<a class="card" href="/gallery.html"><div class="ph"><img src="' + esc(g.img) + '" alt="" loading="lazy"></div>' + (g.caption ? '<div class="bd"><p>' + esc(g.caption) + '</p></div>' : '') + '</a>').join('') + '</div></div>';
+    band.parentNode.insertBefore(sec, band); rethemed();
+  });
+}
+
+// ---- gallery page ----
+if (page === 'gallery') J('/api/gallery').then(items => {
+  const grid = document.getElementById('galgrid'), chips = document.getElementById('galchips');
+  if (!grid) return;
+  if (!items || !items.length){ grid.innerHTML = '<p style="color:#8a90a0">No photos yet — the club team adds them from the admin panel, and they appear here instantly.</p>'; return; }
+  const cats = ['ALL'].concat(Array.from(new Set(items.map(i => i.cat || 'CLUB'))));
+  let cur = 'ALL';
+  const draw = () => {
+    grid.innerHTML = items.filter(i => cur === 'ALL' || (i.cat || 'CLUB') === cur)
+      .map(g => '<div class="gph" data-i="' + items.indexOf(g) + '"><img src="' + esc(g.img) + '" loading="lazy" alt="' + esc(g.caption) + '">' + (g.caption ? '<div class="gc">' + esc(g.caption) + '</div>' : '') + '</div>').join('');
+    rethemed();
+  };
+  chips.innerHTML = cats.map(c => '<button class="chip ' + (c === cur ? 'on' : '') + '" data-c="' + c + '">' + c + '</button>').join('');
+  chips.addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; cur = b.getAttribute('data-c'); chips.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === b)); draw(); });
+  draw();
+  const v = document.createElement('div'); v.id = 'storyview';
+  v.innerHTML = '<button class="x">&times;</button><img alt=""><div class="cap"></div>';
+  document.body.appendChild(v);
+  grid.addEventListener('click', e => {
+    const el = e.target.closest('.gph'); if (!el) return;
+    const g = items[+el.getAttribute('data-i')];
+    v.querySelector('img').src = g.img;
+    v.querySelector('.cap').innerHTML = esc(g.caption || 'AFC Totton') + ' &nbsp; <button class="btn" style="padding:8px 14px" id="gshare">Share photo</button>';
+    v.style.display = 'flex';
+    v.querySelector('#gshare').onclick = ev => { ev.stopPropagation();
+      if (navigator.share) navigator.share({ title: 'AFC Totton', text: g.caption || 'AFC Totton', url: g.img }).catch(() => {});
+      else { navigator.clipboard && navigator.clipboard.writeText(g.img); alert('Photo link copied — paste it anywhere.'); } };
+  });
+  v.addEventListener('click', e => { if (e.target === v || e.target.className === 'x') v.style.display = 'none'; });
 });
 
 // ---- dynamic news cards ----
