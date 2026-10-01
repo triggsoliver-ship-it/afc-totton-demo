@@ -1,6 +1,6 @@
 import { readJson, writeJson, ok, isAuthed } from './_util.js';
 
-const CATS = ['MATCHDAY', 'YOUTH', 'EVENTS', 'COMMUNITY', 'HOSPITALITY', 'CLUB'];
+const CATS = ['MATCHDAY', 'YOUTH', 'PROVISION', 'EVENTS', 'COMMUNITY', 'HOSPITALITY', 'CLUB'];
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
