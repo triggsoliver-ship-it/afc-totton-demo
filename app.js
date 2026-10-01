@@ -109,6 +109,8 @@ css.textContent = `
 #pmodal .bd2 .spl img{height:26px;width:auto}
 #pmodal .x2{position:absolute;top:10px;right:14px;font-size:26px;color:#fff;background:none;border:0;cursor:pointer;z-index:2}
 .evcard .when{font-size:11px;font-weight:800;letter-spacing:.1em;color:#C9A24B;text-transform:uppercase}
+.sponsors .ntile{font-size:11.5px;font-weight:800;letter-spacing:.05em;color:#2A3658;text-align:center;line-height:1.35;text-transform:uppercase;padding:4px}
+.sponsors a.splink{display:flex;align-items:center;justify-content:center;width:100%;height:100%}
 html[data-theme=dark] #pmodal .bx{background:#111A33}
 html[data-theme=dark] #pmodal .bd2 h3{color:#EEF1F8}
 html[data-theme=dark] #pmodal .bd2 p{color:#B9C2D8}
@@ -439,20 +441,21 @@ if (page === 'index' || page === 'news') J('/api/news').then(items => {
   rethemed();
 });
 
-// ---- sponsor links (all pages with a sponsor grid) ----
+// ---- sponsor wall (dynamic: every sponsor in the registry, linked where we have a site) ----
 if (document.querySelector('.sponsors')) J('/api/sponsors').then(list => {
-  if (!list) return;
-  const map = {}; list.forEach(s => { map[s.img] = s; if (s.gid) map[s.gid] = s; });
-  document.querySelectorAll('.sponsors > div > img').forEach(img => {
-    const src = img.getAttribute('src') || '';
-    const m = src.match(/\/d\/([^=]+)=/);
-    const s = map[m ? m[1] : src.split('/').pop()]; if (!s || !s.url) return;
-    const a = document.createElement('a');
-    a.href = s.url; a.target = '_blank'; a.rel = 'noopener sponsored';
-    a.setAttribute('data-sp', s.name || s.img); a.title = s.name || '';
-    a.style.cssText = 'display:flex;align-items:center;justify-content:center;width:100%;height:100%';
-    img.parentNode.insertBefore(a, img); a.appendChild(img);
+  if (!list || !list.length) return;
+  document.querySelectorAll('.sponsors').forEach(gridEl => {
+    gridEl.innerHTML = list.map(s => {
+      const src = s.src || (s.gid ? 'https://lh3.googleusercontent.com/d/' + s.gid + '=w320' : '');
+      const inner = src
+        ? '<img src="' + esc(src) + '" alt="' + esc(s.name) + '" loading="lazy">'
+        : '<span class="ntile">' + esc(s.name) + '</span>';
+      return s.url
+        ? '<div><a class="splink" href="' + esc(s.url) + '"' + (s.url.indexOf('/') === 0 ? '' : ' target="_blank" rel="noopener sponsored"') + ' data-sp="' + esc(s.name) + '" title="' + esc(s.name) + '">' + inner + '</a></div>'
+        : '<div>' + inner + '</div>';
+    }).join('');
   });
+  rethemed();
 });
 
 // ---- analytics beacons (pageviews + clicks) ----
