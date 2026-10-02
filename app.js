@@ -111,6 +111,25 @@ css.textContent = `
 .evcard .when{font-size:11px;font-weight:800;letter-spacing:.1em;color:#C9A24B;text-transform:uppercase}
 .sponsors .ntile{font-size:11.5px;font-weight:800;letter-spacing:.05em;color:#2A3658;text-align:center;line-height:1.35;text-transform:uppercase;padding:4px}
 .sponsors a.splink{display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+nav.main a{white-space:nowrap}
+.brand span{white-space:nowrap}
+nav.main .nvg{position:relative}
+nav.main .nvg>button{background:none;border:0;cursor:pointer;font:inherit;font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#cfd8ea;padding:6px 0;border-bottom:2px solid transparent;display:flex;align-items:center;gap:5px;white-space:nowrap}
+nav.main .nvg>button i{font-style:normal;font-size:8px;opacity:.65;transform:translateY(1px)}
+nav.main .nvg:hover>button,nav.main .nvg.act>button,nav.main .nvg.openg>button{color:#fff;border-color:var(--blue)}
+nav.main .nvg .dd{position:absolute;top:100%;left:50%;transform:translateX(-50%);padding-top:14px;display:none;z-index:230}
+nav.main .nvg:hover .dd,nav.main .nvg.openg .dd{display:block}
+nav.main .nvg .dd .in2{background:#0E1630;border:1px solid rgba(255,255,255,.09);border-radius:6px;box-shadow:0 18px 44px rgba(3,6,18,.55);padding:8px;min-width:216px}
+nav.main .nvg .dd a{display:block;padding:11px 14px;border-bottom:0;border-radius:4px;font-size:11.5px;white-space:nowrap;color:#cfd8ea}
+nav.main .nvg .dd a:hover,nav.main .nvg .dd a.on{background:rgba(91,122,184,.22);color:#fff}
+@media(max-width:1000px){
+ nav.main.open .nvg{position:static;display:flex;flex-direction:column;align-items:center}
+ nav.main.open .nvg>button{color:#C9A24B;font-size:10.5px;letter-spacing:.16em;pointer-events:none;border:0;margin-top:16px;padding:0 0 4px}
+ nav.main.open .nvg>button i{display:none}
+ nav.main.open .nvg .dd{display:block;position:static;transform:none;padding:0}
+ nav.main.open .nvg .dd .in2{background:none;border:0;box-shadow:none;padding:0;min-width:0;text-align:center}
+ nav.main.open .nvg .dd a{font-size:16px;padding:8px 0}
+}
 html[data-theme=dark] #pmodal .bx{background:#111A33}
 html[data-theme=dark] #pmodal .bd2 h3{color:#EEF1F8}
 html[data-theme=dark] #pmodal .bd2 p{color:#B9C2D8}
@@ -119,20 +138,33 @@ html[data-theme=dark] #pmodal .bd2 .spl{border-color:#232E4E}
 document.head.appendChild(css);
 const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
 
-// ---- nav + footer injection (Events / Hospitality / contacts / safeguarding) ----
+// ---- nav (rebuilt with grouped dropdowns) + footer injection ----
 (function(){
   const nav = document.querySelector('nav.main');
   if (nav){
-    const ins = (href, label, on, beforeHref) => {
-      if (nav.querySelector('a[href="' + href + '"]')) return;
-      const anchor = nav.querySelector('a[href="' + beforeHref + '"]');
-      if (anchor) anchor.insertAdjacentHTML('beforebegin', '<a href="' + href + '" class="' + (on ? 'on' : '') + '">' + label + '</a>');
-    };
-    ins('/events.html', 'Events', page === 'events', '/commercial.html');
-    ins('/hospitality.html', 'Hospitality', page === 'hospitality', '/commercial.html');
-    ins('/youth.html', 'Youth', page === 'youth', '/events.html');
-    ins('/provision.html', 'Alt Provision', page === 'provision', '/events.html');
-    ins('/gallery.html', 'Gallery', page === 'gallery', '/club.html');
+    const P = p => page === p;
+    const a = (href, label, p) => '<a href="' + href + '" class="' + (P(p) ? 'on' : '') + '">' + label + '</a>';
+    const g = (label, kids) => '<div class="nvg' + (kids.some(k => P(k[2])) ? ' act' : '') + '"><button type="button">' + label + ' <i>&#9660;</i></button><div class="dd"><div class="in2">'
+      + kids.map(k => '<a href="' + k[0] + '" class="' + (P(k[2]) ? 'on' : '') + '">' + k[1] + '</a>').join('') + '</div></div></div>';
+    nav.innerHTML =
+      a('/match-centre.html', 'Match Centre', 'match-centre')
+      + g('Teams', [['/teams.html', 'First Team', 'teams'], ['/youth.html', 'Youth Football', 'youth'], ['/provision.html', 'Alternative Provision', 'provision']])
+      + g('News', [['/news.html', 'Latest News', 'news'], ['/gallery.html', 'Gallery', 'gallery']])
+      + g('Events', [['/events.html', 'What&rsquo;s On', 'events'], ['/hospitality.html', 'Hospitality', 'hospitality']])
+      + g('Club', [['/club.html', 'The Club', 'club'], ['/community.html', 'Community', 'community']])
+      + a('/commercial.html', 'Commercial', 'commercial')
+      + a('/shop.html', 'Shop', 'shop')
+      + '<a href="/tickets.html" class="btn' + (P('tickets') ? ' on' : '') + '" style="color:#fff">Buy Tickets</a>';
+    nav.addEventListener('click', e => {
+      const b = e.target.closest('.nvg>button'); if (!b) return;
+      e.preventDefault(); e.stopPropagation();
+      const grp = b.parentNode, was = grp.classList.contains('openg');
+      nav.querySelectorAll('.nvg.openg').forEach(x => x.classList.remove('openg'));
+      if (!was) grp.classList.add('openg');
+    });
+    document.addEventListener('click', e => {
+      if (!e.target.closest('nav.main')) nav.querySelectorAll('.nvg.openg').forEach(x => x.classList.remove('openg'));
+    });
   }
   const burger = document.querySelector('.burger');
   if (burger && nav){
