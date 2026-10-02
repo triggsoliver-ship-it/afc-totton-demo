@@ -18,6 +18,9 @@ const SEED = [
   { img: 'sp-harrison-hire.webp', gid: '1XHFblLpDtoDQiyQ3EJwKGHkN73CuRptM', name: 'Harrison Hire', url: 'https://www.harrisonhire.uk' },
   { img: 'sp-below-the-hook.webp', gid: '1i3oJhuReenpylHCoDX2ezYkOpr18nWQc', name: 'Below The Hook', url: 'https://www.bthservices.co.uk' },
   { img: 'sp-scp.webp', gid: '1f-R7dBbc70HGxV7EWcUMArVPR7eEVpek', name: 'Solent Streetworks', url: 'https://www.solentstreetworks.com' },
+  { img: 'sp-evr.webp', gid: '1jvVdIuHc2qXZy7EMl-RfuutkjUYGetPs', name: 'EVR Energy', url: 'https://www.evrltd.co.uk' },
+  { img: 'sp-lion-cleaning.webp', gid: '1fc0SGpddr8KSgEU5K5qnJhCH2JgeHXTT', name: 'Lion Cleaning Group', url: 'https://www.lioncleaninggroup.co.uk' },
+  { img: 'sp-trou-digital.webp', gid: '1V5W75JO472drrBgNPEsi0fovjfZU5DyG', name: 'Trou Digital', url: 'https://www.troudigital.com' },
   { img: 'heineken', src: A + '4517/1827/5814/Heineken-Logo-166x88PX.png', name: 'Heineken', url: 'https://www.heineken.co.uk' },
   { img: 'sos-storage', src: A + '9817/1827/7311/SOS-Logo-166x88PX.png', name: 'SOS Storage', url: 'https://storageonsite.co.uk' },
   { img: 'bidfood', src: A + '9717/4914/0363/Bidfood_Inspired_by_You_logo.png', name: 'Bidfood', url: 'https://www.bidfood.co.uk' },
@@ -37,7 +40,7 @@ const SEED = [
   { img: 'set-tyres', name: 'Setyres', url: 'https://www.setyres.com' },
   { img: 'specsavers-hearing', name: 'Specsavers Hearing', url: 'https://www.specsavers.co.uk' },
   { img: 'calmore-service-station', name: 'Calmore Service Station', url: 'https://www.calmoreservicestation.co.uk' },
-  { img: 'flag-man', name: 'The Flag Man', url: 'https://www.flagmanltd.co.uk' },
+  { img: 'flag-man', name: 'The Badgeman / The Flag Man', url: 'https://www.theflagmanltd.co.uk' },
   { img: 'neil-cooper', name: 'Neil Cooper', url: '' },
   { img: 'bridge-rubber-plastics', name: 'Bridge Rubber & Plastics', url: 'https://www.bridgerubberplastics.co.uk' },
   { img: 'abbey-croft-nursery', name: 'Abbey Croft Nursery', url: 'https://www.abbeycroftnursery.co.uk' },
@@ -47,7 +50,18 @@ const SEED = [
   { img: 'liftability', name: 'Liftability', url: 'https://www.liftabilityltd.com' },
   { img: 'apollo-business-supplies', name: 'Apollo Business Supplies', url: 'https://www.appolloservices.co.uk' },
   { img: 'new-forest-estate-agents', name: 'New Forest Estate Agents', url: 'https://www.nfea.co.uk' },
-  { img: 'totton-grill', name: 'Totton Grill', url: 'https://www.tottongrillonline.co.uk' }
+  { img: 'totton-grill', name: 'Totton Grill', url: 'https://www.tottongrillonline.co.uk' },
+  { img: 'weightwash', name: 'WeightWash', url: 'https://www.weightwash.co.uk' },
+  { img: 'vision-scaffolding', name: 'Vision Scaffolding', url: 'https://www.vision-scaffolding.co.uk' },
+  { img: 'canon', name: 'Canon', url: 'https://www.canon.co.uk' },
+  { img: 'harrison-carpentry', name: 'Harrison Carpentry & Construction', url: 'https://www.harrisoncarpentryandconstruction.com' },
+  { img: 'anytime-fitness', name: 'Anytime Fitness', url: 'https://www.anytimefitness.com' },
+  { img: 'whelan-hygiene', name: 'Whelan Hygiene', url: 'https://www.whelanhygiene.co.uk' },
+  { img: 'aes-cleaning', name: 'AES Cleaning Services', url: 'https://www.aescleaningservice.com' },
+  { img: 'proline-pointing', name: 'Proline Pointing', url: 'https://www.prolinepointing.com' },
+  { img: 'hurst-autos', name: 'Hurst Auto Assistance', url: 'https://www.hurstautoassistance.co.uk' },
+  { img: 'relay-fire-safety', name: 'Relay Fire Safety', url: 'https://www.relayfiresafety.co.uk' },
+  { img: 'hampshire-pat-testing', name: 'Hampshire PAT Testing', url: 'https://www.hampshirepattesting.co.uk' }
 ];
 
 export default async function handler(req, res) {
