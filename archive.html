@@ -91,6 +91,11 @@ html[data-theme=dark] #reader .bd p{color:#B9C2D8}
 <script>
 (function(){
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const yearCache = {};
+async function loadYear(y){
+  if (!yearCache[y]) yearCache[y] = await fetch('/api/archive?year=' + y).then(r => r.json()).catch(() => []);
+  return yearCache[y];
+}
 fetch('/api/archive?ts=' + Date.now()).then(r => r.json()).then(items => {
   const list = document.getElementById('alist');
   if (!items || !items.length){ list.innerHTML = '<p style="color:#8a90a0">The archive is being imported — check back shortly.</p>'; return; }
@@ -119,9 +124,11 @@ fetch('/api/archive?ts=' + Date.now()).then(r => r.json()).then(items => {
   }
   chips(yc, v => { ySel = v; }); chips(cc, v => { cSel = v; });
   const reader = document.getElementById('reader'), rbody = document.getElementById('rbody');
-  list.addEventListener('click', e => {
+  list.addEventListener('click', async e => {
     const row = e.target.closest('.arow'); if (!row) return;
-    const i = items.find(x => x.slug === row.getAttribute('data-slug')); if (!i) return;
+    const meta = items.find(x => x.slug === row.getAttribute('data-slug')); if (!meta) return;
+    const full = await loadYear((meta.date || '').slice(0, 4));
+    const i = (full || []).find(x => x.slug === meta.slug) || meta;
     const paras = (i.body || '').split(/\n\n+/).filter(Boolean).map(p => '<p>' + esc(p) + '</p>').join('');
     rbody.innerHTML = '<span class="tag">' + esc(i.cat) + '</span><h2>' + esc(i.title) + '</h2><div class="dt">' + fmt(i.date) + '</div>'
       + (i.img ? '<img class="lead" src="' + esc(i.img) + '" alt="" onerror="this.remove()">' : '')
