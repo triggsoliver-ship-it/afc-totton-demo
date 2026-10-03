@@ -1,6 +1,6 @@
 import { readJson, writeJson, ok, isAuthed } from './_util.js';
 
-const A = 'https://www.afctotton.com/application/files/thumbnails/sponsor/';
+const B = 'https://cumfagvcuihevgzv.public.blob.vercel-storage.com/uploads/';
 
 const SEED = [
   { img: 'sp-garmin.webp', gid: '1A0MGo5Qapa3LJ4yiSQ0fR1E4mO3wqImI', name: 'Garmin', url: 'https://www.garmin.com' },
@@ -21,21 +21,21 @@ const SEED = [
   { img: 'sp-evr.webp', gid: '1jvVdIuHc2qXZy7EMl-RfuutkjUYGetPs', name: 'EVR Energy', url: 'https://www.evrltd.co.uk' },
   { img: 'sp-lion-cleaning.webp', gid: '1fc0SGpddr8KSgEU5K5qnJhCH2JgeHXTT', name: 'Lion Cleaning Group', url: 'https://www.lioncleaninggroup.co.uk' },
   { img: 'sp-trou-digital.webp', gid: '1V5W75JO472drrBgNPEsi0fovjfZU5DyG', name: 'Trou Digital', url: 'https://www.troudigital.com' },
-  { img: 'heineken', src: A + '4517/1827/5814/Heineken-Logo-166x88PX.png', name: 'Heineken', url: 'https://www.heineken.co.uk' },
-  { img: 'sos-storage', src: A + '9817/1827/7311/SOS-Logo-166x88PX.png', name: 'SOS Storage', url: 'https://storageonsite.co.uk' },
-  { img: 'bidfood', src: A + '9717/4914/0363/Bidfood_Inspired_by_You_logo.png', name: 'Bidfood', url: 'https://www.bidfood.co.uk' },
-  { img: 'matthew-clark', src: A + '3417/4914/5868/Matthew_Clark_wine_logo.jpg', name: 'Matthew Clark', url: 'https://www.mcbdrinks.co.uk' },
-  { img: 'oakhaven', src: A + '6317/1827/7289/Oakhaven-Hospice-Logo-166x88PX.png', name: 'Oakhaven Hospice', url: 'https://www.oakhavenhospice.co.uk' },
-  { img: 'bodyworx', src: A + '7217/4914/0016/Bodyworx_Health.png', name: 'Bodyworx Health', url: 'https://www.bodyworxphysio.co.uk' },
-  { img: 'absolute-car', src: A + '9317/8282/7958/absolute_car.png', name: 'Absolute Car Company', url: 'https://www.absolutecarco.com' },
-  { img: 'scents-of-occasion', src: A + '2217/4914/7410/Scents_of_Occasion_logo.png', name: 'Scents of Occasion', url: 'https://www.scentsofoccasion.co.uk' },
-  { img: 'best-buy-diy', src: A + '2117/4913/9662/BEST_BUY_DIY_logo.png', name: 'Best Buy DIY', url: 'https://www.bestbuydiy.uk' },
-  { img: 'fiesta-fm', src: A + '9817/4914/1264/Fiesta_FM_logo.png', name: 'Fiesta FM', url: 'https://www.fiestafm.co.uk' },
-  { img: 'harvest-fine-foods', src: A + '3017/4914/1617/Harvest_Fine_Foods_logo.png', name: 'Harvest Fine Foods', url: 'https://www.harvestfinefood.co.uk' },
-  { img: 'lfs', src: A + '7217/8282/7600/LFS_Investments.jpg', name: 'LFS', url: 'https://www.lfs.co.uk' },
-  { img: 'octave-accountants', src: A + '1717/6000/3568/Octavave_accountants_logo.png', name: 'Octave Accountants', url: 'https://www.octaveaccountants.co.uk' },
-  { img: 'romsey-dental', src: A + '4717/1827/7303/Romsey-Dental-Care-Logo-166x88PX.png', name: 'Romsey Dental Care', url: 'https://www.romseydentalcare.co.uk' },
-  { img: 'its-holdings', src: A + '5117/4914/5468/ITS-Construction-Logo-Full_Dark_Text.png', name: 'ITS Holdings', url: 'https://www.itsconstruction.co.uk' },
+  { img: 'heineken', src: B + '1791025732912-sp-heineken.png', name: 'Heineken', url: 'https://www.heineken.co.uk' },
+  { img: 'sos-storage', src: B + '1791025733117-sp-sos.png', name: 'SOS Storage', url: 'https://storageonsite.co.uk' },
+  { img: 'bidfood', src: B + '1791025733479-sp-bidfood.png', name: 'Bidfood', url: 'https://www.bidfood.co.uk' },
+  { img: 'matthew-clark', src: B + '1791025733749-sp-matthew-clark.jpg', name: 'Matthew Clark', url: 'https://www.mcbdrinks.co.uk' },
+  { img: 'oakhaven', src: B + '1791025733991-sp-oakhaven.png', name: 'Oakhaven Hospice', url: 'https://www.oakhavenhospice.co.uk' },
+  { img: 'bodyworx', src: B + '1791025734187-sp-bodyworx.png', name: 'Bodyworx Health', url: 'https://www.bodyworxphysio.co.uk' },
+  { img: 'absolute-car', src: B + '1791025734445-sp-absolute-car.png', name: 'Absolute Car Company', url: 'https://www.absolutecarco.com' },
+  { img: 'scents-of-occasion', src: B + '1791025734677-sp-scents.png', name: 'Scents of Occasion', url: 'https://www.scentsofoccasion.co.uk' },
+  { img: 'best-buy-diy', src: B + '1791025757593-sp-best-buy-diy.png', name: 'Best Buy DIY', url: 'https://www.bestbuydiy.uk' },
+  { img: 'fiesta-fm', src: B + '1791025758012-sp-fiesta-fm.png', name: 'Fiesta FM', url: 'https://www.fiestafm.co.uk' },
+  { img: 'harvest-fine-foods', src: B + '1791025758346-sp-harvest.png', name: 'Harvest Fine Foods', url: 'https://www.harvestfinefood.co.uk' },
+  { img: 'lfs', src: B + '1791025758556-sp-lfs.jpg', name: 'LFS', url: 'https://www.lfs.co.uk' },
+  { img: 'octave-accountants', src: B + '1791025758765-sp-octave.png', name: 'Octave Accountants', url: 'https://www.octaveaccountants.co.uk' },
+  { img: 'romsey-dental', src: B + '1791025759145-sp-romsey-dental.png', name: 'Romsey Dental Care', url: 'https://www.romseydentalcare.co.uk' },
+  { img: 'its-holdings', src: B + '1791025759458-sp-its-holdings.png', name: 'ITS Holdings', url: 'https://www.itsconstruction.co.uk' },
   { img: 'charles-edwardson', name: 'Charles Edwardson', url: 'https://www.charlesedwardson.co.uk' },
   { img: 'set-tyres', name: 'Setyres', url: 'https://www.setyres.com' },
   { img: 'specsavers-hearing', name: 'Specsavers Hearing', url: 'https://www.specsavers.co.uk' },
@@ -51,16 +51,16 @@ const SEED = [
   { img: 'apollo-business-supplies', name: 'Apollo Business Supplies', url: 'https://www.appolloservices.co.uk' },
   { img: 'new-forest-estate-agents', name: 'New Forest Estate Agents', url: 'https://www.nfea.co.uk' },
   { img: 'totton-grill', name: 'Totton Grill', url: 'https://www.tottongrillonline.co.uk' },
-  { img: 'weightwash', name: 'WeightWash', url: 'https://www.weightwash.co.uk' },
-  { img: 'vision-scaffolding', name: 'Vision Scaffolding', url: 'https://www.vision-scaffolding.co.uk' },
-  { img: 'canon', name: 'Canon', url: 'https://www.canon.co.uk' },
+  { img: 'weightwash', src: B + '1791025770928-sp-weightwash.png', name: 'WeightWash', url: 'https://www.weightwash.co.uk' },
+  { img: 'vision-scaffolding', src: B + '1791025769565-sp-vision-scaffolding.png', name: 'Vision Scaffolding', url: 'https://www.vision-scaffolding.co.uk' },
+  { img: 'canon', src: B + '1791025770731-sp-canon.jpg', name: 'Canon', url: 'https://www.canon.co.uk' },
   { img: 'harrison-carpentry', name: 'Harrison Carpentry & Construction', url: 'https://www.harrisoncarpentryandconstruction.com' },
-  { img: 'anytime-fitness', name: 'Anytime Fitness', url: 'https://www.anytimefitness.com' },
+  { img: 'anytime-fitness', src: B + '1791025759737-sp-anytime-fitness.png', name: 'Anytime Fitness', url: 'https://www.anytimefitness.com' },
   { img: 'whelan-hygiene', name: 'Whelan Hygiene', url: 'https://www.whelanhygiene.co.uk' },
-  { img: 'aes-cleaning', name: 'AES Cleaning Services', url: 'https://www.aescleaningservice.com' },
+  { img: 'aes-cleaning', src: B + '1791025769312-sp-aes.png', name: 'AES Cleaning Services', url: 'https://www.aescleaningservice.com' },
   { img: 'proline-pointing', name: 'Proline Pointing', url: 'https://www.prolinepointing.com' },
-  { img: 'hurst-autos', name: 'Hurst Auto Assistance', url: 'https://www.hurstautoassistance.co.uk' },
-  { img: 'relay-fire-safety', name: 'Relay Fire Safety', url: 'https://www.relayfiresafety.co.uk' },
+  { img: 'hurst-autos', src: B + '1791025770501-sp-hurst.png', name: 'Hurst Auto Assistance', url: 'https://www.hurstautoassistance.co.uk' },
+  { img: 'relay-fire-safety', src: B + '1791025770045-sp-relay-fire.png', name: 'Relay Fire Safety', url: 'https://www.relayfiresafety.co.uk' },
   { img: 'hampshire-pat-testing', name: 'Hampshire PAT Testing', url: 'https://www.hampshirepattesting.co.uk' }
 ];
 
@@ -76,7 +76,7 @@ export default async function handler(req, res) {
     const cur = await readJson('data/sponsors.json', SEED);
     const gids = {}, srcs = {};
     cur.forEach(s => { if (s.gid) gids[s.img] = s.gid; if (s.src) srcs[s.img] = s.src; });
-    SEED.forEach(s => { if (s.gid && !gids[s.img]) gids[s.img] = s.gid; if (s.src && !srcs[s.img]) srcs[s.img] = s.src; });
+    SEED.forEach(s => { if (s.gid && !gids[s.img]) gids[s.img] = s.gid; if (s.src) srcs[s.img] = s.src; });
     const list = b.list.slice(0, 80).map(s => ({
       img: String((s && s.img) || '').slice(0, 80),
       gid: gids[String((s && s.img) || '')] || String((s && s.gid) || '').slice(0, 60),
