@@ -316,3 +316,11 @@ body.matchday .storyrail{border-bottom:2px solid rgba(201,162,75,.35)}
 @keyframes gzoom{0%{transform:scale(.55);opacity:0}12%{transform:scale(1.07);opacity:1}22%{transform:scale(1)}100%{transform:scale(1)}}
 @keyframes gfade{0%{opacity:0}100%{opacity:1}}
 @media (prefers-reduced-motion: reduce){#goalflash b{animation:none}}
+
+/* the squad's quiet extra (Athvora) */
+.pc.athx{opacity:.45;transition:opacity .3s,transform .18s,box-shadow .18s}
+.pc.athx:after{content:'\25C7';position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);font-family:'Oswald','Inter',sans-serif;font-size:76px;font-weight:500;color:rgba(201,162,75,.55);transition:color .3s,text-shadow .3s;line-height:1}
+.pc.athx .nm b{letter-spacing:.16em;text-transform:uppercase}
+.pc.athx .nm span{color:rgba(201,162,75,.85)}
+.pc.athx:hover{opacity:1;transform:translateY(-5px) scale(1.012)}
+.pc.athx:hover:after{color:var(--gold);text-shadow:0 0 34px rgba(201,162,75,.55)}

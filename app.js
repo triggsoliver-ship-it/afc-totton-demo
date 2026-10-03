@@ -428,6 +428,10 @@ if (page === 'teams') J('/api/players').then(items => {
   });
   marker.insertAdjacentHTML('afterend', html);
   marker.remove();
+  // the squad's quiet extra — tap the diamond
+  const lastSq = Array.from(host.querySelectorAll('.sq')).pop();
+  if (lastSq) lastSq.insertAdjacentHTML('beforeend',
+    '<a class="pc athx" href="https://athvora.co.uk" target="_blank" rel="noopener" title="Athvora"><div class="nm"><b>Athvora</b><span>Every name has value</span></div></a>');
   let modal = document.getElementById('pmodal');
   if (!modal){
     modal = document.createElement('div'); modal.id = 'pmodal';
