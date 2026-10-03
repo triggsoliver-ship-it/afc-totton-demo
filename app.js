@@ -452,6 +452,27 @@ if (page === 'provision'){
   });
 }
 
+// ---- community page: community news + photos ----
+if (page === 'community'){
+  J('/api/news').then(items => {
+    if (!items) return;
+    const cn = items.filter(i => String(i.cat || '').toUpperCase() === 'COMMUNITY').slice(0, 3);
+    if (!cn.length) return;
+    const band = document.querySelector('section.band'); if (!band) return;
+    const sec = document.createElement('section');
+    sec.innerHTML = '<div class="wrap"><div class="sec-head"><h2>Community news</h2><a href="/news.html">All news &rsaquo;</a></div><div class="grid g3">' + cn.map(card).join('') + '</div></div>';
+    band.parentNode.insertBefore(sec, band); rethemed();
+  });
+  J('/api/gallery').then(items => {
+    const cg = (items || []).filter(i => (i.cat || '') === 'COMMUNITY').slice(0, 8);
+    if (!cg.length) return;
+    const band = document.querySelector('section.band'); if (!band) return;
+    const sec = document.createElement('section'); sec.setAttribute('style', 'background:#FAFBFD');
+    sec.innerHTML = '<div class="wrap"><div class="sec-head"><h2>Community in pictures</h2><a href="/gallery.html">Full gallery &rsaquo;</a></div><div class="grid g4">' + cg.map(g => '<a class="card" href="/gallery.html"><div class="ph"><img src="' + esc(g.img) + '" alt="" loading="lazy"></div>' + (g.caption ? '<div class="bd"><p>' + esc(g.caption) + '</p></div>' : '') + '</a>').join('') + '</div></div>';
+    band.parentNode.insertBefore(sec, band); rethemed();
+  });
+}
+
 // ---- gallery page ----
 if (page === 'gallery') J('/api/gallery').then(items => {
   const grid = document.getElementById('galgrid'), chips = document.getElementById('galchips');
