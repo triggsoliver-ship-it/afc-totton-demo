@@ -138,7 +138,7 @@ html[data-theme=dark] #pmodal .bd2 .spl{border-color:#232E4E}
 document.head.appendChild(css);
 const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
 
-// ---- nav (rebuilt with grouped dropdowns) + footer injection ----
+// ---- nav + footer injection (Events / Hospitality / contacts / safeguarding) ----
 (function(){
   const nav = document.querySelector('nav.main');
   if (nav){
@@ -148,7 +148,7 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
       + kids.map(k => '<a href="' + k[0] + '" class="' + (P(k[2]) ? 'on' : '') + '">' + k[1] + '</a>').join('') + '</div></div></div>';
     nav.innerHTML =
       a('/match-centre.html', 'Match Centre', 'match-centre')
-      + g('Teams', [['/teams.html', 'First Team', 'teams'], ['/youth.html', 'Youth Football', 'youth'], ['/provision.html', 'Alternative Provision', 'provision']])
+      + g('Teams', [['/teams.html', 'First Team', 'teams'], ['/youth.html', 'Youth Football', 'youth'], ['/academy.html', 'Academy 16&ndash;19', 'academy'], ['/provision.html', 'Alternative Provision', 'provision']])
       + g('News', [['/news.html', 'Latest News', 'news'], ['/gallery.html', 'Gallery', 'gallery']])
       + g('Events', [['/events.html', 'What&rsquo;s On', 'events'], ['/hospitality.html', 'Hospitality', 'hospitality']])
       + g('Club', [['/club.html', 'The Club', 'club'], ['/community.html', 'Community', 'community']])
@@ -204,6 +204,8 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
       + 'Dan Woodnutt &middot; <a href="mailto:dan.woodnutt@afctottonyouth.com" style="display:inline;padding:0">dan.woodnutt@afctottonyouth.com</a> &middot; 07879 868311<br>'
       + 'Caroline Keats &middot; <a href="mailto:Safeguarding@afctottondp.com" style="display:inline;padding:0">Safeguarding@afctottondp.com</a> &middot; 07395 292386</p>'
       + '<p style="margin-top:12px;font-size:11.5px">AFC Totton in the Community<br>Registered Charity 1206854</p>';
+    const btm = f.querySelector('.btm');
+    if (btm && !f.querySelector('.own')) btm.insertAdjacentHTML('afterend', '<p class="own" style="margin-top:14px;font-size:10.5px;line-height:1.7;color:#93a2c0">For the purpose of Football Association rule 2.13, AFC Totton can confirm ownership details of the company AFC Totton 1886 Ltd is 100% owned by its shareholders. The company is considered to be controlled by Mr S Brookwell, Mr P Davies, Mr T Croft, Mr K Hebenton and Mr S. Snow by reason of their shareholdings and financial commitment to the company. Company address: AFC Totton 1886 LTD, The Snows Stadium, Salisbury Road, Totton, Southampton, SO40 2RW. Registered in England No.11293572. &middot; <a href="/privacy.html" style="display:inline;padding:0">Privacy policy</a> &middot; <a href="/club.html" style="display:inline;padding:0">Club policies &amp; documents</a></p>');
   });
 })();
 
