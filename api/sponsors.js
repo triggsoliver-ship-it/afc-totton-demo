@@ -61,7 +61,9 @@ const SEED = [
   { img: 'proline-pointing', name: 'Proline Pointing', url: 'https://www.prolinepointing.com' },
   { img: 'hurst-autos', src: B + '1791025770501-sp-hurst.png', name: 'Hurst Auto Assistance', url: 'https://www.hurstautoassistance.co.uk' },
   { img: 'relay-fire-safety', src: B + '1791025770045-sp-relay-fire.png', name: 'Relay Fire Safety', url: 'https://www.relayfiresafety.co.uk' },
-  { img: 'hampshire-pat-testing', name: 'Hampshire PAT Testing', url: 'https://www.hampshirepattesting.co.uk' }
+  { img: 'hampshire-pat-testing', name: 'Hampshire PAT Testing', url: 'https://www.hampshirepattesting.co.uk' },
+  { img: 'agent-legend', src: B + '1791046451466-sp-agent-legend-v2.png', name: 'Agent Legend', url: 'https://agentlegend.co.uk' },
+  { img: 'hhs-capital', src: B + '1791046325355-sp-hhs-capital.png', name: 'HHS Capital', url: 'https://hhscapital.org' }
 ];
 
 export default async function handler(req, res) {
