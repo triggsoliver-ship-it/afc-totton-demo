@@ -23,6 +23,34 @@ document.addEventListener('click',e=>{if(e.target&&e.target.id==='installbtn'){
  else{alert('Open this site on your phone, then use your browser menu to add it to your home screen.');}}});
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 
+// ===== v2 makeover: display font + glass header + scroll reveal =====
+(function(){
+if (!document.querySelector('header.site')) return; // not on admin
+const fl = document.createElement('link'); fl.rel = 'stylesheet';
+fl.href = 'https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap';
+document.head.appendChild(fl);
+const hd = document.querySelector('header.site');
+const onScroll = () => hd.classList.toggle('scrolled', window.scrollY > 8);
+window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting){ e.target.classList.add('rv-in'); io.unobserve(e.target); }
+}), { rootMargin: '0px 0px -7% 0px', threshold: 0.06 });
+const SEL = '.card,.tier,.suite,.agegrp,.mgcard,.course,.pc,.sponsors>div,.evcard,.gph,.roomcard';
+let pend = null;
+const mark = () => {
+  document.querySelectorAll(SEL).forEach(el => {
+    if (el.classList.contains('rv')) return;
+    const r = el.getBoundingClientRect();
+    if (r.top < window.innerHeight * 0.92 && r.bottom > 0){ el.classList.add('rv','rv-in'); return; }
+    el.classList.add('rv'); io.observe(el);
+  });
+};
+mark();
+new MutationObserver(() => { if (pend) return; pend = setTimeout(() => { pend = null; mark(); }, 120); })
+  .observe(document.body, { childList: true, subtree: true });
+})();
+
 // ===== dark / light mode (follows device, manual override persisted) =====
 (function(){
 if (!document.querySelector('header.site')) return; // not on admin
