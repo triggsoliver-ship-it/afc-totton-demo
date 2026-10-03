@@ -5,6 +5,7 @@
 <link rel="icon" type="image/svg+xml" href="/img/crest.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
 <style>
 body{background:#EEF1F8}
@@ -262,6 +263,15 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
   <div class="hint" style="margin:10px 4px">Signed in. This panel manages content only — it cannot change the design or structure of the site. Keep the password private; anyone with it can publish to the club website.</div>
 </div>
 
+<div id="scm" style="position:fixed;inset:0;background:rgba(5,8,20,.92);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;flex-direction:column;gap:14px">
+  <canvas id="scc" width="1080" height="1080" style="max-width:min(86vw,440px);max-height:62vh;width:auto;height:auto;border-radius:10px;box-shadow:0 24px 70px rgba(0,0,0,.6)"></canvas>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+    <button class="btn dark" onclick="dlCard()">Download PNG</button>
+    <button class="btn" onclick="document.getElementById('scm').style.display='none'">Close</button>
+  </div>
+  <div style="color:#93a2c0;font-size:12px;max-width:440px;text-align:center">1080&times;1080 &mdash; ready for Instagram, Facebook and X. Post it with the article link.</div>
+</div>
+
 <script>
 let KEY = sessionStorage.getItem('afct_admin') || '';
 const $ = id => document.getElementById(id);
@@ -448,9 +458,72 @@ async function publishNews(){
     else show($('nmsg'), 'Publish failed — try again.', false);
   } catch(e){ show($('nmsg'), 'Something went wrong: ' + e.message, false); }
 }
+let NEWSI = [];
 async function loadNews(){
   const items = await J('/api/news');
-  $('newslist').innerHTML = items.map(i => `<div class="newsitem"><img src="${esc(i.img)||'/img/crest.svg'}" alt=""><span><b>${esc(i.title)}</b><br><span class="hint">${esc(i.cat)} · ${esc(i.date)}</span></span>${i.id.startsWith('seed-') ? '' : `<button class="del" onclick="delNews('${i.id}')">Delete</button>`}</div>`).join('') || 'No articles yet.';
+  NEWSI = items;
+  $('newslist').innerHTML = items.map(i => `<div class="newsitem"><img src="${esc(i.img)||'/img/crest.svg'}" alt=""><span><b>${esc(i.title)}</b><br><span class="hint">${esc(i.cat)} · ${esc(i.date)}</span></span><button class="edt" onclick="shareCard('${i.id}')">Share card</button>${i.id.startsWith('seed-') ? '' : `<button class="del" onclick="delNews('${i.id}')">Delete</button>`}</div>`).join('') || 'No articles yet.';
+}
+
+/* ---------- social share cards ---------- */
+let SCITEM = null;
+function scLoadImg(src){ return new Promise((res, rej) => { const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => res(im); im.onerror = rej; im.src = src; }); }
+function scWrap(x, t, X, Y, maxW, lh, maxL){
+  const words = String(t).split(/\s+/); let line = '', lines = 0;
+  for (let w of words){
+    const test = line ? line + ' ' + w : w;
+    if (x.measureText(test).width > maxW && line){
+      x.fillText(line, X, Y + lines * lh); lines++;
+      if (lines >= maxL - 1){ line = w + '…'; break; }
+      line = w;
+    } else line = test;
+  }
+  x.fillText(line, X, Y + lines * lh);
+  return lines + 1;
+}
+async function drawCard(i, noPhoto){
+  const c = $('scc'), x = c.getContext('2d');
+  try { await document.fonts.load('600 72px Oswald'); await document.fonts.load('700 72px Oswald'); } catch(e){}
+  const g = x.createLinearGradient(0, 0, 1080, 1080); g.addColorStop(0, '#151C36'); g.addColorStop(1, '#0A0F22');
+  x.fillStyle = g; x.fillRect(0, 0, 1080, 1080);
+  if (i.img && !noPhoto){
+    try {
+      const im = await scLoadImg(i.img);
+      const ph = 560, r = Math.max(1080 / im.width, ph / im.height), w = im.width * r, h = im.height * r;
+      x.save(); x.beginPath(); x.rect(0, 0, 1080, ph); x.clip();
+      x.drawImage(im, (1080 - w) / 2, (ph - h) / 2, w, h);
+      const og = x.createLinearGradient(0, 160, 0, ph);
+      og.addColorStop(0, 'rgba(10,15,34,0)'); og.addColorStop(1, 'rgba(10,15,34,.97)');
+      x.fillStyle = og; x.fillRect(0, 0, 1080, ph); x.restore();
+    } catch(e){}
+  }
+  const gb = x.createLinearGradient(60, 0, 300, 0); gb.addColorStop(0, '#C9A24B'); gb.addColorStop(1, '#E5CE8F');
+  x.fillStyle = gb; x.fillRect(60, 596, 130, 7);
+  x.textBaseline = 'top';
+  x.fillStyle = '#C9A24B'; x.font = '800 30px Inter, Arial';
+  x.fillText(((i.cat || 'CLUB NEWS') + (i.date ? '  ·  ' + i.date : '')).toUpperCase(), 60, 634);
+  x.fillStyle = '#fff'; x.font = '600 66px Oswald, Arial';
+  scWrap(x, (i.title || '').toUpperCase(), 60, 694, 960, 78, 3);
+  try { const crest = await scLoadImg('/icon-192.png'); x.save(); x.beginPath();
+    const cx=60, cy=946, cs=86, rr=18; x.moveTo(cx+rr,cy); x.arcTo(cx+cs,cy,cx+cs,cy+cs,rr); x.arcTo(cx+cs,cy+cs,cx,cy+cs,rr); x.arcTo(cx,cy+cs,cx,cy,rr); x.arcTo(cx,cy,cx+cs,cy,rr); x.closePath(); x.clip();
+    x.drawImage(crest, 60, 946, 86, 86); x.restore(); } catch(e){}
+  x.fillStyle = '#A8BFE0'; x.font = '800 28px Inter, Arial';
+  x.fillText('AFCTOTTON.COM', 170, 962);
+  x.fillStyle = '#C9A24B'; x.fillText('#UPTHESTAGS  #PRIDEOFTHENEWFOREST', 170, 998);
+}
+async function shareCard(id){
+  const i = NEWSI.find(n => String(n.id) === String(id)); if (!i) return;
+  SCITEM = i;
+  $('scm').style.display = 'flex';
+  await drawCard(i, false);
+}
+async function dlCard(){
+  const c = $('scc');
+  let url;
+  try { url = c.toDataURL('image/png'); }
+  catch(e){ await drawCard(SCITEM, true); url = c.toDataURL('image/png'); }
+  const a = document.createElement('a');
+  a.href = url; a.download = 'stags-' + String(SCITEM && SCITEM.id || 'news') + '-share.png'; a.click();
 }
 async function delNews(id){
   if (!confirm('Delete this article from the website?')) return;

@@ -330,8 +330,46 @@ function applyScore(s){
       strip.insertBefore(el, btn || null);
     }
   }
+  // matchday mode cleanup when not live
+  if (page === 'index' && !(s.status === 'live' || s.status === 'ht')){
+    document.body.classList.remove('matchday');
+    const md0 = document.getElementById('mdm'); if (md0) md0.remove();
+  }
   if (!s.status || s.status === 'none' || s.status === 'upcoming') return;
   const L = scoreLines(s);
+  // goal flash: celebrate the moment Totton score while a fan has the page open
+  try {
+    const key = 'afct_ls', prev = sessionStorage.getItem(key);
+    const cur = s.opp + '|' + s.home + '|' + s.away;
+    if ((s.status === 'live' || s.status === 'ht') && prev){
+      const p = prev.split('|');
+      if (p[0] === s.opp && Number(s.home) > Number(p[1]) && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+        let gf = document.getElementById('goalflash');
+        if (!gf){ gf = document.createElement('div'); gf.id = 'goalflash'; document.body.appendChild(gf);
+          gf.addEventListener('click', () => gf.classList.remove('on')); }
+        gf.innerHTML = '<b>GOOOAL!</b><span>' + esc(L.a) + ' ' + L.ag + ' &ndash; ' + L.bg + ' ' + esc(L.b) + (s.note ? ' &middot; ' + esc(s.note) : '') + '</span>';
+        gf.classList.add('on');
+        setTimeout(() => gf.classList.remove('on'), 5000);
+      }
+    }
+    sessionStorage.setItem(key, cur);
+  } catch(e){}
+  // matchday mode: homepage scoreboard takeover while the Stags are playing
+  if (page === 'index' && (s.status === 'live' || s.status === 'ht')){
+    document.body.classList.add('matchday');
+    let md = document.getElementById('mdm');
+    if (!md){
+      md = document.createElement('section'); md.id = 'mdm'; md.className = 'mdm';
+      const hero = document.querySelector('.hero');
+      if (hero) hero.parentNode.insertBefore(md, hero);
+    }
+    md.innerHTML = '<div class="lv' + (s.status === 'ht' ? ' ht' : '') + '">' + (s.status === 'ht' ? 'HALF-TIME' : 'LIVE &middot; ' + esc(s.minute || '')) + '</div>'
+      + '<div class="comp">Enterprise National League South' + (s.venue === 'away' ? '' : ' &middot; The Snows Stadium') + '</div>'
+      + '<div class="teams"><span class="tm">' + esc(L.a) + '</span><span class="sc">' + L.ag + '<i>&ndash;</i>' + L.bg + '</span><span class="tm">' + esc(L.b) + '</span></div>'
+      + (s.note ? '<div class="note">' + esc(s.note) + '</div>' : '')
+      + (s.sponsor ? '<div class="sp">Matchday sponsor &middot; ' + esc(s.sponsor) + '</div>' : '')
+      + '<div class="cta"><a class="btn" style="color:#fff" href="/match-centre.html">Match Centre</a><a class="btn ghost" href="/gallery.html">Matchday photos</a></div>';
+  }
   const badge = s.status === 'live' ? `<span class="lp">LIVE ${esc(s.minute)}</span>` : (s.status === 'ht' ? '<span class="lp" style="animation:none;background:#5B7AB8">HALF-TIME</span>' : 'FULL TIME');
   const spLine = s.sponsor ? ` &middot; MATCHDAY SPONSOR: ${esc(s.sponsor).toUpperCase()}` : '';
   const card = document.querySelector('.scorecard');
