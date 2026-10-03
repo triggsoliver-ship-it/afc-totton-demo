@@ -247,6 +247,32 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
   </div>
 
   <div class="panel">
+    <h2>Fan Zone</h2>
+    <div class="hint" style="margin-bottom:10px">Fans play at <b>/fanzone</b> (linked under News in the site menu). Matchday routine: open the Man of the Match vote at full time, close it later that evening &mdash; the final result publishes itself. Everything here takes up to a minute to appear on the site.</div>
+    <div class="frm">
+      <div><label>Fans&rsquo; Man of the Match &mdash; vote title</label><input id="mv_title" maxlength="120" placeholder="Fans' Man of the Match — v Dorking Wanderers"></div>
+      <div><label>Candidates (one per line &mdash; the squad loads automatically, trim it to who played)</label><textarea id="mv_opts" class="short"></textarea></div>
+      <div class="row3">
+        <button class="btn dark" onclick="openVote()">Open vote</button>
+        <button class="btn" onclick="closeVote()">Close vote (publish result)</button>
+        <button class="btn" style="background:#B33A3A" onclick="clearVote()">Remove vote</button>
+      </div>
+      <div id="mvmsg" class="msg"></div>
+      <div id="mvres" class="hint" style="margin-top:6px"></div>
+    </div>
+    <h2 style="margin-top:26px">Stags quiz</h2>
+    <div class="frm">
+      <div><label>Quiz title</label><input id="qz_title" maxlength="120" placeholder="The Stags Quiz — matchweek 10"></div>
+      <div><label>Questions &mdash; one per line: question | answer | answer* | answer &nbsp;(star marks the correct answer, 2&ndash;4 answers)</label><textarea id="qz_rows" placeholder="What year did the Stags reach the FA Vase final at Wembley? | 2005 | 2007* | 2011&#10;Who scored the play-off final winner v Gloucester City? | Tony Lee | Ethan Taylor* | Josh Sims"></textarea></div>
+      <div class="row2">
+        <button class="btn dark" onclick="saveQuiz()">Publish quiz</button>
+        <button class="btn" style="background:#B33A3A" onclick="clearQuiz()">Remove quiz</button>
+      </div>
+      <div id="qzmsg" class="msg"></div>
+    </div>
+  </div>
+
+  <div class="panel">
     <h2>Fan data</h2>
     <div class="hint" style="margin-bottom:10px">Signups from the website’s “Join the Stags list” form. <b id="fcount"></b></div>
     <button class="btn dark" onclick="downloadCsv()">Download CSV</button>
@@ -290,7 +316,59 @@ async function login(){
 
 async function boot(){
   $('gate').classList.add('hidden'); $('app').classList.remove('hidden');
-  loadScore(); loadNews(); loadFans(); loadStories(); loadFixtures(); loadPlayers(); loadEvents(); loadSponsors(); loadAnalytics(); loadGallery();
+  loadScore(); loadNews(); loadFans(); loadStories(); loadFixtures(); loadPlayers(); loadEvents(); loadSponsors(); loadAnalytics(); loadGallery(); loadFanzone();
+}
+
+/* ---------- fan zone ---------- */
+async function loadFanzone(){
+  const cfg = await J('/api/fanzone');
+  if (cfg && cfg.vote){
+    $('mv_title').value = cfg.vote.title || '';
+    $('mv_opts').value = (cfg.vote.options || []).join('\n');
+    const t = cfg.vote.total || 0;
+    $('mvres').innerHTML = (cfg.vote.open ? '<b style="color:#B33A3A">VOTING OPEN</b>' : '<b>VOTE CLOSED</b>') + ' · ' + t + ' vote' + (t === 1 ? '' : 's')
+      + (t ? '<br>' + cfg.vote.options.map((o, i) => esc(o) + ': <b>' + ((cfg.vote.counts || [])[i] || 0) + '</b>').join(' · ') : '');
+  } else if (!$('mv_opts').value){
+    const ps = await J('/api/players');
+    if (Array.isArray(ps)) $('mv_opts').value = ps.slice().sort((a, b) => (a.num || 99) - (b.num || 99)).map(p => p.name).join('\n');
+  }
+  if (cfg && cfg.quiz){
+    $('qz_title').value = cfg.quiz.title || '';
+    $('qz_rows').value = cfg.quiz.questions.map(q => q.q + ' | ' + q.opts.map((o, i) => o + (i === q.correct ? '*' : '')).join(' | ')).join('\n');
+  }
+}
+async function openVote(){
+  const options = $('mv_opts').value.split('\n').map(s => s.trim()).filter(Boolean);
+  const r = await api('/api/fanzone', { method:'POST', body: JSON.stringify({ setVote: { title: $('mv_title').value || "Fans' Man of the Match", options } }) });
+  show($('mvmsg'), r.ok ? 'Vote is OPEN — live on the Fan Zone within a minute.' : 'Need at least two candidates.', r.ok);
+  if (r.ok) setTimeout(loadFanzone, 800);
+}
+async function closeVote(){
+  const r = await api('/api/fanzone', { method:'POST', body: JSON.stringify({ closeVote: true }) });
+  show($('mvmsg'), r.ok ? 'Vote closed — the final result publishes on the Fan Zone within a minute.' : 'Failed — try again.', r.ok);
+  if (r.ok) setTimeout(loadFanzone, 800);
+}
+async function clearVote(){
+  if (!confirm('Remove the vote from the Fan Zone?')) return;
+  const r = await api('/api/fanzone', { method:'POST', body: JSON.stringify({ clearVote: true }) });
+  show($('mvmsg'), r.ok ? 'Vote removed.' : 'Failed — try again.', r.ok);
+  if (r.ok) $('mvres').innerHTML = '';
+}
+async function saveQuiz(){
+  const questions = $('qz_rows').value.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+    const p = l.split('|').map(s => s.trim());
+    const q = p.shift();
+    let correct = 0;
+    const opts = p.map((o, i) => { if (o.endsWith('*')){ correct = i; return o.slice(0, -1).trim(); } return o; });
+    return { q, opts, correct };
+  });
+  const r = await api('/api/fanzone', { method:'POST', body: JSON.stringify({ setQuiz: { title: $('qz_title').value || 'The Stags Quiz', questions } }) });
+  show($('qzmsg'), r.ok ? 'Quiz published — live on the Fan Zone within a minute.' : 'Check the format: question | answer | answer* | answer', r.ok);
+}
+async function clearQuiz(){
+  if (!confirm('Remove the quiz from the Fan Zone?')) return;
+  const r = await api('/api/fanzone', { method:'POST', body: JSON.stringify({ clearQuiz: true }) });
+  show($('qzmsg'), r.ok ? 'Quiz removed.' : 'Failed — try again.', r.ok);
 }
 
 /* ---------- analytics ---------- */

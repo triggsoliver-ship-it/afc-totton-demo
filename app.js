@@ -19,7 +19,7 @@ function show(){if(standalone||localStorage.getItem('ip'))return;
  el.style.display='flex';}
 if(isIOS)setTimeout(show,2600);
 document.addEventListener('click',e=>{if(e.target&&e.target.id==='installbtn'){
- if(deferred){deferred.prompt();deferred=null;}else if(isIOS){alert('Tap the Share button in Safari, then choose "Add to Home Screen".');}
+ if(deferred){deferred.prompt();deferred=null;}else if(isIOS){alert('Tap the Share button in Safari, then choose \"Add to Home Screen\".');}
  else{alert('Open this site on your phone, then use your browser menu to add it to your home screen.');}}});
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 
@@ -177,7 +177,7 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
     nav.innerHTML =
       a('/match-centre.html', 'Match Centre', 'match-centre')
       + g('Teams', [['/teams.html', 'First Team', 'teams'], ['/youth.html', 'Youth Football', 'youth'], ['/academy.html', 'Academy 16&ndash;19', 'academy'], ['/provision.html', 'Alternative Provision', 'provision']])
-      + g('News', [['/news.html', 'Latest News', 'news'], ['/gallery.html', 'Gallery', 'gallery'], ['/archive.html', 'News Archive', 'archive']])
+      + g('News', [['/news.html', 'Latest News', 'news'], ['/gallery.html', 'Gallery', 'gallery'], ['/fanzone.html', 'Fan Zone', 'fanzone'], ['/archive.html', 'News Archive', 'archive']])
       + g('Events', [['/events.html', 'What&rsquo;s On', 'events'], ['/hospitality.html', 'Hospitality', 'hospitality']])
       + g('Club', [['/club.html', 'The Club', 'club'], ['/community.html', 'Community', 'community']])
       + a('/commercial.html', 'Commercial', 'commercial')
@@ -544,6 +544,19 @@ if (page === 'community'){
   });
 }
 
+// ---- fan zone: homepage banner while a vote is open ----
+if (page === 'index') J('/api/fanzone').then(cfg => {
+  if (!cfg || !cfg.vote || !cfg.vote.open) return;
+  const sec = document.createElement('section'); sec.className = 'band'; sec.style.padding = '30px 0';
+  sec.innerHTML = '<div class="wrap" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap">'
+    + '<span class="lbl" style="background:#C0392B;font-weight:800;letter-spacing:.12em;font-size:10.5px;padding:5px 10px;border-radius:2px;color:#fff">VOTE OPEN</span>'
+    + '<b style="font-size:17px;flex:1;min-width:220px">' + esc(cfg.vote.title) + ' &mdash; have your say</b>'
+    + '<a class="btn" style="color:#fff" href="/fanzone.html">Vote now</a></div>';
+  const anchor = document.querySelector('.fanband') || Array.from(document.querySelectorAll('section')).pop();
+  if (anchor) anchor.parentNode.insertBefore(sec, anchor);
+  rethemed();
+});
+
 // ---- gallery page ----
 if (page === 'gallery') J('/api/gallery').then(items => {
   const grid = document.getElementById('galgrid'), chips = document.getElementById('galchips');
@@ -621,4 +634,26 @@ if (document.querySelector('.sponsors')) J('/api/sponsors').then(list => {
     else if (a.classList.contains('btn')) send('click', 'btn:' + (a.textContent || '').trim().slice(0, 40));
   }, true);
 })();
+
+// ---- fan capture band (homepage) ----
+if (page === 'index'){
+  const sec = document.createElement('section'); sec.className = 'fanband';
+  sec.innerHTML = `<div class="wrap"><h2>Join the Stags list</h2>
+    <p>Team news, ticket releases and offers, straight from the club. No spam, unsubscribe any time.</p>
+    <form id="fanform"><input type="text" name="name" placeholder="Your name"><input type="email" name="email" placeholder="Email address" required>
+    <button class="btn" type="submit">Sign up</button></form>
+    <label class="c"><input type="checkbox" id="fanconsent"> I&rsquo;m happy for AFC Totton to email me club news and offers. Demo notice: this form stores data for demonstration purposes only.</label>
+    <p id="fanmsg" style="margin-top:10px;display:none"></p></div>`;
+  const partners = Array.from(document.querySelectorAll('section')).pop();
+  partners.parentNode.insertBefore(sec, partners);
+  sec.querySelector('#fanform').addEventListener('submit', async e => {
+    e.preventDefault();
+    const msg = sec.querySelector('#fanmsg'); msg.style.display = 'block';
+    if (!sec.querySelector('#fanconsent').checked){ msg.textContent = 'Please tick the consent box first.'; return; }
+    const r = await fetch('/api/fans', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ name: e.target.name.value, email: e.target.email.value, consent: true, source: 'homepage' }) });
+    msg.textContent = r.ok ? 'Welcome to the Stags list — you’re signed up.' : 'That didn’t work — check the email address.';
+    if (r.ok) e.target.reset();
+  });
+}
 })();

@@ -1,0 +1,165 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Fan Zone | AFC Totton</title><meta name="description" content="Vote for your Fans' Man of the Match and take on the Stags quiz.">
+<meta name="robots" content="noindex,nofollow">
+<meta property="og:title" content="Fan Zone | AFC Totton"><meta property="og:description" content="Vote for your Fans' Man of the Match and take on the Stags quiz.">
+<meta property="og:image" content="https://lh3.googleusercontent.com/d/18oiVUgBcpMYX-yD49kYHXlVtZ0lhh_dQ=w1600"><meta property="og:type" content="website">
+<meta name="theme-color" content="#151C36">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="icon" type="image/svg+xml" href="/img/crest.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AFC Totton">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+.vopt{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:6px;padding:15px 18px;font:inherit;font-size:15px;font-weight:700;color:#151C36;cursor:pointer;margin-bottom:10px;transition:border-color .15s,transform .15s,box-shadow .15s}
+.vopt:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 22px rgba(21,28,54,.1)}
+.vopt .n{font-family:'Oswald','Inter',sans-serif;font-size:17px;letter-spacing:.02em;text-transform:uppercase}
+.vbar{position:relative;background:#fff;border:1px solid var(--line);border-radius:6px;padding:13px 18px;margin-bottom:10px;overflow:hidden}
+.vbar .fill{position:absolute;inset:0;background:linear-gradient(90deg,rgba(201,162,75,.22),rgba(201,162,75,.06));transform-origin:left;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.vbar .tx{position:relative;display:flex;justify-content:space-between;gap:12px;font-weight:700;color:#151C36;font-size:14.5px}
+.vbar.win{border-color:var(--gold)}
+.vbar.win .tx:before{content:'★ ';color:var(--gold)}
+.qopt{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:6px;padding:14px 18px;font:inherit;font-size:14.5px;font-weight:600;color:#151C36;cursor:pointer;margin-bottom:10px;transition:border-color .15s}
+.qopt:hover{border-color:var(--blue)}
+.qopt.right{border-color:#1F7A46;background:#E4F3E9}
+.qopt.wrong{border-color:#B33A3A;background:#F8E4E4}
+.qprog{font-size:11px;letter-spacing:.14em;font-weight:800;color:#5B7AB8;text-transform:uppercase;margin-bottom:10px}
+.qq{font-family:'Oswald','Inter',sans-serif;font-size:24px;font-weight:600;color:#151C36;text-transform:uppercase;letter-spacing:.01em;margin-bottom:18px;line-height:1.3}
+html[data-theme=dark] .vopt,html[data-theme=dark] .qopt,html[data-theme=dark] .vbar{background:#111A33;border-color:#232E4E;color:#E8ECF5}
+html[data-theme=dark] .vbar .tx,html[data-theme=dark] .qq{color:#E8ECF5}
+html[data-theme=dark] .qopt.right{background:#11301e;border-color:#1F7A46}
+html[data-theme=dark] .qopt.wrong{background:#331316;border-color:#B33A3A}
+</style></head><body data-page="fanzone">
+<div class="demo-bar">DEMO SITE &middot; INDICATIVE CONTENT &middot; NOT AFC TOTTON POLICY</div>
+<header class="site"><div class="wrap hdr">
+<a class="brand" href="/"><img class="crest" src="/img/crest.svg" alt="AFC Totton crest"><span>AFC TOTTON</span></a>
+<nav class="main"><a href="/tickets.html">Tickets</a><a href="/match-centre.html">Match Centre</a><a href="/teams.html">Teams</a><a href="/news.html">News</a><a href="/club.html">Club</a><a href="/community.html">Community</a><a href="/commercial.html">Commercial</a><a href="/shop.html">Shop</a><a href="/tickets.html" class="btn" style="color:#fff">Buy Tickets</a></nav>
+<button class="burger" onclick="document.querySelector('nav.main').style.display='flex'">&#9776;</button>
+</div></header><div class="strip"><div class="wrap in">
+<span class="lbl">NEXT MATCH</span>
+<b>AFC Totton v Dorking Wanderers</b>
+<span class="meta">National League South &middot; Tuesday 18 August 2026 &middot; KO 19:45 &middot; The Snows Stadium</span>
+<a href="/tickets.html" class="btn">Buy Tickets</a></div></div>
+
+<section><div class="wrap" style="max-width:860px">
+<span class="eyebrow" style="color:#5B7AB8">THE 12TH STAG &middot; YOUR SHOUT</span>
+<h1 style="font-size:38px;color:#151C36;margin:12px 0 8px;font-weight:800">Fan Zone</h1>
+<p style="color:#5b6272;max-width:66ch;font-size:15.5px;line-height:1.7;margin-bottom:30px">Have your say &mdash; vote for your Fans&rsquo; Man of the Match after every game, and take on the Stags quiz. New votes and quizzes drop regularly, straight from the media team.</p>
+
+<div id="votebox" style="margin-bottom:46px"><p style="color:#8a90a0">Loading&hellip;</p></div>
+<div id="quizbox"><p style="color:#8a90a0"></p></div>
+</div></section>
+
+<footer class="site"><div class="wrap">
+<div class="cols">
+<div><img src="/img/crest-white.svg" alt="" style="height:64px;margin-bottom:14px">
+<p style="line-height:1.7">The Snows Stadium<br>Mally's Way, Totton, Southampton SO40 2DE<br>Capacity 3,000 &middot; Founded 1886</p>
+<div class="social">
+<a href="https://x.com/AFCTotton" target="_blank" rel="noopener" aria-label="X">X</a>
+<a href="https://www.instagram.com/afctotton/" target="_blank" rel="noopener" aria-label="Instagram">IG</a>
+<a href="https://www.facebook.com/afctottonofficial/" target="_blank" rel="noopener" aria-label="Facebook">FB</a>
+<a href="https://www.youtube.com/" target="_blank" rel="noopener" aria-label="YouTube">YT</a>
+<a href="https://www.tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok">TT</a>
+<a href="https://www.linkedin.com/" target="_blank" rel="noopener" aria-label="LinkedIn">IN</a>
+</div></div>
+<div><h4>EXPLORE</h4><a href="/tickets.html">Tickets</a><a href="/match-centre.html">Match Centre</a><a href="/teams.html">Teams</a><a href="/news.html">News</a></div>
+<div><h4>THE CLUB</h4><a href="/club.html">Club</a><a href="/community.html">Community</a><a href="/commercial.html">Commercial</a><a href="/shop.html">Shop</a></div>
+<div><h4>CONTACT</h4><a href="mailto:Enquires@afctotton.com">Enquires@afctotton.com</a>
+<a href="/club.html">Club officials</a><a href="/commercial.html">Commercial enquiries</a>
+<p style="margin-top:12px;font-size:11.5px">AFC Totton in the Community<br>Registered Charity 1206854</p></div>
+</div>
+<div class="btm"><span>&copy; 2026 AFC TOTTON 1886 LTD. Demo site built for board and member review.</span>
+<span>Prices, tiers and product content are indicative placeholders.</span></div>
+</div></footer>
+<nav class="mob"><div><a href="/"><b>&#9679;</b>Home</a><a href="/match-centre.html"><b>&#9917;</b>Match</a><a href="/news.html"><b>&#9998;</b>News</a><a href="/shop.html"><b>&#128717;</b>Shop</a><a href="/club.html"><b>&#9776;</b>More</a></div></nav>
+<div id="install"><img src="/img/crest.svg" style="background:#151C36;border-radius:9px;padding:4px;width:44px;height:44px;object-fit:contain" alt=""><div class="tx"><b>Add the Stags to your Home Screen</b>
+<span id="instx">Tap Share, then &lsquo;Add to Home Screen&rsquo; for one-tap access.</span></div>
+<button onclick="document.getElementById('install').style.display='none';localStorage.setItem('ip','1')">&times;</button></div>
+<script src="/app.js"></script>
+<script>
+(function(){
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const theme = () => { window.__applyTheme && window.__applyTheme(); };
+
+fetch('/api/fanzone?ts=' + Date.now()).then(r => r.json()).then(cfg => {
+  const vb = document.getElementById('votebox'), qb = document.getElementById('quizbox');
+
+  /* ---- fans' man of the match ---- */
+  if (!cfg.vote){
+    vb.innerHTML = '<div class="sec-head"><h2>Fans&rsquo; Man of the Match</h2></div><p style="color:#8a90a0;font-size:14.5px">No vote is open right now &mdash; the next one launches at full time of the next match. Follow the club on social so you don&rsquo;t miss it.</p>';
+  } else {
+    const v = cfg.vote, key = 'afct_mv_' + v.id, voted = localStorage.getItem(key);
+    const head = '<div class="sec-head"><h2>' + esc(v.title) + '</h2>' + (v.open ? '<span style="font-size:11px;font-weight:800;letter-spacing:.12em;color:#C0392B">&#9679; VOTING OPEN</span>' : '<span style="font-size:11px;font-weight:800;letter-spacing:.12em;color:#5B7AB8">FINAL RESULT</span>') + '</div>';
+    const results = (extra) => {
+      const total = Math.max(1, (v.total || 0) + (extra ? 1 : 0));
+      const counts = (v.counts || v.options.map(() => 0)).slice();
+      if (extra != null) counts[extra]++;
+      const max = Math.max.apply(null, counts);
+      vb.innerHTML = head + v.options.map((o, i) => {
+        const pc = Math.round(100 * counts[i] / total);
+        return '<div class="vbar' + (!v.open && counts[i] === max && max > 0 ? ' win' : '') + '"><div class="fill" style="transform:scaleX(' + (counts[i] / total) + ')"></div><div class="tx"><span>' + esc(o) + '</span><span>' + pc + '%</span></div></div>';
+      }).join('') + '<p style="margin-top:10px;font-size:12px;color:#8a90a0">' + ((v.total || 0) + (extra != null ? 1 : 0)) + ' votes' + (v.open ? ' so far &mdash; thanks for yours!' : ' &middot; thanks to everyone who voted') + '</p>';
+      theme();
+    };
+    if (!v.open || voted){ results(null); }
+    else {
+      vb.innerHTML = head + '<p style="color:#5b6272;font-size:14px;margin-bottom:14px">One tap, one vote &mdash; who gets your shout?</p>'
+        + v.options.map((o, i) => '<button class="vopt" data-i="' + i + '"><span class="n">' + esc(o) + '</span><span style="font-size:11px;font-weight:800;letter-spacing:.1em;color:#5B7AB8">VOTE &rsaquo;</span></button>').join('');
+      vb.addEventListener('click', async e => {
+        const btn = e.target.closest('.vopt'); if (!btn || localStorage.getItem(key)) return;
+        const i = +btn.getAttribute('data-i');
+        localStorage.setItem(key, String(i));
+        try { await fetch('/api/fanzone', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ cast: i }) }); } catch(err){}
+        results(i);
+      });
+      theme();
+    }
+  }
+
+  /* ---- quiz ---- */
+  if (!cfg.quiz || !cfg.quiz.questions || !cfg.quiz.questions.length){
+    qb.innerHTML = '<div class="sec-head"><h2>The Stags Quiz</h2></div><p style="color:#8a90a0;font-size:14.5px">A new quiz is being written &mdash; check back soon.</p>';
+    theme(); return;
+  }
+  const qz = cfg.quiz; let qi = 0, score = 0, locked = false;
+  const draw = () => {
+    const q = qz.questions[qi];
+    qb.innerHTML = '<div class="sec-head"><h2>' + esc(qz.title) + '</h2></div>'
+      + '<div class="qprog">Question ' + (qi + 1) + ' of ' + qz.questions.length + ' &middot; Score ' + score + '</div>'
+      + '<div class="qq">' + esc(q.q) + '</div>'
+      + q.opts.map((o, i) => '<button class="qopt" data-i="' + i + '">' + esc(o) + '</button>').join('');
+    locked = false; theme();
+  };
+  const finish = () => {
+    const pc = Math.round(100 * score / qz.questions.length);
+    const line = pc === 100 ? 'Perfect! Proper Stag. 🟡⚫' : pc >= 70 ? 'Top marks — season ticket knowledge.' : pc >= 40 ? 'Solid effort — more time at the Snows needed.' : 'Room to grow — see you at the next home game.';
+    qb.innerHTML = '<div class="sec-head"><h2>' + esc(qz.title) + '</h2></div>'
+      + '<div style="border:1px solid var(--line);border-radius:7px;padding:34px 24px;text-align:center">'
+      + '<div style="font-family:Oswald,Inter,sans-serif;font-size:56px;font-weight:700;color:#151C36">' + score + ' / ' + qz.questions.length + '</div>'
+      + '<p style="color:#5b6272;font-size:15px;margin:10px 0 20px">' + line + '</p>'
+      + '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">'
+      + '<button class="btn dark" style="color:#fff" id="qshare">Share your score</button>'
+      + '<button class="btn" id="qretry">Try again</button></div></div>';
+    document.getElementById('qretry').onclick = () => { qi = 0; score = 0; draw(); };
+    document.getElementById('qshare').onclick = () => {
+      const txt = 'I scored ' + score + '/' + qz.questions.length + ' on the ' + qz.title + ' — take it on at afc-totton-demo.vercel.app/fanzone #UPTHESTAGS';
+      if (navigator.share) navigator.share({ text: txt, url: location.href }).catch(() => {});
+      else { navigator.clipboard && navigator.clipboard.writeText(txt); alert('Score copied — paste it anywhere.'); }
+    };
+    theme();
+  };
+  qb.addEventListener('click', e => {
+    const btn = e.target.closest('.qopt'); if (!btn || locked) return;
+    locked = true;
+    const i = +btn.getAttribute('data-i'), q = qz.questions[qi];
+    [...qb.querySelectorAll('.qopt')].forEach((b, n) => { if (n === q.correct) b.classList.add('right'); });
+    if (i === q.correct) score++; else btn.classList.add('wrong');
+    setTimeout(() => { qi++; qi < qz.questions.length ? draw() : finish(); }, 1100);
+  });
+  draw();
+});
+})();
+</script></body></html>
