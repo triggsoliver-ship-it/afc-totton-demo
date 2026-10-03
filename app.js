@@ -19,7 +19,7 @@ function show(){if(standalone||localStorage.getItem('ip'))return;
  el.style.display='flex';}
 if(isIOS)setTimeout(show,2600);
 document.addEventListener('click',e=>{if(e.target&&e.target.id==='installbtn'){
- if(deferred){deferred.prompt();deferred=null;}else if(isIOS){alert('Tap the Share button in Safari, then choose \"Add to Home Screen\".');}
+ if(deferred){deferred.prompt();deferred=null;}else if(isIOS){alert('Tap the Share button in Safari, then choose "Add to Home Screen".');}
  else{alert('Open this site on your phone, then use your browser menu to add it to your home screen.');}}});
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 
