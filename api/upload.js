@@ -3,12 +3,13 @@ import { isAuthed, ok } from './_util.js';
 
 export const config = { api: { bodyParser: { sizeLimit: '8mb' } } };
 
-// CORS: allow the old club site origin only, so archived documents can be
-// lifted across browser-side during the migration (POST still needs the admin key).
-const CORS_ORIGIN = 'https://www.afctotton.com';
+// CORS: allowlisted origins for browser-side asset migration only
+// (POST still needs the admin key).
+const CORS_ORIGINS = ['https://www.afctotton.com', 'https://hhscapital.org', 'https://agentlegend.co.uk'];
 function cors(req, res) {
-  if ((req.headers.origin || '') === CORS_ORIGIN) {
-    res.setHeader('Access-Control-Allow-Origin', CORS_ORIGIN);
+  const o = req.headers.origin || '';
+  if (CORS_ORIGINS.includes(o)) {
+    res.setHeader('Access-Control-Allow-Origin', o);
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'content-type, x-admin-key');
   }

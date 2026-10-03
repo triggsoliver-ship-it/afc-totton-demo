@@ -233,7 +233,10 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
       + 'Caroline Keats &middot; <a href="mailto:Safeguarding@afctottondp.com" style="display:inline;padding:0">Safeguarding@afctottondp.com</a> &middot; 07395 292386</p>'
       + '<p style="margin-top:12px;font-size:11.5px">AFC Totton in the Community<br>Registered Charity 1206854</p>';
     const btm = f.querySelector('.btm');
-    if (btm && !f.querySelector('.own')) btm.insertAdjacentHTML('afterend', '<p class="own" style="margin-top:14px;font-size:10.5px;line-height:1.7;color:#93a2c0">For the purpose of Football Association rule 2.13, AFC Totton can confirm ownership details of the company AFC Totton 1886 Ltd is 100% owned by its shareholders. The company is considered to be controlled by Mr S Brookwell, Mr P Davies, Mr T Croft, Mr K Hebenton and Mr S. Snow by reason of their shareholdings and financial commitment to the company. Company address: AFC Totton 1886 LTD, The Snows Stadium, Salisbury Road, Totton, Southampton, SO40 2RW. Registered in England No.11293572. &middot; <a href="/privacy.html" style="display:inline;padding:0">Privacy policy</a> &middot; <a href="/club.html" style="display:inline;padding:0">Club policies &amp; documents</a></p>');
+    if (btm && !f.querySelector('.own')) btm.insertAdjacentHTML('afterend', '<p class="own" style="margin-top:14px;font-size:10.5px;line-height:1.7;color:#93a2c0">For the purpose of Football Association rule 2.13, AFC Totton can confirm ownership details of the company AFC Totton 1886 Ltd is 100% owned by its shareholders. The company is considered to be controlled by Mr S Brookwell, Mr P Davies, Mr T Croft, Mr K Hebenton and Mr S. Snow by reason of their shareholdings and financial commitment to the company. Company address: AFC Totton 1886 LTD, The Snows Stadium, Salisbury Road, Totton, Southampton, SO40 2RW. Registered in England No.11293572. &middot; <a href="/privacy.html" style="display:inline;padding:0">Privacy policy</a> &middot; <a href="/club.html" style="display:inline;padding:0">Club policies &amp; documents</a>'
+      + (['teams','academy','youth'].indexOf(page) > -1 ? ' <a href="https://athvora.co.uk" target="_blank" rel="noopener" style="display:inline;padding:0;opacity:.4" title="Athvora">&#9671;</a>' : '')
+      + '</p>'
+      + '<p class="credit" style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);font-size:10.5px;letter-spacing:.06em;color:#7C87A2;text-transform:uppercase">Website design by <a href="https://shipitstudio.co.uk" target="_blank" rel="noopener" style="display:inline;padding:0;color:#A8BFE0;font-weight:700">shipitstudio.co.uk</a> &nbsp;&middot;&nbsp; Grow your club with <a href="https://scaleyourclub.com" target="_blank" rel="noopener" style="display:inline;padding:0;color:#C9A24B;font-weight:700">scaleyourclub.com</a></p>');
   });
 })();
 
@@ -618,26 +621,4 @@ if (document.querySelector('.sponsors')) J('/api/sponsors').then(list => {
     else if (a.classList.contains('btn')) send('click', 'btn:' + (a.textContent || '').trim().slice(0, 40));
   }, true);
 })();
-
-// ---- fan capture band (homepage) ----
-if (page === 'index'){
-  const sec = document.createElement('section'); sec.className = 'fanband';
-  sec.innerHTML = `<div class="wrap"><h2>Join the Stags list</h2>
-    <p>Team news, ticket releases and offers, straight from the club. No spam, unsubscribe any time.</p>
-    <form id="fanform"><input type="text" name="name" placeholder="Your name"><input type="email" name="email" placeholder="Email address" required>
-    <button class="btn" type="submit">Sign up</button></form>
-    <label class="c"><input type="checkbox" id="fanconsent"> I&rsquo;m happy for AFC Totton to email me club news and offers. Demo notice: this form stores data for demonstration purposes only.</label>
-    <p id="fanmsg" style="margin-top:10px;display:none"></p></div>`;
-  const partners = Array.from(document.querySelectorAll('section')).pop();
-  partners.parentNode.insertBefore(sec, partners);
-  sec.querySelector('#fanform').addEventListener('submit', async e => {
-    e.preventDefault();
-    const msg = sec.querySelector('#fanmsg'); msg.style.display = 'block';
-    if (!sec.querySelector('#fanconsent').checked){ msg.textContent = 'Please tick the consent box first.'; return; }
-    const r = await fetch('/api/fans', { method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ name: e.target.name.value, email: e.target.email.value, consent: true, source: 'homepage' }) });
-    msg.textContent = r.ok ? 'Welcome to the Stags list — you’re signed up.' : 'That didn’t work — check the email address.';
-    if (r.ok) e.target.reset();
-  });
-}
 })();
