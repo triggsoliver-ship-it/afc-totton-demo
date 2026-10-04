@@ -329,3 +329,10 @@ body.matchday .storyrail{border-bottom:2px solid rgba(201,162,75,.35)}
 .sponsors div{min-width:0}
 .sponsors img{max-width:100%;height:auto;max-height:56px;object-fit:contain}
 .sponsors .ntile{overflow-wrap:break-word;min-width:0}
+
+/* fix: long email addresses must wrap inside footer columns & tables */
+footer .cols>div{min-width:0}
+footer a,footer p{overflow-wrap:anywhere}
+.tbl td{overflow-wrap:anywhere}
+/* hard stop: the page can never pan sideways (clip keeps sticky header working) */
+html,body{overflow-x:clip}
