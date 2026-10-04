@@ -324,3 +324,8 @@ body.matchday .storyrail{border-bottom:2px solid rgba(201,162,75,.35)}
 .pc.athx .nm span{color:rgba(201,162,75,.85)}
 .pc.athx:hover{opacity:1;transform:translateY(-5px) scale(1.012)}
 .pc.athx:hover:after{color:var(--gold);text-shadow:0 0 34px rgba(201,162,75,.55)}
+
+/* fix: wide sponsor logos must never blow the grid out past the viewport */
+.sponsors div{min-width:0}
+.sponsors img{max-width:100%;height:auto;max-height:56px;object-fit:contain}
+.sponsors .ntile{overflow-wrap:break-word;min-width:0}
