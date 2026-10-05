@@ -73,7 +73,7 @@ section{padding:56px 0}
 .sq{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
 .pc{background:linear-gradient(170deg,var(--navy),var(--deep));border-radius:5px;overflow:hidden;position:relative;aspect-ratio:3/4;display:flex;align-items:flex-end;transition:.18s}
 .pc:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(21,28,54,.28)}
-.pc img{position:absolute;bottom:0;left:50%;transform:translateX(-50%);height:88%;width:auto;object-fit:contain}
+.pc>img{position:absolute;bottom:0;left:50%;transform:translateX(-50%);height:88%;width:auto;object-fit:contain}
 .pc .no{position:absolute;top:10px;right:14px;font-size:34px;font-weight:800;color:rgba(255,255,255,.18);line-height:1}
 .pc .nm{position:relative;width:100%;padding:14px 13px;background:linear-gradient(180deg,transparent,rgba(10,15,34,.93) 45%);color:#fff}
 .pc .nm b{display:block;font-size:14.5px;font-weight:800;line-height:1.2}
@@ -244,7 +244,7 @@ nav.main a.btn{background-image:none}
 .card .ph img{transition:transform .5s cubic-bezier(.2,.7,.2,1)}
 .card:hover .ph img{transform:scale(1.055)}
 .pc:hover{transform:translateY(-5px) scale(1.012)}
-.pc:hover img{filter:drop-shadow(0 10px 18px rgba(0,0,0,.4))}
+.pc:hover>img{filter:drop-shadow(0 10px 18px rgba(0,0,0,.4))}
 
 /* sponsor wall: colour pop on hover */
 .sponsors div{transition:transform .2s,box-shadow .2s,border-color .2s}
@@ -348,3 +348,8 @@ footer .lgp img{height:24px;width:auto;max-width:104px;object-fit:contain}
 /* ---- social icon glyphs ---- */
 .social a svg{display:block;width:16px;height:16px;fill:currentColor;pointer-events:none}
 .social a:hover svg{fill:#fff}
+
+/* ---- player sponsor chip (logo OR name, never over the number) ---- */
+.pc .spchip{position:absolute;top:10px;left:10px;z-index:2;display:inline-flex;align-items:center;max-width:calc(100% - 72px);height:24px;padding:0 7px;background:rgba(255,255,255,.96);color:#151C36;border-radius:3px;font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.pc .spchip img{position:static;transform:none;height:16px;width:auto;max-width:72px;object-fit:contain;filter:none}
+.pc:hover .spchip img{filter:none}

@@ -498,7 +498,7 @@ if (page === 'teams') J('/api/players').then(items => {
     const list = items.filter(p => p.group === g).sort((a,b) => a.num - b.num);
     if (!list.length) return;
     html += `<div class="grp">${gname[g]}</div><div class="sq">` + list.map(p => {
-      const chip = p.sponsor ? `<span class="spchip">${p.sponsorLogo?`<img src="${esc(p.sponsorLogo)}" alt="">`:''}${esc(p.sponsor)}</span>` : '';
+      const chip = p.sponsor ? `<span class="spchip" title="Sponsored by ${esc(p.sponsor)}">${p.sponsorLogo?`<img src="${esc(p.sponsorLogo)}" alt="${esc(p.sponsor)}">`:esc(p.sponsor)}</span>` : '';
       return `<div class="pc ${p.img?'':'empty'}" data-id="${esc(p.id)}">${chip}<span class="no">${p.num||''}</span>${p.img?`<img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy">`:''}<div class="nm"><b>${esc(p.name)}</b><span>${esc(p.pos)}</span></div></div>`;
     }).join('') + '</div>';
   });
