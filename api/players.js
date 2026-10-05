@@ -41,7 +41,11 @@ export default async function handler(req, res) {
       bio: String(b.bio || '').slice(0, 2000),
       sponsor: String(b.sponsor || '').slice(0, 80),
       sponsorUrl: String(b.sponsorUrl || '').slice(0, 300),
-      sponsorLogo: String(b.sponsorLogo || '').slice(0, 500)
+      sponsorLogo: String(b.sponsorLogo || '').slice(0, 500),
+      sponsorAway: String(b.sponsorAway || '').slice(0, 80),
+      sponsorAwayUrl: String(b.sponsorAwayUrl || '').slice(0, 300),
+      sponsorThird: String(b.sponsorThird || '').slice(0, 80),
+      sponsorThirdUrl: String(b.sponsorThirdUrl || '').slice(0, 300)
     };
     const i = items.findIndex(x => x.id === item.id);
     if (i >= 0) items[i] = item; else items.push(item);

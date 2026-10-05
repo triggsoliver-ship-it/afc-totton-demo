@@ -128,10 +128,17 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
       <div><label>Photo (optional — replaces current)</label><input id="p_photo" type="file" accept="image/*"></div>
       <div><label>Bio / about (shown when a fan taps the player)</label><textarea id="p_bio" class="short" placeholder="Joined the Stags in 2024…"></textarea></div>
       <div class="row3">
-        <div><label>Player sponsor (optional)</label><input id="p_sp" placeholder="Company name"></div>
+        <div><label>Home kit sponsor (optional)</label><input id="p_sp" placeholder="Company name"></div>
         <div><label>Sponsor link (optional)</label><input id="p_spu" placeholder="https://…"></div>
         <div><label>Sponsor logo (optional)</label><input id="p_splogo" type="file" accept="image/*"></div>
       </div>
+      <div class="row4">
+        <div><label>Away kit sponsor (optional)</label><input id="p_spa" placeholder="Leave blank if same"></div>
+        <div><label>Away sponsor link</label><input id="p_spau" placeholder="https://…"></div>
+        <div><label>Third kit sponsor (optional)</label><input id="p_spt" placeholder="Leave blank if same"></div>
+        <div><label>Third sponsor link</label><input id="p_sptu" placeholder="https://…"></div>
+      </div>
+      <div class="hint">One sponsor across all kits? Just fill in the home kit sponsor. Different sponsors per kit? Add the away and third ones too — they all show on the player&rsquo;s profile card.</div>
       <input type="hidden" id="p_id">
       <div class="row2">
         <button class="btn dark" onclick="savePlayer()">Save player</button>
@@ -450,7 +457,7 @@ function editFixture(id){
 async function delFixture(id){ if(!confirm('Delete this fixture?'))return; await api('/api/fixtures?id='+encodeURIComponent(id),{method:'DELETE'}); loadFixtures(); }
 
 /* ---------- players ---------- */
-function clearPlayer(){ ['p_id','p_num','p_name','p_pos','p_bio','p_sp','p_spu'].forEach(i=>$(i).value=''); $('p_photo').value=''; $('p_splogo').value=''; $('p_group').value='mf'; }
+function clearPlayer(){ ['p_id','p_num','p_name','p_pos','p_bio','p_sp','p_spu','p_spa','p_spau','p_spt','p_sptu'].forEach(i=>$(i).value=''); $('p_photo').value=''; $('p_splogo').value=''; $('p_group').value='mf'; }
 let PLAYERS = [];
 async function savePlayer(){
   if (!$('p_name').value.trim()) return show($('pmsg'), 'Name is required.', false);
@@ -461,7 +468,7 @@ async function savePlayer(){
     if (f1){ show($('pmsg'),'Uploading photo…',true); img = await uploadFile(f1); }
     const f2 = $('p_splogo').files[0];
     if (f2){ show($('pmsg'),'Uploading sponsor logo…',true); sponsorLogo = await uploadFile(f2); }
-    const body = { id:$('p_id').value||undefined, num:$('p_num').value, name:$('p_name').value, pos:$('p_pos').value, group:$('p_group').value, img, bio:$('p_bio').value, sponsor:$('p_sp').value, sponsorUrl:$('p_spu').value, sponsorLogo };
+    const body = { id:$('p_id').value||undefined, num:$('p_num').value, name:$('p_name').value, pos:$('p_pos').value, group:$('p_group').value, img, bio:$('p_bio').value, sponsor:$('p_sp').value, sponsorUrl:$('p_spu').value, sponsorLogo, sponsorAway:$('p_spa').value, sponsorAwayUrl:$('p_spau').value, sponsorThird:$('p_spt').value, sponsorThirdUrl:$('p_sptu').value };
     const r = await api('/api/players', { method:'POST', body: JSON.stringify(body) });
     show($('pmsg'), r.ok ? 'Player saved — live on the Teams page within a minute.' : 'Failed — try again.', r.ok);
     if (r.ok){ clearPlayer(); loadPlayers(); }
@@ -481,7 +488,7 @@ async function loadPlayers(){
 }
 function editPlayer(id){
   const p = PLAYERS.find(x=>x.id===id); if (!p) return;
-  $('p_id').value=p.id; $('p_num').value=p.num||''; $('p_name').value=p.name; $('p_pos').value=p.pos||''; $('p_group').value=p.group; $('p_bio').value=p.bio||''; $('p_sp').value=p.sponsor||''; $('p_spu').value=p.sponsorUrl||'';
+  $('p_id').value=p.id; $('p_num').value=p.num||''; $('p_name').value=p.name; $('p_pos').value=p.pos||''; $('p_group').value=p.group; $('p_bio').value=p.bio||''; $('p_sp').value=p.sponsor||''; $('p_spu').value=p.sponsorUrl||''; $('p_spa').value=p.sponsorAway||''; $('p_spau').value=p.sponsorAwayUrl||''; $('p_spt').value=p.sponsorThird||''; $('p_sptu').value=p.sponsorThirdUrl||'';
   window.scrollTo({top:$('p_num').getBoundingClientRect().top+window.scrollY-120,behavior:'smooth'});
 }
 async function delPlayer(id){ if(!confirm('Remove this player from the site?'))return; await api('/api/players?id='+encodeURIComponent(id),{method:'DELETE'}); loadPlayers(); }
