@@ -217,7 +217,7 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
       const lps = [
         ['1Yd1dmZk5vu8LyG7OO4vRf00qxaaGjGQx', 'Enterprise', 'https://www.enterprise.co.uk'],
         ['1QgPkms7yOISj_RWXi1SOovDQS2a8Tp9s', 'DAZN', 'https://www.dazn.com'],
-        ['1xRlThTn0CisOnEY94H8f_HHaZ1TOw2mC', 'TIC Health', 'https://www.thenationalleague.org.uk'],
+        ['1xRlThTn0CisOnEY94H8f_HHaZ1TOw2mC', 'TIC Health', 'https://tichealth.co.uk/services/scans/mri/'],
         ['1V23jY2Fvi2jvxwtJdfcNhvI98uFQSlJN', 'Utility Warehouse', 'https://uw.co.uk'],
         ['1n9D1wx28onAAvNiTwjq8KeUrrYpYOFE0', 'Errèa', 'https://www.errea.com'],
         ['1qwtnbDi5kVPvFwxsSPZOi-JEHrmt7z2u', 'Mitre', 'https://www.mitre.com']
@@ -323,9 +323,9 @@ if (page === 'match-centre'){
   if (pane){ pane.innerHTML = `<div style="border:1px solid var(--line);border-radius:5px;padding:44px 24px;text-align:center">
     <div class="eyebrow" style="color:#5B7AB8">ENTERPRISE NATIONAL LEAGUE SOUTH</div>
     <h3 style="font-size:24px;color:#151C36;margin:12px 0 10px;font-weight:800">The live league table</h3>
-    <p style="color:#5b6272;font-size:14.5px;max-width:54ch;margin:0 auto 22px;line-height:1.6">Always up to date, straight from the source \u2014 updated automatically after every match.</p>
+    <p style="color:#5b6272;font-size:14.5px;max-width:54ch;margin:0 auto 22px;line-height:1.6">Always up to date, straight from the source \\u2014 updated automatically after every match.</p>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-    <a class="btn" style="color:#fff" href="https://www.bbc.co.uk/sport/football/national-league-south/table" target="_blank" rel="noopener">View the live table \u2014 BBC Sport</a>
+    <a class="btn" style="color:#fff" href="https://www.bbc.co.uk/sport/football/national-league-south/table" target="_blank" rel="noopener">View the live table \\u2014 BBC Sport</a>
     <a class="btn dark" style="color:#fff" href="https://www.thenationalleague.org.uk/match-hub/tables" target="_blank" rel="noopener">Official league site</a></div></div>`;
   rethemed(); }
 }
@@ -586,7 +586,7 @@ if (page === 'index') J('/api/fanzone').then(cfg => {
 if (page === 'gallery') J('/api/gallery').then(items => {
   const grid = document.getElementById('galgrid'), chips = document.getElementById('galchips');
   if (!grid) return;
-  if (!items || !items.length){ grid.innerHTML = '<p style="color:#8a90a0">No photos yet \u2014 the club team adds them from the admin panel, and they appear here instantly.</p>'; return; }
+  if (!items || !items.length){ grid.innerHTML = '<p style="color:#8a90a0">No photos yet \\u2014 the club team adds them from the admin panel, and they appear here instantly.</p>'; return; }
   const cats = ['ALL'].concat(Array.from(new Set(items.map(i => i.cat || 'CLUB'))));
   let cur = 'ALL';
   const draw = () => {
@@ -608,7 +608,7 @@ if (page === 'gallery') J('/api/gallery').then(items => {
     v.style.display = 'flex';
     v.querySelector('#gshare').onclick = ev => { ev.stopPropagation();
       if (navigator.share) navigator.share({ title: 'AFC Totton', text: g.caption || 'AFC Totton', url: g.img }).catch(() => {});
-      else { navigator.clipboard && navigator.clipboard.writeText(g.img); alert('Photo link copied \u2014 paste it anywhere.'); } };
+      else { navigator.clipboard && navigator.clipboard.writeText(g.img); alert('Photo link copied \\u2014 paste it anywhere.'); } };
   });
   v.addEventListener('click', e => { if (e.target === v || e.target.className === 'x') v.style.display = 'none'; });
 });
