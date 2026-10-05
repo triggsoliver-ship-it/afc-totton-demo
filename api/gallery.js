@@ -10,6 +10,25 @@ export default async function handler(req, res) {
   const items = await readJson('data/gallery.json', []);
   if (req.method === 'POST') {
     const b = req.body || {};
+    // bulk add (single write — safe for many photos at once)
+    if (Array.isArray(b.items)) {
+      const have = new Set(items.map(x => x.img));
+      let n = 0;
+      b.items.slice(0, 40).forEach(it => {
+        const img = String((it && it.img) || '').slice(0, 500);
+        if (!img || have.has(img)) return;
+        items.unshift({
+          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+          img,
+          caption: String((it && it.caption) || '').slice(0, 160),
+          cat: CATS.includes(String((it && it.cat) || '').toUpperCase()) ? String(it.cat).toUpperCase() : 'CLUB',
+          ts: new Date().toISOString()
+        });
+        have.add(img); n++;
+      });
+      await writeJson('data/gallery.json', items.slice(0, 60));
+      return ok(res, { added: n, total: Math.min(items.length, 60) });
+    }
     if (!b.img) return res.status(400).json({ error: 'photo required' });
     items.unshift({
       id: Date.now().toString(36),
