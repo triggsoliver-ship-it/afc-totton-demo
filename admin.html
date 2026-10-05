@@ -86,6 +86,33 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
   </div>
 
   <div class="panel">
+    <h2>Homepage hero</h2>
+    <div class="frm">
+      <div><label>Small line above the headline</label><input id="h_eye" placeholder="2026/27 · Enterprise National League South"></div>
+      <div><label>Headline</label><input id="h_title" placeholder="Three from three?"></div>
+      <div><label>Intro paragraph</label><textarea id="h_lead" rows="3" placeholder="The Stags return to the Snows Stadium on Saturday…"></textarea></div>
+      <div class="row2">
+        <div><label>Main button text</label><input id="h_b1" placeholder="Read the preview"></div>
+        <div><label>Main button link</label><input id="h_u1" placeholder="/news.html or https://…"></div>
+      </div>
+      <div class="row2">
+        <div><label>Second button text (optional)</label><input id="h_b2" placeholder="Match centre"></div>
+        <div><label>Second button link</label><input id="h_u2" placeholder="/match-centre.html"></div>
+      </div>
+      <div class="row2">
+        <div><label>Background photo (optional &mdash; wide landscape works best)</label><input id="h_img" type="file" accept="image/*"></div>
+        <div><label>Current photo</label><div id="h_cur" class="hint" style="margin:0">Using the default photo</div></div>
+      </div>
+      <div class="row3">
+        <button class="btn dark" onclick="saveHero()">Publish hero</button>
+        <button class="btn" style="background:#B33A3A" onclick="resetHero()" title="Goes back to the built-in default hero">Reset to default</button>
+      </div>
+      <div id="hmsg" class="msg"></div>
+      <div class="hint">This is the big banner at the top of the homepage. Keep the headline to a few punchy words &mdash; it displays in large capitals. Changes take up to a minute to show.</div>
+    </div>
+  </div>
+
+  <div class="panel">
     <h2>Fixtures &amp; results</h2>
     <div class="frm">
       <div class="row4">
@@ -323,7 +350,7 @@ async function login(){
 
 async function boot(){
   $('gate').classList.add('hidden'); $('app').classList.remove('hidden');
-  loadScore(); loadNews(); loadFans(); loadStories(); loadFixtures(); loadPlayers(); loadEvents(); loadSponsors(); loadAnalytics(); loadGallery(); loadFanzone();
+  loadScore(); loadHero(); loadNews(); loadFans(); loadStories(); loadFixtures(); loadPlayers(); loadEvents(); loadSponsors(); loadAnalytics(); loadGallery(); loadFanzone();
 }
 
 /* ---------- fan zone ---------- */
@@ -422,6 +449,33 @@ async function clearMatch(){
     $('s_home').value=0; $('s_away').value=0; $('s_status').value='none'; $('s_venue').value='home';
     show($('smsg'), 'Match cleared — the scoreboard disappears from the site within a minute.', true);
   } else show($('smsg'), 'Failed — try again.', false);
+}
+/* ---------- homepage hero ---------- */
+let HERO_IMG = '';
+async function loadHero(){
+  const h = await J('/api/hero');
+  if (!h || !h.on) return;
+  $('h_eye').value = h.eyebrow||''; $('h_title').value = h.title||''; $('h_lead').value = h.lead||'';
+  $('h_b1').value = h.btn1||''; $('h_u1').value = h.url1||''; $('h_b2').value = h.btn2||''; $('h_u2').value = h.url2||'';
+  HERO_IMG = h.img||'';
+  $('h_cur').innerHTML = HERO_IMG ? '<img src="'+HERO_IMG+'" style="height:48px;border-radius:3px;vertical-align:middle"> custom photo' : 'Using the default photo';
+}
+async function saveHero(){
+  if (!$('h_title').value.trim()) return show($('hmsg'), 'Enter a headline first.', false);
+  try {
+    const f = $('h_img').files[0];
+    if (f){ show($('hmsg'), 'Uploading photo…', true); HERO_IMG = await uploadFile(f); }
+    const body = { on:true, eyebrow:$('h_eye').value, title:$('h_title').value, lead:$('h_lead').value,
+      btn1:$('h_b1').value, url1:$('h_u1').value, btn2:$('h_b2').value, url2:$('h_u2').value, img:HERO_IMG };
+    const r = await api('/api/hero', { method:'POST', body: JSON.stringify(body) });
+    show($('hmsg'), r.ok ? 'Hero published — live within a minute.' : 'Failed — try again.', r.ok);
+    if (r.ok){ $('h_img').value=''; loadHero(); }
+  } catch(e){ show($('hmsg'), 'Photo upload failed — try a smaller image.', false); }
+}
+async function resetHero(){
+  const r = await api('/api/hero', { method:'POST', body: JSON.stringify({ on:false }) });
+  if (r.ok){ ['h_eye','h_title','h_lead','h_b1','h_u1','h_b2','h_u2'].forEach(i=>$(i).value=''); HERO_IMG=''; $('h_cur').textContent='Using the default photo'; }
+  show($('hmsg'), r.ok ? 'Reset — the default hero returns within a minute.' : 'Failed — try again.', r.ok);
 }
 async function fileResult(){
   if (!$('s_opp').value.trim()) return show($('smsg'), 'Enter the opponent first.', false);

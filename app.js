@@ -279,6 +279,23 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
   });
 })();
 
+// ---- homepage hero (admin-editable) ----
+if (page === 'index') J('/api/hero').then(h => {
+  if (!h || !h.on || !h.title) return;
+  const hero = document.querySelector('.hero'); if (!hero) return;
+  const eye = hero.querySelector('.eyebrow'), h1 = hero.querySelector('h1'), lead = hero.querySelector('p.lead'), cta = hero.querySelector('.cta'), bg = hero.querySelector('img.bg');
+  if (eye && h.eyebrow) eye.textContent = h.eyebrow;
+  if (h1) h1.textContent = h.title;
+  if (lead) { if (h.lead) lead.textContent = h.lead; else lead.remove(); }
+  if (cta) {
+    const b1 = h.btn1 && h.url1 ? `<a class="btn" href="${esc(h.url1)}">${esc(h.btn1)}</a>` : '';
+    const b2 = h.btn2 && h.url2 ? `<a class="btn ghost" href="${esc(h.url2)}">${esc(h.btn2)}</a>` : '';
+    if (b1 || b2) cta.innerHTML = b1 + b2; else cta.remove();
+  }
+  if (bg && h.img) { bg.src = h.img; bg.alt = h.title; }
+  rethemed();
+});
+
 // ---- social stories (homepage) ----
 if (page === 'index') J('/api/stories').then(items => {
   if (!items || !items.length) return;
