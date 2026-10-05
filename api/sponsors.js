@@ -39,7 +39,7 @@ const SEED = [
   { img: 'charles-edwardson', src: B + '1791215498670-sp-charles-edwardson.png', name: 'Charles Edwardson', url: 'https://charles-edwardson.co.uk' },
   { img: 'set-tyres', src: B + '1791215499462-sp-setyres.png', name: 'Setyres', url: 'https://www.setyres.com' },
   { img: 'specsavers-hearing', src: B + '1791215500101-sp-specsavers.png', name: 'Specsavers Hearing', url: 'https://www.specsavers.co.uk' },
-  { img: 'calmore-service-station', src: B + '1791217124439-sp-calmore.jpg', name: 'Calmore Service Station', url: 'https://calmoreservicestation.co.uk' },
+  { img: 'calmore-service-station', src: B + '1791218216207-sp-calmore-v2.jpg', name: 'Calmore Service Station', url: 'https://calmoreservicestation.co.uk' },
   { img: 'flag-man', src: B + '1791215501345-sp-flagman.png', name: 'The Badgeman / The Flag Man', url: 'https://theflagmanltd.co.uk' },
   { img: 'neil-cooper', name: 'Neil Cooper', url: '' },
   { img: 'bridge-rubber-plastics', src: B + '1791215502940-sp-bridge-rubber.png', name: 'Bridge Rubber & Plastics', url: 'https://bridgerubber.co.uk' },
