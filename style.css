@@ -336,3 +336,11 @@ footer a,footer p{overflow-wrap:anywhere}
 .tbl td{overflow-wrap:anywhere}
 /* hard stop: the page can never pan sideways (clip keeps sticky header working) */
 html,body{overflow-x:clip}
+
+/* league principal partners strip (footer, site-wide) */
+footer .lgp{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:30px;padding-bottom:26px;border-bottom:1px solid rgba(255,255,255,.1)}
+footer .lgp>span{font-size:10px;letter-spacing:.16em;font-weight:800;color:#93a2c0;text-transform:uppercase}
+footer .lgp .in3{display:flex;gap:10px;flex-wrap:wrap;min-width:0}
+footer .lgp a{background:#fff;border-radius:4px;padding:6px 10px;display:flex;align-items:center;min-width:0;transition:transform .18s}
+footer .lgp a:hover{transform:translateY(-2px)}
+footer .lgp img{height:24px;width:auto;max-width:104px;object-fit:contain}

@@ -211,6 +211,23 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
   document.querySelectorAll('footer.site').forEach(f => {
     const cols = f.querySelectorAll('.cols > div');
     if (!cols.length) return;
+    // league principal partners — required by the Enterprise National League South
+    if (!f.querySelector('.lgp')){
+      const LG = 'https://lh3.googleusercontent.com/d/';
+      const lps = [
+        ['1Yd1dmZk5vu8LyG7OO4vRf00qxaaGjGQx', 'Enterprise', 'https://www.enterprise.co.uk'],
+        ['1QgPkms7yOISj_RWXi1SOovDQS2a8Tp9s', 'DAZN', 'https://www.dazn.com'],
+        ['1xRlThTn0CisOnEY94H8f_HHaZ1TOw2mC', 'TIC Health', 'https://www.thenationalleague.org.uk'],
+        ['1V23jY2Fvi2jvxwtJdfcNhvI98uFQSlJN', 'Utility Warehouse', 'https://uw.co.uk'],
+        ['1n9D1wx28onAAvNiTwjq8KeUrrYpYOFE0', 'Errèa', 'https://www.errea.com'],
+        ['1qwtnbDi5kVPvFwxsSPZOi-JEHrmt7z2u', 'Mitre', 'https://www.mitre.com']
+      ];
+      const c0 = f.querySelector('.cols');
+      if (c0) c0.insertAdjacentHTML('beforebegin',
+        '<div class="lgp"><span>Enterprise National League South &middot; Principal Partners</span><div class="in3">'
+        + lps.map(p => '<a href="' + p[2] + '" target="_blank" rel="noopener" title="' + p[1] + '"><img src="' + LG + p[0] + '=w200" alt="' + p[1] + '" loading="lazy"></a>').join('')
+        + '</div></div>');
+    }
     const addr = cols[0].querySelector('p');
     if (addr) addr.innerHTML = 'Snows Stadium<br>Mally&rsquo;s Way, Totton SO40 2RW<br><a href="tel:02380868981" style="display:inline;padding:0">02380 868981</a> &middot; Capacity 3,000 &middot; Founded 1886';
     const explore = cols[1];
@@ -444,9 +461,13 @@ if (page === 'teams') J('/api/players').then(items => {
     if (e.target.closest('.spchip')) return;
     const p = items.find(x => x.id === pc.getAttribute('data-id')); if (!p) return;
     modal.querySelector('.ph2').innerHTML = p.img ? `<img src="${esc(p.img)}" alt="">` : '<span style="color:rgba(255,255,255,.3);font-size:11px;letter-spacing:.12em;font-weight:800;align-self:center">PHOTO TO FOLLOW</span>';
+    const multiKit = !!(p.sponsorAway || p.sponsorThird);
+    const spRow = (label, nm, url, logo) => nm ? `<div class="spl">${logo?`<img src="${esc(logo)}" alt="">`:''}<span><b style="font-size:9.5px;letter-spacing:.12em;color:#8a90a0">${label}</b>&nbsp; <b>${esc(nm)}</b>${url?` &middot; <a href="${esc(url)}" target="_blank" rel="noopener" style="color:#5B7AB8;font-weight:700">Visit site &rsaquo;</a>`:''}</span></div>` : '';
     modal.querySelector('.bd2').innerHTML = `<h3>${p.num?p.num+' · ':''}${esc(p.name)}</h3><div class="ps">${esc(p.pos)}</div>`
       + `<p>${esc(p.bio) || 'Player profile to follow.'}</p>`
-      + (p.sponsor ? `<div class="spl">${p.sponsorLogo?`<img src="${esc(p.sponsorLogo)}" alt="">`:''}<span>Player sponsored by <b>${esc(p.sponsor)}</b>${p.sponsorUrl?` &middot; <a href="${esc(p.sponsorUrl)}" target="_blank" rel="noopener" style="color:#5B7AB8;font-weight:700">Visit site &rsaquo;</a>`:''}</span></div>` : '');
+      + spRow(multiKit ? 'HOME KIT SPONSOR' : 'PLAYER SPONSOR', p.sponsor, p.sponsorUrl, p.sponsorLogo)
+      + spRow('AWAY KIT SPONSOR', p.sponsorAway, p.sponsorAwayUrl)
+      + spRow('THIRD KIT SPONSOR', p.sponsorThird, p.sponsorThirdUrl);
     modal.style.display = 'flex';
   });
   const spu = {};
