@@ -229,7 +229,7 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
         + '</div></div>');
     }
     const addr = cols[0].querySelector('p');
-    if (addr) addr.innerHTML = 'Snows Stadium<br>Mally&rsquo;s Way, Totton SO40 2RW<br><a href="tel:02380868981" style="display:inline;padding:0">02380 868981</a> &middot; Capacity 3,000 &middot; Founded 1886';
+    if (addr) addr.innerHTML = 'Snows Stadium<br>Mally&rsquo;s Way, Totton SO40 2DE<br><a href="tel:02380868981" style="display:inline;padding:0">02380 868981</a> &middot; Capacity 3,000 &middot; Founded 1886';
     const socials = {
       'X': 'https://x.com/afctotton',
       'Facebook': 'https://www.facebook.com/afctottonofficial/',
@@ -272,7 +272,7 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
       + 'Caroline Keats &middot; <a href="mailto:Safeguarding@afctottondp.com" style="display:inline;padding:0">Safeguarding@afctottondp.com</a> &middot; 07395 292386</p>'
       + '<p style="margin-top:12px;font-size:11.5px">AFC Totton in the Community<br>Registered Charity 1206854</p>';
     const btm = f.querySelector('.btm');
-    if (btm && !f.querySelector('.own')) btm.insertAdjacentHTML('afterend', '<p class="own" style="margin-top:14px;font-size:10.5px;line-height:1.7;color:#93a2c0">For the purpose of Football Association rule 2.13, AFC Totton can confirm ownership details of the company AFC Totton 1886 Ltd is 100% owned by its shareholders. The company is considered to be controlled by Mr S Brookwell, Mr P Davies, Mr T Croft, Mr K Hebenton and Mr S. Snow by reason of their shareholdings and financial commitment to the company. Company address: AFC Totton 1886 LTD, The Snows Stadium, Salisbury Road, Totton, Southampton, SO40 2RW. Registered in England No.11293572. &middot; <a href="/privacy.html" style="display:inline;padding:0">Privacy policy</a> &middot; <a href="/club.html" style="display:inline;padding:0">Club policies &amp; documents</a>'
+    if (btm && !f.querySelector('.own')) btm.insertAdjacentHTML('afterend', '<p class="own" style="margin-top:14px;font-size:10.5px;line-height:1.7;color:#93a2c0">For the purpose of Football Association rule 2.13, AFC Totton can confirm ownership details of the company AFC Totton 1886 Ltd is 100% owned by its shareholders. The company is considered to be controlled by Mr S Brookwell, Mr P Davies, Mr T Croft, Mr K Hebenton and Mr S. Snow by reason of their shareholdings and financial commitment to the company. Company address: AFC Totton 1886 LTD, The Snows Stadium, Salisbury Road, Totton, Southampton, SO40 2DE. Registered in England No.11293572. &middot; <a href="/privacy.html" style="display:inline;padding:0">Privacy policy</a> &middot; <a href="/club.html" style="display:inline;padding:0">Club policies &amp; documents</a>'
       + (['teams','academy','youth'].indexOf(page) > -1 ? ' <a href="https://athvora.co.uk" target="_blank" rel="noopener" style="display:inline;padding:0;opacity:.4" title="Athvora">&#9671;</a>' : '')
       + '</p>'
       + '<p class="credit" style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);font-size:10.5px;letter-spacing:.06em;color:#7C87A2;text-transform:uppercase">Website design by <a href="https://shipitstudio.co.uk" target="_blank" rel="noopener" style="display:inline;padding:0;color:#A8BFE0;font-weight:700">shipitstudio.co.uk</a> &nbsp;&middot;&nbsp; Grow your club with <a href="https://scaleyourclub.com" target="_blank" rel="noopener" style="display:inline;padding:0;color:#C9A24B;font-weight:700">scaleyourclub.com</a></p>');
@@ -332,6 +332,29 @@ if (fxP) fxP.then(items => {
   if (page === 'index'){
     const grid = document.querySelector('.fx');
     if (grid) grid.innerHTML = upcoming.slice(0,5).map(fxRow).join('');
+    // "Last time out" card: most recent result from the fixtures data
+    // (the live-score feed overrides this while a match is live / just finished)
+    const card = document.querySelector('.scorecard');
+    if (card && !card.classList.contains('livecard')){
+      const last = played.slice().sort((x,y) => String(y.date||'').localeCompare(String(x.date||'')))[0];
+      if (last){
+        const us = 'AFC Totton', them = last.opp || 'Opponent';
+        const a = last.venue === 'away' ? them : us, b = last.venue === 'away' ? us : them;
+        const ag = last.venue === 'away' ? last.ag : last.hg, bg = last.venue === 'away' ? last.hg : last.ag;
+        const res = last.hg > last.ag ? 'WIN' : (last.hg === last.ag ? 'DRAW' : 'DEFEAT');
+        card.innerHTML = `<div class="t">LAST TIME OUT &middot; ${res}</div>
+          <div class="row"><span>${esc(a)}</span><span>${ag}</span></div>
+          <div class="row"><span style="color:#b9c6de">${esc(b)}</span><span style="color:#b9c6de">${bg}</span></div>
+          <div style="margin-top:12px;font-size:11px;color:#8fa3c7;letter-spacing:.05em">${esc((last.comp || 'National League South').toUpperCase())} &middot; ${esc(fmtD(last.date)).toUpperCase()}</div>
+          ${last.scorers ? `<div style="margin-top:6px;font-size:12px;color:#b9c6de">&#9917; ${esc(last.scorers.replace(/\s+,/g, ','))}</div>` : ''}`;
+      } else if (upcoming[0]){
+        const n = upcoming[0];
+        card.innerHTML = `<div class="t">NEXT UP</div>
+          <div class="row"><span>${n.venue === 'away' ? esc(n.opp) : 'AFC Totton'}</span><span></span></div>
+          <div class="row"><span style="color:#b9c6de">${n.venue === 'away' ? 'AFC Totton' : esc(n.opp)}</span><span></span></div>
+          <div style="margin-top:12px;font-size:11px;color:#8fa3c7;letter-spacing:.05em">${esc(fmtD(n.date)).toUpperCase()} &middot; KO ${esc(n.ko)}</div>`;
+      }
+    }
   }
   if (page === 'match-centre'){
     const fx = document.querySelector('#fx .fx');
