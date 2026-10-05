@@ -654,16 +654,16 @@ async function addPhoto(){
   const f = $('g_photo').files[0];
   if (!f) return show($('gamsg'), 'Choose a photo first.', false);
   try {
-    show($('gamsg'), 'Uploading…', true);
+    show($('gamsg'), 'Uploading\u2026', true);
     const img = await uploadFile(f);
     const r = await api('/api/gallery', { method:'POST', body: JSON.stringify({ img, caption:$('g_cap').value, cat:$('g_cat').value }) });
     if (r.ok){ show($('gamsg'), 'Added to the gallery.', true); $('g_photo').value=''; $('g_cap').value=''; loadGallery(); }
-    else show($('gamsg'), 'Failed — try again.', false);
+    else show($('gamsg'), 'Failed \u2014 try again.', false);
   } catch(e){ show($('gamsg'), 'Something went wrong: ' + e.message, false); }
 }
 async function loadGallery(){
   const items = await J('/api/gallery');
-  $('gallist').innerHTML = (items||[]).map(g => `<div class="newsitem"><img src="${esc(g.img)}" alt=""><span>${esc(g.caption)||'(no caption)'}<br><span class="hint">${esc(g.cat)} · ${(g.ts||'').slice(0,10)}</span></span><button class="del" style="margin-left:auto" onclick="delPhoto('${g.id}')">Delete</button></div>`).join('') || 'No photos yet.';
+  $('gallist').innerHTML = (items||[]).map(g => `<div class="newsitem"><img src="${esc(g.img)}" alt=""><span>${esc(g.caption)||'(no caption)'}<br><span class="hint">${esc(g.cat)} \u00b7 ${(g.ts||'').slice(0,10)}</span></span><button class="del" style="margin-left:auto" onclick="delPhoto('${g.id}')">Delete</button></div>`).join('') || 'No photos yet.';
 }
 async function delPhoto(id){ if(!confirm('Remove this photo from the gallery?'))return; await api('/api/gallery?id='+encodeURIComponent(id),{method:'DELETE'}); loadGallery(); }
 
