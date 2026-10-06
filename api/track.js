@@ -14,12 +14,13 @@ export default async function handler(req, res) {
     const d = stats[day] = stats[day] || { pv: {}, clicks: {} };
     d[bucket][key] = (d[bucket][key] || 0) + 1;
     const days = Object.keys(stats).sort();
-    while (days.length > 60) delete stats[days.shift()];
+    while (days.length > 400) delete stats[days.shift()];
     await writeJson('data/stats.json', stats);
     return ok(res, { t: true });
   }
   if (req.method === 'GET') {
-    const n = Math.min(60, parseInt(req.query.days, 10) || 7);
+    const q = parseInt(req.query.days, 10);
+    const n = Math.max(0, Math.min(366, isNaN(q) ? 7 : q));
     const stats = await readJson('data/stats.json', {});
     const cutoff = new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
     const out = { since: cutoff, days: {}, totals: { pv: {}, clicks: {}, pageviews: 0 } };

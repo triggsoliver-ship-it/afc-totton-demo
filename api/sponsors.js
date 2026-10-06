@@ -41,7 +41,6 @@ const SEED = [
   { img: 'specsavers-hearing', src: B + '1791215500101-sp-specsavers.png', name: 'Specsavers Hearing', url: 'https://www.specsavers.co.uk' },
   { img: 'calmore-service-station', src: B + '1791222520426-sp-calmore-v4.jpg', name: 'Calmore Service Station', url: 'https://calmoreservicestation.co.uk' },
   { img: 'flag-man', src: B + '1791215501345-sp-flagman.png', name: 'The Badgeman / The Flag Man', url: 'https://theflagmanltd.co.uk' },
-  { img: 'neil-cooper', name: 'Neil Cooper', url: '' },
   { img: 'bridge-rubber-plastics', src: B + '1791215502940-sp-bridge-rubber.png', name: 'Bridge Rubber & Plastics', url: 'https://bridgerubber.co.uk' },
   { img: 'abbey-croft-nursery', src: B + '1791222319581-sp-abbey-croft-v3.jpg', name: 'Abbey Croft Nursery', url: 'https://abbeycroftnursery.co.uk' },
   { img: 'nick-illingsworth', src: B + '1791287796107-sp-pil-southampton.png', name: 'Protection & Investment Ltd (Nick Illingsworth)', url: 'https://pilsouthampton.co.uk' },
