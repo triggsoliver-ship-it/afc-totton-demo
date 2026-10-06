@@ -48,7 +48,7 @@ const SEED = [
   { img: 'totton-walking-club', name: 'Totton Walking Football', url: '/teams.html' },
   { img: 'silhouette-building-group', src: B + '1791215505111-sp-silhouette.png', name: 'Silhouette Building Group', url: 'https://sbg-ltd.co.uk' },
   { img: 'liftability', src: B + '1791215523633-sp-liftability.png', name: 'Liftability', url: 'https://www.liftabilityltd.com' },
-  { img: 'apollo-business-supplies', src: B + '1791215525188-sp-apollo.png', name: 'Apollo Business Supplies', url: 'https://www.appolloservices.co.uk' },
+  { img: 'apollo-business-supplies', src: B + '1791285961774-sp-apollo-bs.png', name: 'Apollo Business Supplies', url: 'https://www.apollo-bs.co.uk' },
   { img: 'new-forest-estate-agents', src: B + '1791215526811-sp-nfea.png', name: 'New Forest Estate Agents', url: 'https://nfea.co.uk' },
   { img: 'totton-grill', src: B + '1791215527536-sp-totton-grill.png', name: 'Totton Grill', url: 'https://tottongrillonline.co.uk' },
   { img: 'weightwash', src: B + '1791025770928-sp-weightwash.png', name: 'WeightWash', url: 'https://www.weightwash.co.uk' },
