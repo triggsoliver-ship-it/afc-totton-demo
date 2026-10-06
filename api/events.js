@@ -3,13 +3,13 @@ import { readJson, writeJson, ok, isAuthed } from './_util.js';
 const SEED = [
   { id: 'ev1', date: '2026-10-16', time: '19:30', title: 'Stags Race Night', where: 'Monarch Suite',
     desc: 'An evening at the races in the Monarch Suite — bar open, tote in the room, all proceeds to the club. Tables of 8.',
-    img: 'https://lh3.googleusercontent.com/d/1-IGGdlHxwuzi5bjDSMI1zo5NnuldoDtR=w1000', tickets: 'https://www.fanbaseclub.com' },
+    img: 'https://lh3.googleusercontent.com/d/1-IGGdlHxwuzi5bjDSMI1zo5NnuldoDtR=w1000', tickets: 'https://app.fanbaseclub.com/club/afc-totton' },
   { id: 'ev2', date: '2026-11-20', time: '19:45', title: 'Sportsman’s Dinner with guest speaker', where: 'Monarch Suite',
     desc: 'Three-course dinner, guest speaker from the professional game, Q&A and auction in support of the Academy.',
-    img: 'https://lh3.googleusercontent.com/d/1WfhRiFuDdj0BjrbeXbaxBe7tPpPwwz99=w1000', tickets: 'https://www.fanbaseclub.com' },
+    img: 'https://lh3.googleusercontent.com/d/1WfhRiFuDdj0BjrbeXbaxBe7tPpPwwz99=w1000', tickets: 'https://app.fanbaseclub.com/club/afc-totton' },
   { id: 'ev3', date: '2026-12-12', time: '19:00', title: 'Christmas Party Night', where: 'Monarch Suite',
     desc: 'Festive party night at the Snows Stadium — dinner, DJ and dancing. Ideal for office parties and groups.',
-    img: 'https://lh3.googleusercontent.com/d/1DXX1ab16pb2UPR_S6RXGT2C8vj9f3Eic=w1000', tickets: 'https://www.fanbaseclub.com' }
+    img: 'https://lh3.googleusercontent.com/d/1DXX1ab16pb2UPR_S6RXGT2C8vj9f3Eic=w1000', tickets: 'https://app.fanbaseclub.com/club/afc-totton' }
 ];
 
 export default async function handler(req, res) {
