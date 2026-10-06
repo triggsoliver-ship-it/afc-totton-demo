@@ -333,7 +333,8 @@ body.matchday .storyrail{border-bottom:2px solid rgba(201,162,75,.35)}
 /* fix: long email addresses must wrap inside footer columns & tables */
 footer .cols>div{min-width:0}
 footer a,footer p{overflow-wrap:anywhere}
-.tbl td{overflow-wrap:anywhere}
+.tbl td{overflow-wrap:break-word}
+.tbl td:first-child{overflow-wrap:normal;word-break:normal;hyphens:none;min-width:5.5em}
 /* hard stop: the page can never pan sideways (clip keeps sticky header working) */
 html,body{overflow-x:clip}
 
