@@ -176,7 +176,7 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
       + kids.map(k => '<a href="' + k[0] + '" class="' + (P(k[2]) ? 'on' : '') + '">' + k[1] + '</a>').join('') + '</div></div></div>';
     nav.innerHTML =
       a('/match-centre.html', 'Match Centre', 'match-centre')
-      + g('Teams', [['/teams.html', 'First Team', 'teams'], ['/youth.html', 'Youth Football', 'youth'], ['/academy.html', 'Academy 16&ndash;19', 'academy'], ['/provision.html', 'Alternative Provision', 'provision']])
+      + g('Teams', [['/teams.html', 'First Team', 'teams'], ['/youth.html', 'Youth Football', 'youth'], ['/academy.html', 'Academy 16&ndash;19', 'academy'], ['/provision.html', 'Alternative Provision', 'provision'], ['/walking-football.html', 'Walking Football', 'walking']])
       + g('News', [['/news.html', 'Latest News', 'news'], ['/gallery.html', 'Gallery', 'gallery'], ['/fanzone.html', 'Fan Zone', 'fanzone'], ['/archive.html', 'News Archive', 'archive']])
       + g('Events', [['/events.html', 'What&rsquo;s On', 'events'], ['/hospitality.html', 'Hospitality', 'hospitality']])
       + g('Club', [['/club.html', 'The Club', 'club'], ['/community.html', 'Community', 'community']])

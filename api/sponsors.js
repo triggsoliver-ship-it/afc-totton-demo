@@ -45,7 +45,7 @@ const SEED = [
   { img: 'bridge-rubber-plastics', src: B + '1791215502940-sp-bridge-rubber.png', name: 'Bridge Rubber & Plastics', url: 'https://bridgerubber.co.uk' },
   { img: 'abbey-croft-nursery', src: B + '1791222319581-sp-abbey-croft-v3.jpg', name: 'Abbey Croft Nursery', url: 'https://abbeycroftnursery.co.uk' },
   { img: 'nick-illingsworth', src: B + '1791287796107-sp-pil-southampton.png', name: 'Protection & Investment Ltd (Nick Illingsworth)', url: 'https://pilsouthampton.co.uk' },
-  { img: 'totton-walking-club', name: 'Totton Walking Football', url: '/teams.html' },
+  { img: 'totton-walking-club', src: B + '1791288835082-walking-football-logo.png', name: 'AFC Totton Walking Football', url: '/walking-football.html' },
   { img: 'silhouette-building-group', src: B + '1791215505111-sp-silhouette.png', name: 'Silhouette Building Group', url: 'https://sbg-ltd.co.uk' },
   { img: 'liftability', src: B + '1791215523633-sp-liftability.png', name: 'Liftability', url: 'https://www.liftabilityltd.com' },
   { img: 'apollo-business-supplies', src: B + '1791285961774-sp-apollo-bs.png', name: 'Apollo Business Supplies', url: 'https://www.apollo-bs.co.uk' },
