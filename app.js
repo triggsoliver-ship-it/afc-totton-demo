@@ -139,6 +139,16 @@ css.textContent = `
 .evcard .when{font-size:11px;font-weight:800;letter-spacing:.1em;color:#C9A24B;text-transform:uppercase}
 .sponsors .ntile{font-size:11.5px;font-weight:800;letter-spacing:.05em;color:#2A3658;text-align:center;line-height:1.35;text-transform:uppercase;padding:4px}
 .sponsors a.splink{display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+.strip .stsign{margin-left:auto;border:1px solid rgba(255,255,255,.5);color:#fff;background:transparent}
+.strip .stsign+.btn{margin-left:0}
+.supporters{margin-top:34px;text-align:center}
+.supporters h3{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#5B7AB8;font-weight:800}
+.supporters .sub{font-size:13px;color:#8a90a0;margin:6px 0 14px}
+.supporters ul{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:8px 10px;margin:0;padding:0}
+.supporters li{border:1px solid var(--line);border-radius:30px;padding:8px 16px;font-size:13.5px;font-weight:700;color:#151C36}
+html[data-theme=dark] .supporters li{border-color:#2A3658;color:#E8ECF5}
+nav.main a.navsign{border:1px solid rgba(255,255,255,.45);color:#fff;background:transparent}
+nav.main a.navsign:hover{background:rgba(255,255,255,.12);border-color:#fff}
 nav.main a{white-space:nowrap}
 .brand span{white-space:nowrap}
 nav.main .nvg{position:relative}
@@ -178,10 +188,11 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
       a('/match-centre.html', 'Match Centre', 'match-centre')
       + g('Teams', [['/teams.html', 'First Team', 'teams'], ['/youth.html', 'Youth Football', 'youth'], ['/academy.html', 'Academy 16&ndash;19', 'academy'], ['/provision.html', 'Alternative Provision', 'provision'], ['/walking-football.html', 'Walking Football', 'walking']])
       + g('News', [['/news.html', 'Latest News', 'news'], ['/gallery.html', 'Gallery', 'gallery'], ['/fanzone.html', 'Fan Zone', 'fanzone'], ['/archive.html', 'News Archive', 'archive']])
-      + g('Events', [['/events.html', 'What&rsquo;s On', 'events'], ['/hospitality.html', 'Hospitality', 'hospitality']])
+      + g('Events', [['/events.html', 'What&rsquo;s On', 'events'], ['/hospitality.html', 'Hospitality', 'hospitality'], ['/facility-hire.html', 'Facility Hire', 'facility-hire']])
       + g('Club', [['/club.html', 'The Club', 'club'], ['/community.html', 'Community', 'community']])
       + a('/commercial.html', 'Commercial', 'commercial')
       + a('/shop.html', 'Shop', 'shop')
+      + '<a href="/#signup" class="btn ghost navsign" data-signup="1">Sign Up</a>'
       + '<a href="/tickets.html" class="btn' + (P('tickets') ? ' on' : '') + '" style="color:#fff">Buy Tickets</a>';
     nav.addEventListener('click', e => {
       const b = e.target.closest('.nvg>button'); if (!b) return;
@@ -720,6 +731,43 @@ if (document.querySelector('.sponsors')) J('/api/sponsors').then(list => {
   rethemed();
 });
 
+// ---- Sign Up button beside Buy Tickets in the match strip ----
+(function(){
+  const strip = document.querySelector('.strip .in'); if (!strip || strip.querySelector('.stsign')) return;
+  const buy = strip.querySelector('a.btn'); if (!buy) return;
+  const su = document.createElement('a'); su.className = 'btn ghost stsign'; su.href = '/#signup'; su.setAttribute('data-signup', '1'); su.textContent = 'Sign Up';
+  strip.insertBefore(su, buy);
+})();
+
+// ---- supporter sponsors (names, under the sponsor wall) ----
+if (document.querySelector('.sponsors')) J('/api/content?key=supporters').then(names => {
+  if (!Array.isArray(names) || !names.length) return;
+  document.querySelectorAll('.sponsors').forEach(gridEl => {
+    if (gridEl.nextElementSibling && gridEl.nextElementSibling.classList.contains('supporters')) return;
+    const d = document.createElement('div'); d.className = 'supporters';
+    d.innerHTML = '<h3>Supporter Sponsors</h3><p class="sub">Thank you to the supporters who back the Stags</p><ul>'
+      + names.map(n => '<li>' + esc(n) + '</li>').join('') + '</ul>';
+    gridEl.parentNode.insertBefore(d, gridEl.nextSibling);
+  });
+  rethemed();
+});
+
+// ---- management team (admin-editable) ----
+if (page === 'teams') J('/api/content?key=staff').then(list => {
+  if (!Array.isArray(list) || !list.length) return;
+  const grid = document.querySelector('.mgcard') && document.querySelector('.mgcard').parentNode;
+  if (!grid) return;
+  grid.innerHTML = list.map(m => '<div class="mgcard"><h3>' + esc(m.name) + '</h3><div class="role">' + esc(m.role) + '</div>'
+    + (m.bio ? '<p>' + esc(m.bio) + '</p>' : '') + '</div>').join('');
+  rethemed();
+});
+
+// ---- page banner photos (admin-editable) ----
+if (page !== 'index' && document.querySelector('.hero img.bg')) J('/api/content?key=banners').then(b => {
+  const u = b && b[page]; if (!u) return;
+  const img = document.querySelector('.hero img.bg'); if (img) img.src = u;
+});
+
 // ---- analytics beacons (pageviews + clicks) ----
 (function(){
   const send = (type, target) => { try {
@@ -738,7 +786,7 @@ if (document.querySelector('.sponsors')) J('/api/sponsors').then(list => {
 
 // ---- fan capture band (homepage) ----
 if (page === 'index'){
-  const sec = document.createElement('section'); sec.className = 'fanband';
+  const sec = document.createElement('section'); sec.className = 'fanband'; sec.id = 'signup';
   sec.innerHTML = `<div class="wrap"><h2>Join the Stags list</h2>
     <p>Team news, ticket releases and offers, straight from the club. No spam, unsubscribe any time.</p>
     <form id="fanform"><input type="text" name="name" placeholder="Your name"><input type="email" name="email" placeholder="Email address" required>
@@ -747,6 +795,13 @@ if (page === 'index'){
     <p id="fanmsg" style="margin-top:10px;display:none"></p></div>`;
   const partners = Array.from(document.querySelectorAll('section')).pop();
   partners.parentNode.insertBefore(sec, partners);
+  if (location.hash === '#signup') setTimeout(() => sec.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[data-signup]'); if (!a) return;
+    e.preventDefault(); sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const n = document.querySelector('nav.main'); if (n && n.classList.contains('open')) n.classList.remove('open');
+    setTimeout(() => { const i = sec.querySelector('input[name=name]'); if (i) i.focus({ preventScroll: true }); }, 600);
+  });
   sec.querySelector('#fanform').addEventListener('submit', async e => {
     e.preventDefault();
     const msg = sec.querySelector('#fanmsg'); msg.style.display = 'block';

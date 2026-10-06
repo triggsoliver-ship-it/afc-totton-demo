@@ -113,6 +113,28 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
   </div>
 
   <div class="panel">
+    <h2>Page banner photos</h2>
+    <div class="frm">
+      <div class="row2">
+        <div><label>Page</label><select id="bn_page" onchange="loadBanner()">
+          <option value="commercial">Commercial</option><option value="facility-hire">Facility Hire</option><option value="hospitality">Hospitality</option>
+          <option value="club">The Club</option><option value="community">Community</option><option value="teams">Teams</option>
+          <option value="events">Events</option><option value="tickets">Tickets</option><option value="youth">Youth</option>
+          <option value="academy">Academy</option><option value="provision">Alternative Provision</option><option value="walking">Walking Football</option>
+        </select></div>
+        <div><label>New photo (wide landscape works best)</label><input id="bn_img" type="file" accept="image/*"></div>
+      </div>
+      <div id="bn_cur" class="hint" style="margin:0">Using the default photo</div>
+      <div class="row3">
+        <button class="btn dark" onclick="saveBanner()">Publish photo</button>
+        <button class="btn" style="background:#B33A3A" onclick="resetBanner()">Back to default</button>
+      </div>
+      <div id="bnmsg" class="msg"></div>
+      <div class="hint">Changes the big photo at the top of the chosen page. The homepage has its own panel above. Live within a minute.</div>
+    </div>
+  </div>
+
+  <div class="panel">
     <h2>Fixtures &amp; results</h2>
     <div class="frm">
       <div class="row4">
@@ -178,6 +200,16 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
   </div>
 
   <div class="panel">
+    <h2>Management team</h2>
+    <div class="hint" style="margin-bottom:10px">One person per line: <b>Name | Role | Short bio</b>. The order here is the order on the Teams page. Delete a line to remove someone.</div>
+    <div class="frm">
+      <textarea id="st_rows" style="min-height:220px;font-size:13px"></textarea>
+      <button class="btn dark" onclick="saveStaff()">Save management team</button>
+      <div id="stmsg" class="msg"></div>
+    </div>
+  </div>
+
+  <div class="panel">
     <h2>Events</h2>
     <div class="hint" style="margin-bottom:10px">Shown on the Events page and homepage. Ticket link should be the event’s Fan Base page.</div>
     <div class="frm">
@@ -204,7 +236,13 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
   </div>
 
   <div class="panel">
-    <h2>Site analytics <span class="hint" style="font-weight:400">&middot; last 7 days</span></h2>
+    <h2>Site analytics <span class="hint" style="font-weight:400" id="a_lbl">&middot; last 7 days</span></h2>
+    <div class="afilt" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      <button class="btn" data-d="0" onclick="setPeriod(this)">Today</button>
+      <button class="btn dark" data-d="7" onclick="setPeriod(this)">Week</button>
+      <button class="btn" data-d="30" onclick="setPeriod(this)">Month</button>
+      <button class="btn" data-d="365" onclick="setPeriod(this)">Year</button>
+    </div>
     <div class="row3" style="margin-bottom:14px">
       <div><div class="hint">PAGE VIEWS</div><div id="a_pv" style="font-size:26px;font-weight:800;color:#151C36">&ndash;</div></div>
       <div><div class="hint">SPONSOR CLICKS</div><div id="a_sp" style="font-size:26px;font-weight:800;color:#151C36">&ndash;</div></div>
@@ -224,6 +262,16 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
       <textarea id="sp_rows" style="min-height:220px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px"></textarea>
       <button class="btn dark" onclick="saveSponsors()">Save sponsor links</button>
       <div id="spmsg" class="msg"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Supporter Sponsors</h2>
+    <div class="hint" style="margin-bottom:10px">One name per line (e.g. <b>Tara &amp; Steve Doel</b>). Shown under the sponsor logos on the homepage and Commercial page, in this order.</div>
+    <div class="frm">
+      <textarea id="sup_rows" style="min-height:150px;font-size:13px"></textarea>
+      <button class="btn dark" onclick="saveSupporters()">Save supporter sponsors</button>
+      <div id="supmsg" class="msg"></div>
     </div>
   </div>
 
@@ -350,7 +398,7 @@ async function login(){
 
 async function boot(){
   $('gate').classList.add('hidden'); $('app').classList.remove('hidden');
-  loadScore(); loadHero(); loadNews(); loadFans(); loadStories(); loadFixtures(); loadPlayers(); loadEvents(); loadSponsors(); loadAnalytics(); loadGallery(); loadFanzone();
+  loadScore(); loadHero(); loadBanner(); loadStaff(); loadSupporters(); loadNews(); loadFans(); loadStories(); loadFixtures(); loadPlayers(); loadEvents(); loadSponsors(); loadAnalytics(); loadGallery(); loadFanzone();
 }
 
 /* ---------- fan zone ---------- */
@@ -405,9 +453,71 @@ async function clearQuiz(){
   show($('qzmsg'), r.ok ? 'Quiz removed.' : 'Failed — try again.', r.ok);
 }
 
+/* ---------- page banners / management team / supporter sponsors ---------- */
+let BANNERS = {};
+async function loadBanner(){
+  const b = await J('/api/content?key=banners'); BANNERS = (b && typeof b === 'object') ? b : {};
+  const u = BANNERS[$('bn_page').value];
+  $('bn_cur').innerHTML = u ? '<img src="'+esc(u)+'" style="height:48px;border-radius:3px;vertical-align:middle"> custom photo' : 'Using the default photo';
+}
+async function saveBanner(){
+  const f = $('bn_img').files[0]; if (!f) return show($('bnmsg'), 'Choose a photo first.', false);
+  try {
+    show($('bnmsg'), 'Uploading photo…', true);
+    const url = await uploadFile(f);
+    const data = Object.assign({}, BANNERS, { [$('bn_page').value]: url });
+    const r = await api('/api/content', { method:'POST', body: JSON.stringify({ key:'banners', data }) });
+    show($('bnmsg'), r.ok ? 'Photo published — live within a minute.' : 'Failed — try again.', r.ok);
+    if (r.ok){ $('bn_img').value=''; loadBanner(); }
+  } catch(e){ show($('bnmsg'), 'Photo upload failed — try a smaller image.', false); }
+}
+async function resetBanner(){
+  const data = Object.assign({}, BANNERS); delete data[$('bn_page').value];
+  const r = await api('/api/content', { method:'POST', body: JSON.stringify({ key:'banners', data }) });
+  show($('bnmsg'), r.ok ? 'Back to the default photo within a minute.' : 'Failed — try again.', r.ok);
+  if (r.ok) loadBanner();
+}
+const STAFF_DEFAULT = [
+  ['Scott Rendell','First Team Manager · Sponsored by Garmin','A club legend turned manager — Golden Boot winner with 28 goals in the 2022/23 title season and Players’ Player of the Year, passing 50 goals for the Stags within eighteen months of arriving. Now leads the first team and heads up coaching across the club’s academy programmes.'],
+  ['David Wright','Director of Football','More than twenty years at the top of professional recruitment and development: Academy Director at Stoke City, Head of Recruitment at Portsmouth, Academy Recruitment Manager at Brighton & Hove Albion and national youth recruitment for Southampton.'],
+  ['Louis Langdown','Assistant Manager','Over 1,000 games coached across levels one to eight of English football, with performance roles at Crystal Palace, Bournemouth and Portsmouth and managerial spells at Weymouth, Eastleigh and Totton. MSc Programme Lead at the University of Chichester.'],
+  ['Steve Hollick','Goalkeeping Coach','A former Bashley and Totton & Eling goalkeeper now in his fourth spell with the club, including a stint as caretaker manager in 2015. Available for Management Team sponsorship.'],
+  ['Ben Leslie Wells','Head Analyst','Sports Science graduate from Exeter with a Master’s from Chichester, joining the Stags after an analyst internship at Reading FC in 2024/25.'],
+  ['Backroom team','Matchday staff','Physiotherapists Andy Hanley and James Colman keep the squad on the pitch, with Joe Sheehan running kit and equipment throughout the season.']
+];
+async function loadStaff(){
+  const l = await J('/api/content?key=staff');
+  const rows = (Array.isArray(l) && l.length) ? l.map(m => [m.name, m.role, m.bio]) : STAFF_DEFAULT;
+  $('st_rows').value = rows.map(r => r.join(' | ')).join('\n');
+}
+async function saveStaff(){
+  const data = $('st_rows').value.split('\n').map(x => x.trim()).filter(Boolean).map(x => {
+    const p = x.split('|').map(t => t.trim()); return { name:p[0], role:p[1]||'', bio:p.slice(2).join(' | ') };
+  });
+  if (!data.length) return show($('stmsg'), 'Add at least one person.', false);
+  const r = await api('/api/content', { method:'POST', body: JSON.stringify({ key:'staff', data }) });
+  show($('stmsg'), r.ok ? 'Management team saved — live within a minute.' : 'Failed — try again.', r.ok);
+}
+async function loadSupporters(){
+  const l = await J('/api/content?key=supporters');
+  if (Array.isArray(l)) $('sup_rows').value = l.join('\n');
+}
+async function saveSupporters(){
+  const data = $('sup_rows').value.split('\n').map(x => x.trim()).filter(Boolean);
+  const r = await api('/api/content', { method:'POST', body: JSON.stringify({ key:'supporters', data }) });
+  show($('supmsg'), r.ok ? 'Supporter sponsors saved — live within a minute.' : 'Failed — try again.', r.ok);
+}
+
 /* ---------- analytics ---------- */
+let A_DAYS = 7;
+function setPeriod(b){
+  A_DAYS = +b.getAttribute('data-d');
+  document.querySelectorAll('.afilt .btn').forEach(x => x.classList.toggle('dark', x === b));
+  $('a_lbl').textContent = '· ' + ({0:'today',7:'last 7 days',30:'last 30 days',365:'last 12 months'})[A_DAYS];
+  loadAnalytics();
+}
 async function loadAnalytics(){
-  const t = await J('/api/track?days=7');
+  const t = await J('/api/track?days=' + A_DAYS);
   if (!t || !t.totals) return;
   $('a_pv').textContent = t.totals.pageviews || 0;
   const clicks = Object.entries(t.totals.clicks || {}).sort((a,b)=>b[1]-a[1]);
