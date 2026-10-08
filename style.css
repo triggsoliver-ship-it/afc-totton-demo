@@ -178,10 +178,10 @@ html[data-theme=dark] .grp{color:#7f9bd0}
 }
 /* mobile nav: full-screen overlay menu */
 @media(max-width:1000px){
-  nav.main.open{display:flex !important;position:fixed;inset:0;background:rgba(8,12,28,.97);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);flex-direction:column;align-items:center;justify-content:center;gap:4px;z-index:220;margin:0;padding:calc(40px + env(safe-area-inset-top)) 20px calc(40px + env(safe-area-inset-bottom))}
+  nav.main.open{display:flex !important;position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;height:100dvh;background:#080C1C;flex-direction:column;align-items:center;justify-content:flex-start;flex-wrap:nowrap;gap:4px;z-index:1000;margin:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:calc(56px + env(safe-area-inset-top)) 20px calc(90px + env(safe-area-inset-bottom))}
   nav.main.open a{font-size:16px;padding:10px 0;border-bottom:0}
   nav.main.open .btn{margin-top:16px;padding:13px 26px}
-  nav.main.open .navx{position:absolute;top:calc(14px + env(safe-area-inset-top));right:20px;background:none;border:0;color:#fff;font-size:34px;cursor:pointer;line-height:1}
+  nav.main.open .navx{position:fixed;z-index:1001;top:calc(14px + env(safe-area-inset-top));right:20px;background:none;border:0;color:#fff;font-size:34px;cursor:pointer;line-height:1}
 }
 
 /* ================================================================
@@ -354,3 +354,7 @@ footer .lgp img{height:24px;width:auto;max-width:104px;object-fit:contain}
 .pc .spchip{position:absolute;top:10px;left:10px;z-index:2;display:inline-flex;align-items:center;max-width:calc(100% - 72px);height:24px;padding:0 7px;background:rgba(255,255,255,.96);color:#151C36;border-radius:3px;font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .pc .spchip img{position:static;transform:none;height:16px;width:auto;max-width:72px;object-fit:contain;filter:none}
 .pc:hover .spchip img{filter:none}
+
+/* mobile menu: lock the page behind the open menu */
+html.navlock,html.navlock body{overflow:hidden;overscroll-behavior:none}
+nav.main.open>*{flex-shrink:0}

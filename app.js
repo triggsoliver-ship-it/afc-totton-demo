@@ -208,10 +208,20 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
   const burger = document.querySelector('.burger');
   if (burger && nav){
     burger.onclick = null;
-    const close = () => { nav.classList.remove('open'); nav.style.display = ''; };
+    // The open menu is moved to <body> so no ancestor (e.g. the frosted-glass header, whose
+    // backdrop-filter creates a containing block on iOS) can trap the fixed overlay.
+    const home = { parent: nav.parentNode, next: nav.nextSibling };
+    const close = () => {
+      nav.classList.remove('open'); nav.style.display = '';
+      document.documentElement.classList.remove('navlock');
+      if (nav.parentNode !== home.parent) home.parent.insertBefore(nav, home.next && home.next.parentNode === home.parent ? home.next : null);
+    };
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && nav.classList.contains('open')) close(); });
     burger.addEventListener('click', e => {
       e.preventDefault();
-      nav.style.display = ''; nav.classList.add('open');
+      if (nav.parentNode !== document.body) document.body.appendChild(nav);
+      nav.style.display = ''; nav.classList.add('open'); nav.scrollTop = 0;
+      document.documentElement.classList.add('navlock');
       if (!nav.querySelector('.navx')){
         const x = document.createElement('button'); x.className = 'navx'; x.innerHTML = '&times;';
         x.addEventListener('click', close); nav.appendChild(x);
