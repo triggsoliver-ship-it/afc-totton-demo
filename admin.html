@@ -174,7 +174,7 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
         <div><label>Position</label><input id="p_pos" placeholder="Striker"></div>
         <div><label>Group</label><select id="p_group"><option value="gk">Goalkeeper</option><option value="df">Defender</option><option value="mf">Midfielder</option><option value="fw">Forward</option></select></div>
       </div>
-      <div><label>Photo (optional — replaces current)</label><input id="p_photo" type="file" accept="image/*"></div>
+      <div><label>Photo (optional — replaces current) · cut-out PNG best; plain backgrounds are removed and the photo is framed automatically</label><input id="p_photo" type="file" accept="image/*"></div>
       <div><label>Bio / about (shown when a fan taps the player)</label><textarea id="p_bio" class="short" placeholder="Joined the Stags in 2024…"></textarea></div>
       <div class="row3">
         <div><label>Home kit sponsor (optional)</label><input id="p_sp" placeholder="Company name"></div>
@@ -629,7 +629,7 @@ async function savePlayer(){
     const cur = PLAYERS.find(x=>x.id===$('p_id').value) || {};
     let img = cur.img || '', sponsorLogo = cur.sponsorLogo || '';
     const f1 = $('p_photo').files[0];
-    if (f1){ show($('pmsg'),'Uploading photo…',true); img = await uploadFile(f1); }
+    if (f1){ show($('pmsg'),'Uploading photo…',true); img = await uploadFile(f1, { player: true }); }
     const f2 = $('p_splogo').files[0];
     if (f2){ show($('pmsg'),'Uploading sponsor logo…',true); sponsorLogo = await uploadFile(f2); }
     const body = { id:$('p_id').value||undefined, num:$('p_num').value, name:$('p_name').value, pos:$('p_pos').value, group:$('p_group').value, img, bio:$('p_bio').value, sponsor:$('p_sp').value, sponsorUrl:$('p_spu').value, sponsorLogo, sponsorAway:$('p_spa').value, sponsorAwayUrl:$('p_spau').value, sponsorThird:$('p_spt').value, sponsorThirdUrl:$('p_sptu').value };
@@ -685,19 +685,70 @@ function editEvent(id){
 async function delEvent(id){ if(!confirm('Delete this event?'))return; await api('/api/events?id='+encodeURIComponent(id),{method:'DELETE'}); loadEvents(); }
 
 /* ---------- shared upload ---------- */
-function resizeImage(file){ return new Promise((resolve,reject)=>{
-  const img = new Image(); const fr = new FileReader();
-  fr.onload = () => { img.onload = () => {
-    const max = 1600; let w = img.width, h = img.height;
-    if (w > max){ h = h * max / w; w = max; }
-    const c = document.createElement('canvas'); c.width = w; c.height = h;
-    c.getContext('2d').drawImage(img, 0, 0, w, h);
-    resolve(c.toDataURL('image/jpeg', 0.82));
-  }; img.onerror = reject; img.src = fr.result; };
+function loadImg(file){ return new Promise((resolve,reject)=>{
+  const fr = new FileReader();
+  fr.onload = () => { const img = new Image(); img.onload = () => resolve(img); img.onerror = reject; img.src = fr.result; };
   fr.onerror = reject; fr.readAsDataURL(file);
 });}
-async function uploadFile(f){
-  const data = await resizeImage(f);
+function hasAlpha(ctx, w, h){
+  const d = ctx.getImageData(0, 0, w, h).data;
+  for (let i = 3; i < d.length; i += 4 * 7) if (d[i] < 250) return true;
+  return false;
+}
+// Remove a plain studio backdrop (flat grey/white) by flood-filling from the edges.
+function removeBackdrop(ctx, w, h){
+  const im = ctx.getImageData(0, 0, w, h), d = im.data;
+  const px = (x, y) => (y * w + x) * 4;
+  const c0 = px(2, 2), br = d[c0], bgc = d[c0 + 1], bb = d[c0 + 2];
+  const near = i => Math.abs(d[i] - br) + Math.abs(d[i + 1] - bgc) + Math.abs(d[i + 2] - bb) <= 12;
+  // only if all four corners share the backdrop colour
+  if (![px(2, 2), px(w - 3, 2), px(2, h - 3), px(w - 3, h - 3)].every(near)) return false;
+  const seen = new Uint8Array(w * h), st = [];
+  for (let x = 0; x < w; x++){ st.push(x, 0, x, h - 1); }
+  for (let y = 0; y < h; y++){ st.push(0, y, w - 1, y); }
+  let n = 0;
+  while (st.length){
+    const y = st.pop(), x = st.pop(), k = y * w + x;
+    if (seen[k]) continue; seen[k] = 1;
+    const i = k * 4; if (!near(i)) continue;
+    d[i + 3] = 0; n++;
+    if (x > 0) st.push(x - 1, y); if (x < w - 1) st.push(x + 1, y);
+    if (y > 0) st.push(x, y - 1); if (y < h - 1) st.push(x, y + 1);
+  }
+  if (n < w * h * 0.15) return false;
+  ctx.putImageData(im, 0, 0); return true;
+}
+// Frame a cut-out like the rest of the squad: 4:5, head ~6% from the top, body to the bottom edge.
+function framePlayer(src){
+  const w = src.width, h = src.height, d = src.getContext('2d').getImageData(0, 0, w, h).data;
+  let x0 = w, x1 = 0, y0 = h, y1 = 0;
+  for (let y = 0; y < h; y += 2) for (let x = 0; x < w; x += 2){
+    if (d[(y * w + x) * 4 + 3] > 20){ if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  }
+  if (x1 <= x0 || y1 <= y0) return src;
+  const ch = (y1 - y0) / 0.94, cw = ch * 0.8, cx = (x0 + x1) / 2, top = y0 - ch * 0.06;
+  const out = document.createElement('canvas'); out.width = 520; out.height = 650;
+  const o = out.getContext('2d'); o.imageSmoothingQuality = 'high';
+  o.drawImage(src, cx - cw / 2, top, cw, ch, 0, 0, 520, 650);
+  return out;
+}
+async function resizeImage(file, opts){
+  opts = opts || {};
+  const img = await loadImg(file);
+  const max = opts.player ? 2400 : 1600; let w = img.width, h = img.height;
+  if (w > max || h > max){ const s = max / Math.max(w, h); w = Math.round(w * s); h = Math.round(h * s); }
+  let c = document.createElement('canvas'); c.width = w; c.height = h;
+  const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, w, h);
+  let transparent = hasAlpha(ctx, w, h);
+  if (opts.player){
+    if (!transparent) transparent = removeBackdrop(ctx, w, h);
+    if (transparent) c = framePlayer(c);
+  }
+  // keep transparency (PNG) – JPEG would turn see-through backgrounds black
+  return transparent ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', 0.82);
+}
+async function uploadFile(f, opts){
+  const data = await resizeImage(f, opts);
   const up = await api('/api/upload', { method:'POST', body: JSON.stringify({ filename: f.name, data }) });
   if (!up.ok) throw new Error('upload failed');
   return (await up.json()).url;
