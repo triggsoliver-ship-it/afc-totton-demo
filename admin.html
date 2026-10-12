@@ -47,12 +47,15 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
   <div class="frm">
     <label>Admin password</label>
     <input id="pw" type="password" autocomplete="current-password" placeholder="Password">
+    <label style="display:flex;align-items:center;gap:8px;font-weight:600;text-transform:none;letter-spacing:0;margin:2px 0 4px;cursor:pointer"><input id="remember" type="checkbox" style="width:auto;margin:0"> Keep me signed in on this device for 30 days</label>
+    <div class="hint" style="margin:-2px 0 6px">Don&rsquo;t tick this on a shared or public computer.</div>
     <button class="btn dark" onclick="login()">Sign in</button>
     <div id="gmsg" class="msg"></div>
   </div>
 </div>
 
 <div id="app" class="wrap hidden" style="max-width:900px;padding-bottom:60px">
+<div style="text-align:right;margin:14px 0 -4px"><button type="button" onclick="logout()" style="background:none;border:1px solid #C9D0E0;border-radius:3px;padding:6px 12px;font-size:11px;font-weight:800;letter-spacing:.06em;cursor:pointer;color:#5B7AB8">SIGN OUT</button></div>
 
   <div class="panel">
     <h2>Live match score</h2>
@@ -384,17 +387,20 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
 </div>
 
 <script>
-let KEY = sessionStorage.getItem('afct_admin') || '';
+function remembered(){ try { const r = JSON.parse(localStorage.getItem('afct_admin_r') || 'null'); if (r && r.k && r.exp > Date.now()) return r.k; localStorage.removeItem('afct_admin_r'); } catch(e){} return ''; }
+function forget(){ sessionStorage.removeItem('afct_admin'); try { localStorage.removeItem('afct_admin_r'); } catch(e){} }
+function logout(){ forget(); location.reload(); }
+let KEY = sessionStorage.getItem('afct_admin') || remembered();
 const $ = id => document.getElementById(id);
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function show(el, txt, good){ el.textContent = txt; el.className = 'msg ' + (good ? 'okc' : 'errc'); if (good) setTimeout(()=>{el.className='msg';}, 4000); }
-async function api(path, opts){ opts = opts || {}; opts.headers = Object.assign({'Content-Type':'application/json','x-admin-key':KEY}, opts.headers||{}); const r = await fetch(path, opts); if (r.status === 401){ sessionStorage.removeItem('afct_admin'); location.reload(); } return r; }
+async function api(path, opts){ opts = opts || {}; opts.headers = Object.assign({'Content-Type':'application/json','x-admin-key':KEY}, opts.headers||{}); const r = await fetch(path, opts); if (r.status === 401){ forget(); location.reload(); } return r; }
 const J = u => fetch(u + (u.indexOf('?')<0?'?':'&') + 'ts=' + Date.now()).then(r=>r.json());
 
 async function login(){
   KEY = $('pw').value.trim();
   const r = await fetch('/api/fans', { headers: { 'x-admin-key': KEY } });
-  if (r.status === 200){ sessionStorage.setItem('afct_admin', KEY); boot(); }
+  if (r.status === 200){ sessionStorage.setItem('afct_admin', KEY); try { if ($('remember').checked) localStorage.setItem('afct_admin_r', JSON.stringify({ k: KEY, exp: Date.now() + 30*864e5 })); else localStorage.removeItem('afct_admin_r'); } catch(e){} boot(); }
   else show($('gmsg'), 'Wrong password.', false);
 }
 
@@ -881,16 +887,16 @@ async function addPhoto(){
   const f = $('g_photo').files[0];
   if (!f) return show($('gamsg'), 'Choose a photo first.', false);
   try {
-    show($('gamsg'), 'Uploading\u2026', true);
+    show($('gamsg'), 'Uploading\\u2026', true);
     const img = await uploadFile(f);
     const r = await api('/api/gallery', { method:'POST', body: JSON.stringify({ img, caption:$('g_cap').value, cat:$('g_cat').value }) });
     if (r.ok){ show($('gamsg'), 'Added to the gallery.', true); $('g_photo').value=''; $('g_cap').value=''; loadGallery(); }
-    else show($('gamsg'), 'Failed \u2014 try again.', false);
+    else show($('gamsg'), 'Failed \\u2014 try again.', false);
   } catch(e){ show($('gamsg'), 'Something went wrong: ' + e.message, false); }
 }
 async function loadGallery(){
   const items = await J('/api/gallery');
-  $('gallist').innerHTML = (items||[]).map(g => `<div class="newsitem"><img src="${esc(g.img)}" alt=""><span>${esc(g.caption)||'(no caption)'}<br><span class="hint">${esc(g.cat)} \u00b7 ${(g.ts||'').slice(0,10)}</span></span><button class="del" style="margin-left:auto" onclick="delPhoto('${g.id}')">Delete</button></div>`).join('') || 'No photos yet.';
+  $('gallist').innerHTML = (items||[]).map(g => `<div class="newsitem"><img src="${esc(g.img)}" alt=""><span>${esc(g.caption)||'(no caption)'}<br><span class="hint">${esc(g.cat)} \\u00b7 ${(g.ts||'').slice(0,10)}</span></span><button class="del" style="margin-left:auto" onclick="delPhoto('${g.id}')">Delete</button></div>`).join('') || 'No photos yet.';
 }
 async function delPhoto(id){ if(!confirm('Remove this photo from the gallery?'))return; await api('/api/gallery?id='+encodeURIComponent(id),{method:'DELETE'}); loadGallery(); }
 
