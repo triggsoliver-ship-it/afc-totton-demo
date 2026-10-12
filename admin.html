@@ -288,6 +288,8 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
       <div><label>Standfirst (one-sentence summary)</label><input id="n_stand" maxlength="300"></div>
       <div><label>Article text (blank line = new paragraph)</label><textarea id="n_body"></textarea></div>
       <div><label>Photo (optional — resized automatically)</label><input id="n_photo" type="file" accept="image/*"></div>
+      <div><label>Schedule for later (optional — leave blank to publish now)</label><input id="n_when" type="datetime-local" style="max-width:260px"></div>
+      <div class="hint" style="margin:-4px 0 4px">For embargoed news (e.g. a new signing reveal): set the exact UK date and time. The article stays hidden from the site until that moment, then appears automatically &mdash; you don&rsquo;t need to be online. You can make its share card now.</div>
       <button class="btn dark" onclick="publishNews()">Publish article</button>
       <div id="nmsg" class="msg"></div>
     </div>
@@ -758,20 +760,30 @@ async function uploadFile(f, opts){
 async function publishNews(){
   const t = $('n_title').value.trim(), b = $('n_body').value.trim();
   if (!t || !b) return show($('nmsg'), 'Headline and article text are required.', false);
+  let publishAt = '';
+  if ($('n_when').value){
+    const d = new Date($('n_when').value);
+    if (isNaN(d.getTime())) return show($('nmsg'), 'That date/time isn\'t valid.', false);
+    if (d.getTime() < Date.now() + 60000) return show($('nmsg'), 'Pick a time at least a minute from now — or clear it to publish straight away.', false);
+    publishAt = d.toISOString();
+  }
   let img = '';
   const f = $('n_photo').files[0];
   try {
     if (f){ show($('nmsg'), 'Uploading photo…', true); img = await uploadFile(f); }
-    const r = await api('/api/news', { method:'POST', body: JSON.stringify({ title:t, body:b, standfirst:$('n_stand').value, cat:$('n_cat').value, img }) });
-    if (r.ok){ show($('nmsg'), 'Published! It is live on the site now.', true); $('n_title').value=''; $('n_stand').value=''; $('n_body').value=''; $('n_photo').value=''; loadNews(); }
+    const r = await api('/api/news', { method:'POST', body: JSON.stringify({ title:t, body:b, standfirst:$('n_stand').value, cat:$('n_cat').value, img, publishAt }) });
+    if (r.ok){ show($('nmsg'), publishAt ? 'Scheduled! It goes live automatically at ' + whenTxt(publishAt) + ' (UK time). Nothing shows on the site until then.' : 'Published! It is live on the site now.', true); $('n_title').value=''; $('n_stand').value=''; $('n_body').value=''; $('n_photo').value=''; $('n_when').value=''; loadNews(); }
     else show($('nmsg'), 'Publish failed — try again.', false);
   } catch(e){ show($('nmsg'), 'Something went wrong: ' + e.message, false); }
 }
 let NEWSI = [];
+function whenTxt(iso){ return new Date(iso).toLocaleString('en-GB', { weekday:'short', day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', timeZone:'Europe/London' }); }
 async function loadNews(){
-  const items = await J('/api/news');
-  NEWSI = items;
-  $('newslist').innerHTML = items.map(i => `<div class="newsitem"><img src="${esc(i.img)||'/img/crest.svg'}" alt=""><span><b>${esc(i.title)}</b><br><span class="hint">${esc(i.cat)} · ${esc(i.date)}</span></span><button class="edt" onclick="shareCard('${i.id}')">Share card</button>${i.id.startsWith('seed-') ? '' : `<button class="del" onclick="delNews('${i.id}')">Delete</button>`}</div>`).join('') || 'No articles yet.';
+  const d = await api('/api/news?all=1&ts=' + Date.now()).then(r => r.json());
+  const items = Array.isArray(d) ? d : (d.items || []), sched = Array.isArray(d) ? [] : (d.scheduled || []);
+  NEWSI = sched.concat(items);
+  const sh = sched.map(i => `<div class="newsitem" style="background:#FFF8E6"><img src="${esc(i.img)||'/img/crest.svg'}" alt=""><span><b>${esc(i.title)}</b><br><span class="hint"><b style="color:#9A6B00">SCHEDULED &middot; ${esc(whenTxt(i.publishAt))}</b> &middot; ${esc(i.cat)}</span></span><button class="edt" onclick="shareCard('${i.id}')">Share card</button><button class="del" onclick="delNews('${i.id}')">Cancel</button></div>`).join('');
+  $('newslist').innerHTML = sh + items.map(i => `<div class="newsitem"><img src="${esc(i.img)||'/img/crest.svg'}" alt=""><span><b>${esc(i.title)}</b><br><span class="hint">${esc(i.cat)} · ${esc(i.date)}</span></span><button class="edt" onclick="shareCard('${i.id}')">Share card</button>${i.id.startsWith('seed-') ? '' : `<button class="del" onclick="delNews('${i.id}')">Delete</button>`}</div>`).join('') || 'No articles yet.';
 }
 
 /* ---------- social share cards ---------- */
