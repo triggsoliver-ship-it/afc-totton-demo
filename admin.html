@@ -57,6 +57,8 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
 <div id="app" class="wrap hidden" style="max-width:900px;padding-bottom:60px">
 <div style="text-align:right;margin:14px 0 -4px"><button type="button" onclick="logout()" style="background:none;border:1px solid #C9D0E0;border-radius:3px;padding:6px 12px;font-size:11px;font-weight:800;letter-spacing:.06em;cursor:pointer;color:#5B7AB8">SIGN OUT</button></div>
 
+  <div class="panel" id="shoppanel"><h2>Club shop</h2><div class="hint">Loading&hellip;</div></div>
+
   <div class="panel">
     <h2>Live match score</h2>
     <div class="frm">
@@ -407,6 +409,7 @@ async function login(){
 async function boot(){
   $('gate').classList.add('hidden'); $('app').classList.remove('hidden');
   loadScore(); loadHero(); loadBanner(); loadStaff(); loadSupporters(); loadNews(); loadFans(); loadStories(); loadFixtures(); loadPlayers(); loadEvents(); loadSponsors(); loadAnalytics(); loadGallery(); loadFanzone();
+  if (window.loadShop) loadShop();
 }
 
 /* ---------- fan zone ---------- */
@@ -887,16 +890,16 @@ async function addPhoto(){
   const f = $('g_photo').files[0];
   if (!f) return show($('gamsg'), 'Choose a photo first.', false);
   try {
-    show($('gamsg'), 'Uploading\u2026', true);
+    show($('gamsg'), 'Uploading\\u2026', true);
     const img = await uploadFile(f);
     const r = await api('/api/gallery', { method:'POST', body: JSON.stringify({ img, caption:$('g_cap').value, cat:$('g_cat').value }) });
     if (r.ok){ show($('gamsg'), 'Added to the gallery.', true); $('g_photo').value=''; $('g_cap').value=''; loadGallery(); }
-    else show($('gamsg'), 'Failed \u2014 try again.', false);
+    else show($('gamsg'), 'Failed \\u2014 try again.', false);
   } catch(e){ show($('gamsg'), 'Something went wrong: ' + e.message, false); }
 }
 async function loadGallery(){
   const items = await J('/api/gallery');
-  $('gallist').innerHTML = (items||[]).map(g => `<div class="newsitem"><img src="${esc(g.img)}" alt=""><span>${esc(g.caption)||'(no caption)'}<br><span class="hint">${esc(g.cat)} \u00b7 ${(g.ts||'').slice(0,10)}</span></span><button class="del" style="margin-left:auto" onclick="delPhoto('${g.id}')">Delete</button></div>`).join('') || 'No photos yet.';
+  $('gallist').innerHTML = (items||[]).map(g => `<div class="newsitem"><img src="${esc(g.img)}" alt=""><span>${esc(g.caption)||'(no caption)'}<br><span class="hint">${esc(g.cat)} \\u00b7 ${(g.ts||'').slice(0,10)}</span></span><button class="del" style="margin-left:auto" onclick="delPhoto('${g.id}')">Delete</button></div>`).join('') || 'No photos yet.';
 }
 async function delPhoto(id){ if(!confirm('Remove this photo from the gallery?'))return; await api('/api/gallery?id='+encodeURIComponent(id),{method:'DELETE'}); loadGallery(); }
 
@@ -920,4 +923,4 @@ async function delStory(id){ await api('/api/stories?id=' + encodeURIComponent(i
 
 $('pw').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
 if (KEY) boot();
-</script></body></html>
+</script><script src="/admin-shop.js"></script></body></html>
