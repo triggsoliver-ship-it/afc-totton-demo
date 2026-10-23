@@ -160,6 +160,8 @@ nav.main .nvg:hover .dd,nav.main .nvg.openg .dd{display:block}
 nav.main .nvg .dd .in2{background:#0E1630;border:1px solid rgba(255,255,255,.09);border-radius:6px;box-shadow:0 18px 44px rgba(3,6,18,.55);padding:8px;min-width:216px}
 nav.main .nvg .dd a{display:block;padding:11px 14px;border-bottom:0;border-radius:4px;font-size:11.5px;white-space:nowrap;color:#cfd8ea}
 nav.main .nvg .dd a:hover,nav.main .nvg .dd a.on{background:rgba(91,122,184,.22);color:#fff}
+@media(min-width:1001px) and (max-width:1240px){nav.main{gap:12px}nav.main a,nav.main .nvg>button{font-size:11.5px;letter-spacing:.04em}nav.main a.btn{padding:9px 12px}}
+@media(min-width:1001px) and (max-width:1060px){.brand span{display:none}}
 @media(max-width:1000px){
  nav.main.open .nvg{position:static;display:flex;flex-direction:column;align-items:center}
  nav.main.open .nvg>button{color:#C9A24B;font-size:10.5px;letter-spacing:.16em;pointer-events:none;border:0;margin-top:16px;padding:0 0 4px}
@@ -189,7 +191,8 @@ const rethemed = () => { window.__applyTheme && window.__applyTheme(); };
       + g('Teams', [['/teams.html', 'First Team', 'teams'], ['/youth.html', 'Youth Football', 'youth'], ['/academy.html', 'Academy 16&ndash;19', 'academy'], ['/provision.html', 'Alternative Provision', 'provision'], ['/walking-football.html', 'Walking Football', 'walking']])
       + g('News', [['/news.html', 'Latest News', 'news'], ['/gallery.html', 'Gallery', 'gallery'], ['/fanzone.html', 'Fan Zone', 'fanzone'], ['/archive.html', 'News Archive', 'archive']])
       + g('Events', [['/events.html', 'What&rsquo;s On', 'events'], ['/hospitality.html', 'Hospitality', 'hospitality'], ['/facility-hire.html', 'Facility Hire', 'facility-hire']])
-      + g('Club', [['/club.html', 'The Club', 'club'], ['/community.html', 'Community', 'community']])
+      + a('/club.html', 'Club', 'club')
+      + a('/community.html', 'Community', 'community')
       + a('/commercial.html', 'Commercial', 'commercial')
       + a('/shop.html', 'Shop', 'shop')
       + '<a href="/#signup" class="btn ghost navsign" data-signup="1">Sign Up</a>'
@@ -420,9 +423,9 @@ if (page === 'match-centre'){
   if (pane){ pane.innerHTML = `<div style="border:1px solid var(--line);border-radius:5px;padding:44px 24px;text-align:center">
     <div class="eyebrow" style="color:#5B7AB8">ENTERPRISE NATIONAL LEAGUE SOUTH</div>
     <h3 style="font-size:24px;color:#151C36;margin:12px 0 10px;font-weight:800">The live league table</h3>
-    <p style="color:#5b6272;font-size:14.5px;max-width:54ch;margin:0 auto 22px;line-height:1.6">Always up to date, straight from the source \u2014 updated automatically after every match.</p>
+    <p style="color:#5b6272;font-size:14.5px;max-width:54ch;margin:0 auto 22px;line-height:1.6">Always up to date, straight from the source \\u2014 updated automatically after every match.</p>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-    <a class="btn" style="color:#fff" href="https://www.bbc.co.uk/sport/football/national-league-south/table" target="_blank" rel="noopener">View the live table \u2014 BBC Sport</a>
+    <a class="btn" style="color:#fff" href="https://www.bbc.co.uk/sport/football/national-league-south/table" target="_blank" rel="noopener">View the live table \\u2014 BBC Sport</a>
     <a class="btn dark" style="color:#fff" href="https://www.thenationalleague.org.uk/match-hub/tables" target="_blank" rel="noopener">Official league site</a></div></div>`;
   rethemed(); }
 }
@@ -684,7 +687,7 @@ if (page === 'index') J('/api/fanzone').then(cfg => {
 if (page === 'gallery') J('/api/gallery').then(items => {
   const grid = document.getElementById('galgrid'), chips = document.getElementById('galchips');
   if (!grid) return;
-  if (!items || !items.length){ grid.innerHTML = '<p style="color:#8a90a0">No photos yet \u2014 the club team adds them from the admin panel, and they appear here instantly.</p>'; return; }
+  if (!items || !items.length){ grid.innerHTML = '<p style="color:#8a90a0">No photos yet \\u2014 the club team adds them from the admin panel, and they appear here instantly.</p>'; return; }
   const cats = ['ALL'].concat(Array.from(new Set(items.map(i => i.cat || 'CLUB'))));
   let cur = 'ALL';
   const draw = () => {
@@ -706,7 +709,7 @@ if (page === 'gallery') J('/api/gallery').then(items => {
     v.style.display = 'flex';
     v.querySelector('#gshare').onclick = ev => { ev.stopPropagation();
       if (navigator.share) navigator.share({ title: 'AFC Totton', text: g.caption || 'AFC Totton', url: g.img }).catch(() => {});
-      else { navigator.clipboard && navigator.clipboard.writeText(g.img); alert('Photo link copied \u2014 paste it anywhere.'); } };
+      else { navigator.clipboard && navigator.clipboard.writeText(g.img); alert('Photo link copied \\u2014 paste it anywhere.'); } };
   });
   v.addEventListener('click', e => { if (e.target === v || e.target.className === 'x') v.style.display = 'none'; });
 });
