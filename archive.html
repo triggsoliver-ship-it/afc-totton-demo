@@ -122,9 +122,8 @@ fetch('/api/archive?ts=' + Date.now()).then(r => r.json()).then(items => {
   }
   chips(yc, v => { ySel = v; }); chips(cc, v => { cSel = v; });
   const reader = document.getElementById('reader'), rbody = document.getElementById('rbody');
-  list.addEventListener('click', async e => {
-    const row = e.target.closest('.arow'); if (!row) return;
-    const meta = items.find(x => x.slug === row.getAttribute('data-slug')); if (!meta) return;
+  async function openSlug(slug){
+    const meta = items.find(x => x.slug === slug); if (!meta) return false;
     const full = await loadYear((meta.date || '').slice(0, 4));
     const i = (full || []).find(x => x.slug === meta.slug) || meta;
     const paras = (i.body || '').split(/\n\n+/).filter(Boolean).map(p => '<p>' + esc(p) + '</p>').join('');
@@ -134,9 +133,16 @@ fetch('/api/archive?ts=' + Date.now()).then(r => r.json()).then(items => {
       + '<div class="src">From the AFC Totton news archive &middot; originally published at afctotton.com</div>';
     reader.style.display = 'block'; reader.scrollTop = 0;
     window.__applyTheme && window.__applyTheme();
+    return true;
+  }
+  list.addEventListener('click', e => {
+    const row = e.target.closest('.arow'); if (row) openSlug(row.getAttribute('data-slug'));
   });
   reader.addEventListener('click', e => { if (e.target === reader || e.target.classList.contains('x')) reader.style.display = 'none'; });
   draw();
+  // deep links from elsewhere on the site, e.g. /archive#a=harlees-angels
+  const fromHash = () => { const m = location.hash.match(/^#a=(.+)$/); if (m) openSlug(decodeURIComponent(m[1])); };
+  fromHash(); window.addEventListener('hashchange', fromHash);
 });
 })();
 </script></body></html>
