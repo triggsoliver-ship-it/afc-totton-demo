@@ -10,13 +10,16 @@ function shell(){
   const el = document.getElementById('youthpanel'); if (!el) return;
   el.innerHTML = `<h2>Youth enquiries <span id="ye_count" class="hint"></span></h2>
   <div class="hint" style="margin-bottom:10px;background:#FFF6E0;border-left:3px solid #C9A227;padding:9px 12px;border-radius:3px">These are <b>children&rsquo;s personal details</b>. Only open this if you help with youth recruitment, don&rsquo;t download or share them unless you need to, and delete enquiries once they&rsquo;re dealt with. Anything older than 12 months is deleted automatically.</div>
+  <button class="btn dark" type="button" id="ye_toggle">Show enquiries</button>
+  <div id="ye_body" class="hidden" style="margin-top:14px">
   <div id="ye_cfg" class="hint" style="margin-bottom:12px"></div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
     <select id="ye_f" style="padding:8px;border:1px solid #C9D0E0;border-radius:4px"><option value="open">Open (new + contacted)</option><option value="new">New</option><option value="contacted">Contacted</option><option value="closed">Closed</option><option value="all">All enquiries</option></select>
     <button class="btn dark" type="button" id="ye_csv">Download CSV</button>
     <button class="btn" type="button" id="ye_reload">Refresh</button>
   </div>
-  <div id="ye_list" class="hint">Loading&hellip;</div>`;
+  <div id="ye_list" class="hint">Loading&hellip;</div>
+  </div>`;
   el.addEventListener('click', onClick);
   el.addEventListener('change', e => { if (e.target.id === 'ye_f'){ YF = e.target.value; draw(); } });
 }
@@ -74,6 +77,7 @@ async function loadAll(){
 
 async function onClick(e){
   const t = e.target.closest('button'); if (!t) return;
+  if (t.id === 'ye_toggle'){ const b = $('ye_body'); b.classList.toggle('hidden'); t.textContent = b.classList.contains('hidden') ? 'Show enquiries' : 'Hide enquiries'; return; }
   if (t.id === 'ye_reload') return loadAll();
   if (t.id === 'ye_csv'){
     const r = await api('/api/enquiries?format=csv&ts=' + Date.now());
