@@ -20,6 +20,42 @@
 html[data-theme=dark] .agegrp{border-color:#232E4E;background:#111A33}
 html[data-theme=dark] .agegrp ul{color:#9AA5BF}
 html[data-theme=dark] .agegrp ul b{color:#E8ECF5}
+.yjoin{background:#FAFBFD}
+.yjgrid{gap:44px;align-items:start}
+.yjgrid>*{min-width:0}
+.yform{background:#fff;border:1px solid var(--line);border-top:4px solid #151C36;border-radius:6px;padding:24px;display:grid;gap:12px;box-shadow:0 14px 34px rgba(10,15,34,.06)}
+.yform .yf-h{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#5B7AB8;margin:4px 0 -2px}
+.yform .yrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.yform .yrow>*{min-width:0}
+.yform label{display:grid;gap:5px;font-size:12.5px;font-weight:700;color:#151C36}
+.yform label span{font-weight:400;color:#8a90a0}
+.yform input,.yform select,.yform textarea{padding:11px 12px;border:1px solid #C9D0E0;border-radius:4px;font:inherit;font-size:15px;font-weight:400;width:100%;box-sizing:border-box;background:#fff;color:#151C36}
+.yform textarea{resize:vertical;min-height:96px}
+.yform input:focus,.yform select:focus,.yform textarea:focus{outline:2px solid #5B7AB8;outline-offset:1px;border-color:#5B7AB8}
+.yform .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.yform .yck{display:flex;gap:10px;align-items:flex-start;font-weight:400;font-size:13px;line-height:1.55;color:#5b6272}
+.yform .yck input{width:18px;height:18px;margin-top:2px;flex:none;padding:0}
+.yform .yck a{color:inherit;text-decoration:underline}
+.yform button{justify-self:start}
+.yage{font-size:13px;font-weight:700;color:#151C36;background:#EEF2FA;border-left:3px solid #5B7AB8;padding:9px 12px;border-radius:3px}
+.yage.warn{background:#FFF6E0;border-left-color:#C9A227}
+.ymsg{font-size:13.5px;margin:0;min-height:1em;color:#B3261E}
+.ythanks{background:#fff;border:1px solid var(--line);border-top:4px solid #C9A227;border-radius:6px;padding:28px 24px}
+.ythanks h3{font-size:22px;color:#151C36;margin-bottom:8px;font-weight:800}
+.ythanks p{color:#5b6272;line-height:1.7;font-size:15px}
+.yjoin .prose ul{margin:0 0 16px 18px;color:#5b6272;line-height:1.85;font-size:14.5px}
+.yalt{font-size:13.5px;color:#5b6272}
+.yalt a{color:#5B7AB8;font-weight:700}
+@media(max-width:600px){.yform{padding:18px}.yform .yrow{grid-template-columns:1fr}}
+html[data-theme=dark] .yjoin{background:#0B1122}
+html[data-theme=dark] .yform,html[data-theme=dark] .ythanks{background:#111A33;border-color:#232E4E;border-top-color:#5B7AB8}
+html[data-theme=dark] .ythanks{border-top-color:#C9A227}
+html[data-theme=dark] .yform label,html[data-theme=dark] .ythanks h3,html[data-theme=dark] .yage{color:#E8ECF5}
+html[data-theme=dark] .yform input,html[data-theme=dark] .yform select,html[data-theme=dark] .yform textarea{background:#0E1630;border-color:#2A3658;color:#E8ECF5}
+html[data-theme=dark] .yform .yck,html[data-theme=dark] .ythanks p,html[data-theme=dark] .yjoin .prose ul,html[data-theme=dark] .yalt{color:#9AA5BF}
+html[data-theme=dark] .yage{background:#16213F}
+html[data-theme=dark] .yage.warn{background:#2A2614}
+html[data-theme=dark] .ymsg{color:#FF8A80}
 </style></head><body data-page="youth">
 <header class="site"><div class="wrap hdr">
 <a class="brand" href="/"><img class="crest" src="/img/crest.svg" alt="AFC Totton crest"><span>AFC TOTTON</span></a>
@@ -35,7 +71,7 @@ html[data-theme=dark] .agegrp ul b{color:#E8ECF5}
 <div class="wrap in"><span class="eyebrow">AFC TOTTON YOUTH &middot; U7 TO U18</span>
 <h1>Football for every child.</h1>
 <p class="lead">A safe, welcoming and inclusive environment for local children &mdash; whatever their ability, experience or background. 35 teams, one club, one pathway to the first team.</p>
-<div class="cta"><a class="btn" href="mailto:dan.woodnutt@afctottonyouth.com?subject=AFC%20Totton%20Youth%20enquiry">Join AFC Totton Youth</a>
+<div class="cta"><a class="btn" href="#join">Join AFC Totton Youth</a>
 <a class="btn ghost" href="#teams">See our teams</a></div></div></div>
 
 <section><div class="wrap"><div class="grid g2" style="gap:44px">
@@ -75,11 +111,100 @@ html[data-theme=dark] .agegrp ul b{color:#E8ECF5}
 <p style="margin-top:14px;font-size:12px;color:#8a90a0">Team list from AFC Totton Youth, 2026/27 season.</p>
 </div></section>
 
-<section class="band"><div class="wrap"><div class="sec-head"><h2>Join AFC Totton Youth</h2></div>
-<div class="grid g2" style="align-items:center">
-<p style="font-size:15.5px;line-height:1.7">Whether your child is new to team football, already enjoys grassroots football or wants to challenge themselves at a higher level, we would love to hear from you. All youth enquiries go straight to Dan Woodnutt, Head of Youth Football.<br><span style="font-size:13px;color:#93a2c0">#UPTHESTAGS &nbsp;#PRIDEOFTHENEWFOREST</span></p>
-<div style="display:flex;gap:12px;flex-wrap:wrap"><a class="btn" style="color:#fff" href="mailto:dan.woodnutt@afctottonyouth.com?subject=AFC%20Totton%20Youth%20enquiry">Email Dan &mdash; dan.woodnutt@afctottonyouth.com</a></div>
+<section id="join" class="yjoin"><div class="wrap">
+<div class="sec-head"><h2>Join AFC Totton Youth</h2><span style="font-size:12px;font-weight:800;letter-spacing:.08em;color:#5B7AB8">PLAYER ENQUIRIES</span></div>
+<div class="grid g2 yjgrid">
+<div class="prose">
+<p>Whether your child is new to team football, already enjoys grassroots football or wants to challenge themselves at a higher level, we would love to hear from you.</p>
+<p>Fill in the form and it goes straight to the AFC Totton Youth recruitment team, who will get back to you about the right team and the next steps.</p>
+<h3>Good to know</h3>
+<ul>
+<li>Boys&rsquo; and girls&rsquo; teams from Under-7s to Under-18s</li>
+<li>Age groups follow the FA&rsquo;s 31 August cut-off &mdash; the form works out your child&rsquo;s age group for you</li>
+<li>All of our coaches are DBS-checked, with safeguarding and first aid qualifications</li>
+<li>Your details go only to the AFC Totton Youth recruitment team</li>
+</ul>
+<p class="yalt">Prefer to email? <a href="mailto:recruitment@afctottonyouth.com?subject=AFC%20Totton%20Youth%20enquiry">recruitment@afctottonyouth.com</a></p>
+<p style="font-size:13px;color:#93a2c0">#UPTHESTAGS &nbsp;#PRIDEOFTHENEWFOREST</p>
+</div>
+<div id="yjoinbox">
+<form id="yform" class="yform" autocomplete="on" novalidate>
+<div class="yf-h">About the player</div>
+<div class="yrow">
+<label>First name<input name="first" required maxlength="60" autocomplete="off"></label>
+<label>Last name<input name="last" required maxlength="60" autocomplete="off"></label>
+</div>
+<div class="yrow">
+<label>Date of birth<input name="dob" type="date" required autocomplete="off"></label>
+<label>Team<select name="teamType" required><option value="">Choose&hellip;</option><option>Boys / mixed team</option><option>Girls team</option><option>Not sure yet</option></select></label>
+</div>
+<div id="yage" class="yage" hidden></div>
+<div class="yrow">
+<label>Position <span>(optional)</span><select name="position"><option value="">Not sure / any</option><option>Goalkeeper</option><option>Defender</option><option>Midfielder</option><option>Forward</option></select></label>
+<label>Current club <span>(optional)</span><input name="club" maxlength="80" autocomplete="off"></label>
+</div>
+<div class="yf-h">Parent or guardian</div>
+<label>Your name<input name="parent" required maxlength="80" autocomplete="name"></label>
+<div class="yrow">
+<label>Email<input name="email" type="email" required maxlength="120" autocomplete="email"></label>
+<label>Phone<input name="phone" type="tel" required maxlength="30" autocomplete="tel"></label>
+</div>
+<label>Anything else we should know? <span>(optional)</span><textarea name="message" maxlength="1000" placeholder="e.g. experience, which team you&rsquo;re interested in, best time to call"></textarea></label>
+<input name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+<label class="yck"><input type="checkbox" name="consent" required><span>I&rsquo;m the player&rsquo;s parent or guardian (or the player, aged 16 or over) and I&rsquo;m happy for AFC Totton Youth to contact me about this enquiry. See our <a href="/privacy">privacy policy</a>.</span></label>
+<button class="btn" type="submit" style="color:#fff">Send enquiry</button>
+<p id="ymsg" class="ymsg" role="status" aria-live="polite"></p>
+</form>
+</div>
 </div></div></section>
+<script>
+(function(){
+  var f = document.getElementById('yform'); if (!f) return;
+  var t0 = Date.now(), now = new Date();
+  var sy = now.getMonth() >= 5 ? now.getFullYear() : now.getFullYear() - 1;
+  var season = sy + '/' + String(sy + 1).slice(2);
+  function group(v){
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); if (!m) return null;
+    return sy - Number(m[1]) - (Number(m[2]) > 8 ? 1 : 0) + 1;
+  }
+  var box = document.getElementById('yage');
+  f.dob.addEventListener('change', function(){
+    var g = group(f.dob.value);
+    if (!g || g < 5 || g > 21){ box.hidden = true; return; }
+    box.hidden = false; box.className = 'yage';
+    if (g < 7){ box.className = 'yage warn'; box.textContent = 'Age group for ' + season + ': Under-' + g + 's. Our youngest team is Under-7s, but send your enquiry and the team will get back to you.'; }
+    else if (g > 18){ box.className = 'yage warn'; box.textContent = 'Our youth teams go up to Under-18s. Send your enquiry and the team will point you in the right direction (see also our Academy and Under-23s).'; }
+    else box.textContent = 'Age group for ' + season + ': Under-' + g + 's';
+  });
+  var msg = document.getElementById('ymsg');
+  f.addEventListener('submit', function(e){
+    e.preventDefault(); msg.textContent = '';
+    var need = [['first','the player’s first name'],['last','the player’s last name'],['dob','the player’s date of birth'],['teamType','a team'],['parent','your name'],['email','your email address'],['phone','a phone number']];
+    for (var i = 0; i < need.length; i++){ if (!String(f[need[i][0]].value || '').trim()){ msg.textContent = 'Please add ' + need[i][1] + '.'; f[need[i][0]].focus(); return; } }
+    var g = group(f.dob.value); if (!g || g < 5 || g > 21){ msg.textContent = 'Please check the player’s date of birth.'; f.dob.focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.value.trim())){ msg.textContent = 'Please check your email address.'; f.email.focus(); return; }
+    if (f.phone.value.replace(/\D/g, '').length < 10){ msg.textContent = 'Please add a phone number we can call you on.'; f.phone.focus(); return; }
+    if (!f.consent.checked){ msg.textContent = 'Please tick the box to confirm you’re happy for us to contact you.'; return; }
+    var btn = f.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = 'Sending…';
+    var body = { action: 'youth', consent: true, el: Date.now() - t0, website: f.website.value };
+    ['first','last','dob','teamType','position','club','parent','email','phone','message'].forEach(function(k){ body[k] = f[k].value; });
+    fetch('/api/enquiries', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return { ok: r.ok, j: j }; }); })
+      .then(function(x){
+        if (!x.ok){ throw new Error((x.j && x.j.error) || 'Something went wrong.'); }
+        var d = document.createElement('div'); d.className = 'ythanks'; d.setAttribute('role', 'status');
+        var h = document.createElement('h3'); h.textContent = 'Thanks — enquiry sent';
+        var p = document.createElement('p'); p.textContent = 'Your enquiry for ' + f.first.value.trim() + ' has gone to the AFC Totton Youth recruitment team. They’ll be in touch soon by email or phone.';
+        var p2 = document.createElement('p'); p2.style.marginTop = '10px'; p2.style.fontSize = '13px';
+        p2.innerHTML = 'Anything to add? Email <a href="mailto:recruitment@afctottonyouth.com" style="color:inherit;text-decoration:underline">recruitment@afctottonyouth.com</a>';
+        d.appendChild(h); d.appendChild(p); d.appendChild(p2);
+        var holder = document.getElementById('yjoinbox'); holder.innerHTML = ''; holder.appendChild(d);
+        try { if (navigator.sendBeacon) navigator.sendBeacon('/api/track', JSON.stringify({ t: 'click', p: 'youth', k: 'youth-enquiry-sent' })); } catch (er) {}
+      })
+      .catch(function(err){ btn.disabled = false; btn.textContent = 'Send enquiry'; msg.textContent = err.message || 'Something went wrong — please try again.'; });
+  });
+})();
+</script>
 
 <footer class="site"><div class="wrap">
 <div class="cols">
