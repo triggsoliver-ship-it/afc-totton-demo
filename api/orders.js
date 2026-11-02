@@ -1,5 +1,5 @@
 import { ok, isAuthed } from './_util.js';
-import { loadProducts, saveProducts, readJson, writeJson, OFILE } from './_shoplib.js';
+import { loadProducts, saveProducts, loadOrders, saveOrders, secureOrders } from './_shoplib.js';
 
 // Click & collect reservations — fans reserve online and pay in the club shop (TouchOffice dept 17).
 //   POST {action:'reserve', name, email, phone, items:[{id,size,qty}], note}   (public)
@@ -16,6 +16,11 @@ function ref() {
 }
 
 export default async function handler(req, res) {
+  try { return await route(req, res); }
+  catch (e) { return res.status(503).json({ error: 'Sorry, that didn’t go through — please try again in a moment.' }); }
+}
+
+async function route(req, res) {
   const b = req.body || {};
   if (req.method === 'POST' && b.action === 'reserve') {
     if (b.website) return ok(res, { ref: 'STG-OK', total: 0 }); // honeypot
@@ -42,15 +47,16 @@ export default async function handler(req, res) {
       name, email, phone, note, items: lines,
       total: money(lines.reduce((s, l) => s + l.price * l.qty, 0))
     };
-    const orders = await readJson(OFILE, []);
+    const orders = await loadOrders();
     orders.unshift(order);
     await saveProducts(products);
-    await writeJson(OFILE, orders.slice(0, 2000));
+    await saveOrders(orders);
     return ok(res, { ref: order.ref, total: order.total });
   }
   if (!isAuthed(req)) return res.status(401).json({ error: 'unauthorised' });
+  if (req.method === 'POST' && b.action === 'secure') return ok(res, await secureOrders());
   if (req.method === 'GET') {
-    const orders = await readJson(OFILE, []);
+    const orders = await loadOrders();
     if (req.query.format === 'csv') {
       const rows = [['ref', 'date', 'status', 'name', 'email', 'phone', 'product', 'size', 'sku', 'qty', 'unit_price', 'line_total', 'touchoffice_department']];
       orders.forEach(o => o.items.forEach(l => rows.push([o.ref, o.ts.slice(0, 16).replace('T', ' '), o.status, o.name, o.email, o.phone, l.name, l.size, l.sku, l.qty, l.price.toFixed(2), (l.price * l.qty).toFixed(2), '17'])));
@@ -64,7 +70,7 @@ export default async function handler(req, res) {
   if (req.method === 'POST' && b.action === 'status') {
     const status = String(b.status || '');
     if (!STATUSES.includes(status)) return res.status(400).json({ error: 'bad status' });
-    const orders = await readJson(OFILE, []);
+    const orders = await loadOrders();
     const o = orders.find(x => x.ref === String(b.ref || ''));
     if (!o) return res.status(404).json({ error: 'order not found' });
     const was = o.status;
@@ -81,7 +87,7 @@ export default async function handler(req, res) {
       await saveProducts(products);
     }
     o.status = status; o.updated = new Date().toISOString();
-    await writeJson(OFILE, orders);
+    await saveOrders(orders);
     return ok(res, { ref: o.ref, status });
   }
   res.status(405).json({ error: 'method not allowed' });
