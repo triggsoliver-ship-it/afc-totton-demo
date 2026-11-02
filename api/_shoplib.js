@@ -1,8 +1,12 @@
-import { readJson, writeJson } from './_util.js';
+import { readJson, writeJson, privateName, loadPrivate, securePrivate } from './_util.js';
 import { SHOP_SEED } from './_shopseed.js';
 
 export const PFILE = 'data/shop-products.json';
-export const OFILE = 'data/shop-orders.json';
+export const OFILE = 'data/shop-orders.json';   // old public address - orders now live in the private folder
+export async function loadOrders() { const d = await loadPrivate('shop-orders.json', OFILE); return Array.isArray(d) ? d : []; }
+export const saveOrders = o => writeJson(privateName('shop-orders.json'), o.slice(0, 2000));
+export const secureOrders = () => securePrivate('shop-orders.json', OFILE, x => x.ref,
+  a => a.slice().sort((x, y) => String(y.ts).localeCompare(String(x.ts))));
 const S = (v, n) => String(v == null ? '' : v).slice(0, n);
 const N = (v, max) => { const x = Math.round(Number(v) * 100) / 100; return isFinite(x) && x >= 0 ? Math.min(x, max) : 0; };
 const I = (v, max) => { const x = parseInt(v, 10); return isFinite(x) && x >= 0 ? Math.min(x, max) : 0; };
