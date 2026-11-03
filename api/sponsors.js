@@ -75,18 +75,26 @@ export default async function handler(req, res) {
     if (!Array.isArray(b.list) || !b.list.length) return res.status(400).json({ error: 'list required' });
     if (b.reset === true) { await writeJson('data/sponsors.json', SEED); return ok(res, { saved: SEED.length, reset: true }); }
     const cur = await readJson('data/sponsors.json', SEED);
-    const gids = {}, srcs = {};
-    cur.forEach(s => { if (s.gid) gids[s.img] = s.gid; if (s.src) srcs[s.img] = s.src; });
+    const gids = {}, srcs = {}, ups = {};
+    cur.forEach(s => { if (s.gid) gids[s.img] = s.gid; if (s.src) srcs[s.img] = s.src; if (s.up && s.src) ups[s.img] = s.src; });
     SEED.forEach(s => { if (s.gid && !gids[s.img]) gids[s.img] = s.gid; if (s.src) srcs[s.img] = s.src; });
-    const list = b.list.slice(0, 80).map(s => ({
-      img: String((s && s.img) || '').slice(0, 80),
-      gid: gids[String((s && s.img) || '')] || String((s && s.gid) || '').slice(0, 60),
-      src: srcs[String((s && s.img) || '')] || String((s && s.src) || '').slice(0, 300),
-      name: String((s && s.name) || '').slice(0, 80),
-      url: String((s && s.url) || '').slice(0, 300)
-    })).filter(s => s.img);
+    // A logo uploaded from the admin panel (posted as src) always wins, and stays put on later saves.
+    const list = b.list.slice(0, 80).map(s => {
+      const img = String((s && s.img) || '').slice(0, 80);
+      const posted = String((s && s.src) || '').slice(0, 300);
+      const fresh = /^https:\/\//i.test(posted) ? posted : '';
+      const out = {
+        img,
+        gid: gids[img] || String((s && s.gid) || '').slice(0, 60),
+        src: fresh || ups[img] || srcs[img] || '',
+        name: String((s && s.name) || '').slice(0, 80),
+        url: String((s && s.url) || '').slice(0, 300)
+      };
+      if (fresh || ups[img]) out.up = true;
+      return out;
+    }).filter(s => s.img);
     await writeJson('data/sponsors.json', list);
-    return ok(res, { saved: list.length });
+    return ok(res, { saved: list.length, list });
   }
   res.status(405).json({ error: 'method not allowed' });
 }
