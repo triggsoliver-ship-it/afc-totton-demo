@@ -270,6 +270,22 @@ table.ft td{padding:8px 10px;border-bottom:1px solid #DDE2ED}
       <button class="btn dark" onclick="saveSponsors()">Save sponsor links</button>
       <div id="spmsg" class="msg"></div>
     </div>
+    <h2 style="margin-top:26px">Add a sponsor or change a logo</h2>
+    <div class="hint" style="margin-bottom:10px">Pick a sponsor to swap their logo, or choose <b>+ New sponsor</b> to add one. A PNG with a transparent or white background looks best. The new logo shows on every sponsor wall within a minute.</div>
+    <div class="frm">
+      <label>Sponsor</label>
+      <select id="spl_pick" onchange="splToggle()"><option value="">+ New sponsor</option></select>
+      <div id="spl_new" style="display:grid;gap:10px">
+        <label>Sponsor name</label>
+        <input id="spl_name" placeholder="e.g. Gentlemen&rsquo;s League Barber">
+        <label>Website link (optional)</label>
+        <input id="spl_url" placeholder="https://&hellip;">
+      </div>
+      <label>Logo image</label>
+      <input id="spl_file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+      <button class="btn dark" onclick="uploadSponsorLogo()">Upload logo</button>
+      <div id="splmsg" class="msg"></div>
+    </div>
   </div>
 
   <div class="panel">
@@ -543,9 +559,48 @@ async function loadAnalytics(){
 }
 
 /* ---------- sponsor links ---------- */
+let SPONSORS = [];
+function showSponsors(list){
+  SPONSORS = list;
+  $('sp_rows').value = list.map(s=>[s.img,s.name,s.url].join(' | ')).join('\n');
+  const sel = $('spl_pick'), keep = sel.value;
+  sel.innerHTML = '<option value="">+ New sponsor</option>' + list.map(s => '<option value="' + esc(s.img) + '">' + esc(s.name || s.img) + ((s.src || s.gid) ? '' : ' (no logo yet)') + '</option>').join('');
+  sel.value = list.some(s => s.img === keep) ? keep : '';
+  splToggle();
+}
 async function loadSponsors(){
   const list = await J('/api/sponsors');
-  if (Array.isArray(list)) $('sp_rows').value = list.map(s=>[s.img,s.name,s.url].join(' | ')).join('\n');
+  if (Array.isArray(list)) showSponsors(list);
+}
+function splToggle(){ $('spl_new').style.display = $('spl_pick').value ? 'none' : 'grid'; }
+async function uploadSponsorLogo(){
+  const f = $('spl_file').files[0];
+  if (!f) return show($('splmsg'), 'Choose the logo image first.', false);
+  const pick = $('spl_pick').value;
+  const rows = $('sp_rows').value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{ const p = l.split('|').map(s=>s.trim()); return { img:p[0], name:p[1]||'', url:p[2]||'' }; });
+  let key = pick, name = '';
+  if (pick){
+    if (!rows.some(r => r.img === pick)) return show($('splmsg'), 'That sponsor isn’t in the list above any more — reload the page and try again.', false);
+  } else {
+    name = $('spl_name').value.trim();
+    let url = $('spl_url').value.trim();
+    if (!name) return show($('splmsg'), 'Enter the sponsor’s name.', false);
+    if (url && !/^https?:\/\//i.test(url) && url.charAt(0) !== '/') url = 'https://' + url;
+    const base = name.toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'sponsor';
+    key = base; let n = 2; while (rows.some(r => r.img === key)) key = base + '-' + (n++);
+    rows.push({ img:key, name, url });
+  }
+  try {
+    show($('splmsg'), 'Uploading logo…', true);
+    const src = await uploadFile(f, { logo: true });
+    const list = rows.map(r => r.img === key ? Object.assign({}, r, { src }) : r);
+    const r = await api('/api/sponsors', { method:'POST', body: JSON.stringify({ list }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) return show($('splmsg'), 'The logo uploaded but the sponsor list didn’t save — try again.', false);
+    if (Array.isArray(j.list)) showSponsors(j.list);
+    $('spl_file').value = ''; $('spl_name').value = ''; $('spl_url').value = '';
+    show($('splmsg'), (pick ? 'Logo changed' : name + ' added') + ' — live on the sponsor wall within a minute.', true);
+  } catch(e){ show($('splmsg'), 'Something went wrong: ' + e.message, false); }
 }
 async function saveSponsors(){
   const list = $('sp_rows').value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
@@ -553,6 +608,8 @@ async function saveSponsors(){
     return { img:p[0], name:p[1]||'', url:p[2]||'' };
   });
   const r = await api('/api/sponsors', { method:'POST', body: JSON.stringify({ list }) });
+  const j = await r.json().catch(() => ({}));
+  if (r.ok && Array.isArray(j.list)) showSponsors(j.list);
   show($('spmsg'), r.ok ? 'Sponsor links saved — live within a minute.' : 'Check the format — image-file | name | link.', r.ok);
 }
 
@@ -749,7 +806,7 @@ function framePlayer(src){
 async function resizeImage(file, opts){
   opts = opts || {};
   const img = await loadImg(file);
-  const max = opts.player ? 2400 : 1600; let w = img.width, h = img.height;
+  const max = opts.player ? 2400 : opts.logo ? 800 : 1600; let w = img.width, h = img.height;
   if (w > max || h > max){ const s = max / Math.max(w, h); w = Math.round(w * s); h = Math.round(h * s); }
   let c = document.createElement('canvas'); c.width = w; c.height = h;
   const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, w, h);
@@ -759,7 +816,7 @@ async function resizeImage(file, opts){
     if (transparent) c = framePlayer(c);
   }
   // keep transparency (PNG) – JPEG would turn see-through backgrounds black
-  return transparent ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', 0.82);
+  return (transparent || opts.logo) ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', 0.82);
 }
 async function uploadFile(f, opts){
   const data = await resizeImage(f, opts);
@@ -893,16 +950,16 @@ async function addPhoto(){
   const f = $('g_photo').files[0];
   if (!f) return show($('gamsg'), 'Choose a photo first.', false);
   try {
-    show($('gamsg'), 'Uploading\u2026', true);
+    show($('gamsg'), 'Uploading…', true);
     const img = await uploadFile(f);
     const r = await api('/api/gallery', { method:'POST', body: JSON.stringify({ img, caption:$('g_cap').value, cat:$('g_cat').value }) });
     if (r.ok){ show($('gamsg'), 'Added to the gallery.', true); $('g_photo').value=''; $('g_cap').value=''; loadGallery(); }
-    else show($('gamsg'), 'Failed \u2014 try again.', false);
+    else show($('gamsg'), 'Failed — try again.', false);
   } catch(e){ show($('gamsg'), 'Something went wrong: ' + e.message, false); }
 }
 async function loadGallery(){
   const items = await J('/api/gallery');
-  $('gallist').innerHTML = (items||[]).map(g => `<div class="newsitem"><img src="${esc(g.img)}" alt=""><span>${esc(g.caption)||'(no caption)'}<br><span class="hint">${esc(g.cat)} \u00b7 ${(g.ts||'').slice(0,10)}</span></span><button class="del" style="margin-left:auto" onclick="delPhoto('${g.id}')">Delete</button></div>`).join('') || 'No photos yet.';
+  $('gallist').innerHTML = (items||[]).map(g => `<div class="newsitem"><img src="${esc(g.img)}" alt=""><span>${esc(g.caption)||'(no caption)'}<br><span class="hint">${esc(g.cat)} · ${(g.ts||'').slice(0,10)}</span></span><button class="del" style="margin-left:auto" onclick="delPhoto('${g.id}')">Delete</button></div>`).join('') || 'No photos yet.';
 }
 async function delPhoto(id){ if(!confirm('Remove this photo from the gallery?'))return; await api('/api/gallery?id='+encodeURIComponent(id),{method:'DELETE'}); loadGallery(); }
 
